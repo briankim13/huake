@@ -189,3 +189,18 @@ void DrawGround(void)
 	glEnd();
 }
 
+
+
+
+// -------- Dynamics Context ---------
+DynamicsContext::DynamicsContext()
+{
+	dT = 0.1; 
+}
+
+DynamicsContext::SimStep()
+{
+	// Player.x += dT*dx (prolly from input)
+	// Player.y += dT*dy
+	// ...  
+}

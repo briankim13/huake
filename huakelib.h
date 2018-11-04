@@ -12,6 +12,7 @@ public:
     void Draw(void); 
 };
 
+// Camera can be subclass of Sprite 
 class CameraObject
 {
 public:
@@ -28,4 +29,21 @@ public:
     void GetForwardVector(double &vx,double &vy,double &vz);
 };
 
+// artifact of Soji's code,
+// should we make a Map class? 
 void DrawGround(void);
+
+
+class DynamicsContext
+{
+public: 
+    DynamicsContext(); 
+    // Player ptr
+    // Obstacle ptr
+    // Enemy ptr
+
+    double dT; 
+    void SimStep(); 
+    // simulate step (dT) from input, 
+    // how should we get input? as a separate class?
+};
