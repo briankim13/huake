@@ -1,9 +1,18 @@
 #include "huakelib.h"
 #include "fssimplewindow.h"
 
-static CameraObject camera;
-void Render(void *)
+// holds pointers for rendering everything 
+class MainData
 {
+public:
+    CameraObject * cameraPtr; 
+    Sprite * cubePtr;
+};
+
+void Render(void *incoming)
+{
+    MainData *datPtr = (MainData *) incoming;
+
     int wid,hei;
     FsGetWindowSize(wid,hei);
 
@@ -12,8 +21,8 @@ void Render(void *)
     glViewport(0,0,wid,hei);
 
     // Set up 3D drawing
-    camera.SetUpCameraProjection();
-    camera.SetUpCameraTransformation();
+    datPtr->cameraPtr->SetUpCameraProjection();
+    datPtr->cameraPtr->SetUpCameraTransformation();
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
@@ -22,8 +31,7 @@ void Render(void *)
 
     // 3D drawing from here
 	DrawGround();
-
-
+    datPtr->cubePtr->Draw(); 
 
     // Set up 2D drawing
     glMatrixMode(GL_PROJECTION);
@@ -37,7 +45,6 @@ void Render(void *)
 
     // 2D drawing from here
 
-
     FsSwapBuffers();
 }
 
@@ -45,15 +52,23 @@ void Render(void *)
 
 int main(void)
 {
+    // make a simple object 
+    Sprite cube(0.,5.,-400.); 
+
     int terminate=0;
 
+    CameraObject camera;
 	camera.y=100.0f;
     camera.z=10.0;
 	camera.nearZ=1.0f;
 	camera.farZ=5000.0f;
 
     FsOpenWindow(16,16,800,600,1);
-    FsRegisterOnPaintCallBack(Render,nullptr);
+    // For rendering -------------
+    MainData dat; 
+    dat.cameraPtr = &camera; 
+    dat.cubePtr = &cube; 
+    FsRegisterOnPaintCallBack(Render,&dat);
 
     while(0==terminate)
     {

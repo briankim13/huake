@@ -4,6 +4,125 @@
 // #include "ysglfontdata.h"
 #include "huakelib.h"
 
+
+// ---------- Sprite -----------
+Sprite::Sprite()
+{
+	Initialize(); 
+}
+
+Sprite::Sprite(double xx, double yy, double zz)
+{
+	x = xx;
+	y = yy; 
+	z = zz;  
+}
+
+
+void Sprite::Initialize(void)
+{
+	x = 0.; 
+	y = 0.; 
+	z = 0.; 
+}
+
+// for now we will define the shape of the
+// object from draw
+void Sprite::Draw(void)
+{
+	glBegin(GL_QUADS);
+
+	glColor3f(0.0f,0.0f,1.0f);
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+	             
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+	             
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+
+	glEnd();
+
+
+	glColor3f(1.0f,1.0f,1.0f);
+	glBegin(GL_LINES);
+
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+
+	glVertex3d(-10.+x, -10.+y, -10.+z);
+	glVertex3d(-10.+x, -10.+y,  10.+z);
+
+	glVertex3d( 10.+x, -10.+y, -10.+z);
+	glVertex3d( 10.+x, -10.+y,  10.+z);
+
+	glVertex3d( 10.+x,  10.+y, -10.+z);
+	glVertex3d( 10.+x,  10.+y,  10.+z);
+
+	glVertex3d(-10.+x,  10.+y, -10.+z);
+	glVertex3d(-10.+x,  10.+y,  10.+z);
+
+
+	glVertex3d( 8.+x, -8.+y, 10.+z);
+	glVertex3d( 8.+x,  8.+y, 10.+z);
+
+	glVertex3d( 8.+x,  8.+y, 10.+z);
+	glVertex3d(-8.+x,  8.+y, 10.+z);
+
+	glVertex3d(-8.+x,  8.+y, 10.+z);
+	glVertex3d(-8.+x, -8.+y, 10.+z);
+
+	glVertex3d(-8.+x, -8.+y, 10.+z);
+	glVertex3d( 8.+x, -8.+y, 10.+z);
+
+	glEnd();
+}
+
+
+// ---------- Camera -----------
 CameraObject::CameraObject()
 {
     Initialize();
@@ -53,6 +172,8 @@ void CameraObject::GetForwardVector(double &vx,double &vy,double &vz)
     vz=-cos(p)*cos(h);
 }
 
+
+// --------- Draw background ---------
 void DrawGround(void)
 {
 	glColor3f(0,0,1);
