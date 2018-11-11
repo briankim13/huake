@@ -17,6 +17,7 @@ void Render(void *incoming)
     FsGetWindowSize(wid,hei);
 
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0, 0.0f, 0.0f, 0.0f); 
 
     glViewport(0,0,wid,hei);
 
@@ -54,6 +55,7 @@ int main(void)
 {
     // make a simple object 
     Sprite cube(0.,5.,-400.); 
+    cube.SetPlanePos(0.,100.,0.); 
 
     int terminate=0;
 
