@@ -4,144 +4,6 @@
 // #include "ysglfontdata.h"
 #include "huakelib.h"
 
-
-// NOT USING THIS FOR NOW
-// COPIED FOR REFERENCE
-// // ---------- Transform --------
-// // this will transform 3d coordinate (x,y,z)
-// // from local coordinate to the global coordinate
-// // you can think in terms of local coordinates and this
-// // figure out global coordinate
-// TransformMatrix::TransformMatrix()
-// {
-// 	for (int i = 0; i < 4; ++i)
-// 	{
-// 		for (int j = 0; j < 4; ++j)
-// 		{ 
-// 			if (i == j)
-// 			{
-// 				matrix[j][i] = 1.; 
-// 			}
-// 			else
-// 			{
-// 				matrix[j][i] = 0.;
-// 			}
-// 		}
-// 	} 
-// }
-// void TransformMatrix::setPos(double x, double y, double z)
-// {
-// 	matrix[0][2] = x;   
-// 	matrix[1][2] = y; 
-// 	matrix[2][2] = z; 
-// }
-// void TransformMatrix::setPosOri(double x, double y, double z, double th)
-// {
-// 	matrix[0][0] = cos(th);
-// 	matrix[0][1] = -sin(th);
-// 	matrix[0][2] = x;   
-// 	matrix[1][0] = sin(th);
-// 	matrix[1][1] = cos(th); 
-// 	matrix[1][2] = y; 
-// 	matrix[2][0] = 0.;
-// 	matrix[2][1] = 0.; 
-// 	matrix[2][2] = z; 
-// }
-// double TransformMatrix::getX()
-// {
-// 	return matrix[0][2]; 
-// }
-// double TransformMatrix::getY()
-// {
-// 	return matrix[1][2];
-// }
-// double TransformMatrix::getZ()
-// {
-// 	return matrix[2][2];
-// }
-// double TransformMatrix::getTh()
-// {
-// 	return atan2(matrix[1][0], matrix[0][0]); 
-// }
-
-// void TransformMatrix::print()
-// {
-// 	printf("%f %f %f %f\n%f %f %f %f\n%f %f %f %f\n",
-// 		matrix[0][0],matrix[0][1],matrix[0][2],matrix[0][3],
-// 		matrix[1][0],matrix[1][1],matrix[1][2],matrix[1][3],
-// 		matrix[2][0],matrix[2][1],matrix[2][2],matrix[2][3],
-// 		matrix[3][0],matrix[3][1],matrix[3][2],matrix[3][3]);
-// }
-
-// void TransformMatrix::printResultVec()
-// {
-// 	printf("%f %f %f %f\n",
-// 		resultVec[0],resultVec[1],resultVec[2],resultVec[3]);
-// }
-
-// void TransformMatrix::doPostMultVec(double p[4])
-// {
-// 	double value[3]; 
-// 	for (int j = 0; j < 3; ++j)
-// 	{
-// 		value[j] = 0.; 
-// 		for (int i = 0; i < 3; ++i)
-// 		{
-// 			value[j] += matrix[j][i]*p[i]; 
-// 		}
-// 	}
-// 	for (int j = 0; j < 3; ++j)
-// 	{
-// 		resultVec[j] = value[j]; 
-// 	}
-// }
-
-// void TransformMatrix::doPreMultMat(double R[4][4])
-// {
-// 	double value[4][4];
-// 	for (int j = 0; j < 4; ++j)
-// 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			value[j][i] = 0.; 
-// 			for (int k = 0; k < 4; ++k)
-// 			{
-// 				value[j][i] += R[j][k] * matrix[k][i]; 
-// 			}
-// 		}
-// 	}
-// 	for (int j = 0; j < 4; ++j)
-// 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			matrix[j][i] = value[j][i]; 
-// 		}
-// 	}
-// }
-
-// void TransformMatrix::doPostMultMat(double R[4][4])
-// {
-// 	double value[4][4];
-// 	for (int j = 0; j < 4; ++j)
-// 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			value[j][i] = 0.; 
-// 			for (int k = 0; k < 4; ++k)
-// 			{
-// 				value[j][i] += matrix[j][k] * R[k][i]; 
-// 			}
-// 		}
-// 	}
-// 	for (int j = 0; j < 4; ++j)
-// 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			matrix[j][i] = value[j][i]; 
-// 		}
-// 	}
-// }
-
 // ---------- Sprite -----------
 // initialize with 0,0,0 
 Sprite::Sprite()
@@ -207,6 +69,21 @@ void Sprite::SetPlanePos(double x, double y, double z)
 	mat[0][3] = x; 
 	mat[1][3] = y; 
 	mat[2][3] = z;
+}
+
+// euler roll-pitch-yaw to rotation matrix
+// http://planning.cs.uiuc.edu/node102.html 
+void Sprite::SetPlaneOri(double a, double b, double g) 
+{
+	mat[0][0] = cos(a)*cos(b);
+	mat[0][1] = cos(a)*sin(b)*sin(g) - sin(a)*cos(g);
+	mat[0][2] = cos(a)*sin(b)*cos(g) + sin(a)*sin(g);
+	mat[1][0] = sin(a)*cos(b); 
+	mat[1][1] = sin(a)*sin(b)*sin(g) + cos(a)*cos(g); 
+	mat[1][2] = sin(a)*sin(b)*cos(g) - cos(a)*sin(g); 
+	mat[2][0] = -sin(b); 
+	mat[2][1] = cos(b)*sin(g); 
+	mat[2][2] = cos(b)*cos(g); 
 }
 
 // lighter version of transform matrix

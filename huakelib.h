@@ -47,6 +47,7 @@ public:
     void gl3dLocal(double lx, double ly, double lz);
     void Draw(void); 
     void SetPlanePos(double pxx, double pyy, double pzz); 
+    void SetPlaneOri(double a, double b, double g); 
     void local2global(double x, double y, double z, double &gx, double &gy, double &gz); 
 };
 
