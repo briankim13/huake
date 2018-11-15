@@ -5,11 +5,8 @@
 class MainData
 {
 public:
-    CameraObject * cameraPtr; 
-    Sprite * cubePtr;
-    Sprite * cubePtr1; 
-    Sprite * cubePtr2; 
-    Sprite * cubesPtr; 
+    Camera * cameraPtr;
+    Sprite * scubesPtr; 
 };
 
 void Render(void *incoming)
@@ -35,13 +32,10 @@ void Render(void *incoming)
 
     // 3D drawing from here
 	DrawGround();
-    // datPtr->cubePtr->Draw(); 
-    // datPtr->cubePtr1->Draw(); 
-    // datPtr->cubePtr2->Draw(); 
     for (int i = 0; i<24; ++i)
     {
-        datPtr->cubesPtr[i].Draw(); 
-    }
+        datPtr->scubesPtr[i].Draw(); 
+    } 
 
     // Set up 2D drawing
     glMatrixMode(GL_PROJECTION);
@@ -62,101 +56,101 @@ void Render(void *incoming)
 
 int main(void)
 {
-    // // make a simple object 
-    // Sprite cube(0.,0.,-60.); 
-    // Sprite cube1(-60.,0.,60.);
-    // Sprite cube2(60.,0.,60.);
-    // cube.SetPlanePos(0.,0.,-400.); // x y z 
-    // cube1.SetPlanePos(0.,0.,-400.); // x y z
-    // cube2.SetPlanePos(0.,0.,-400.);
+    // set global and local origins
+    TransformMatrix GP;
+    TransformMatrix P0; 
+    TransformMatrix P1; 
+    TransformMatrix P2; 
+    TransformMatrix P3; 
+    TransformMatrix P4; 
+    TransformMatrix P5; 
 
-    Sprite cubes[24];
-    // set local position of the cubes
-    cubes[0].SetPos(90.,10.,-90.);
-    cubes[1].SetPos(90.,10.,90.);
-    cubes[2].SetPos(-90.,10.,90.);
-    cubes[3].SetPos(-90.,10.,-90.);
-    // set the position and orientation of the 
-    // local origin
+    GP.SetPos(0.,0.,0.); // THE GLOBAL
+
+    P0.SetPos(0.,200.,-400.);
+    P0.SetOri(0.,0.,0.); 
+
+    P1.SetPos(0.,0.,-400.);
+    P1.SetOri(-PI,0.,0.);
+
+    P2.SetPos(100.,100.,-400.);
+    P2.SetOri(-PI/2.,0.,0.);
+
+    P3.SetPos(-100.,100.,-400.);
+    P3.SetOri(PI/2.,0.,0.);
+
+    P4.SetPos(0.,100.,-300.);
+    P4.SetOri(0.,PI/2.,0.);
+
+    P5.SetPos(0.,100.,-500.);
+    P5.SetOri(0.,-PI/2.,0.);
+
+
+    // make object
+    Sprite scubes[24];
+    scubes[0].SetPos(90.,10.,-90.); 
+    scubes[1].SetPos(90.,10.,90.);
+    scubes[2].SetPos(-90.,10.,90.);
+    scubes[3].SetPos(-90.,10.,-90.);
     for (int i = 0; i < 4; ++i)
     {
-        cubes[i].SetPlanePos(0.,200.,-400.);
-        cubes[i].SetPlaneOri(0.,0.,0.); 
-    } 
-
-    cubes[4].SetPos(90.,10.,-90.);
-    cubes[5].SetPos(90.,10.,90.);
-    cubes[6].SetPos(-90.,10.,90.);
-    cubes[7].SetPos(-90.,10.,-90.);
-    // set the position and orientation of the 
-    // local origin 
+        scubes[i].pHT = &P0; 
+    }
+    scubes[4].SetPos(90.,10.,-90.); 
+    scubes[5].SetPos(90.,10.,90.);
+    scubes[6].SetPos(-90.,10.,90.);
+    scubes[7].SetPos(-90.,10.,-90.);
     for (int i = 4; i < 8; ++i)
     {
-        cubes[i].SetPlanePos(0.,0.,-400.);
-        cubes[i].SetPlaneOri(-PI,0.,0.); 
-    } 
-
-    cubes[8].SetPos(90.,10.,-90.);
-    cubes[9].SetPos(90.,10.,90.);
-    cubes[10].SetPos(-90.,10.,90.);
-    cubes[11].SetPos(-90.,10.,-90.);
-    // set the plane they will lie in 
+        scubes[i].pHT = &P1; 
+    }
+    scubes[8].SetPos(90.,10.,-90.); 
+    scubes[9].SetPos(90.,10.,90.);
+    scubes[10].SetPos(-90.,10.,90.);
+    scubes[11].SetPos(-90.,10.,-90.);
     for (int i = 8; i < 12; ++i)
     {
-        cubes[i].SetPlanePos(100.,100.,-400.);
-        cubes[i].SetPlaneOri(-PI/2.,0.,0.); 
-    } 
-
-    cubes[12].SetPos(90.,10.,-90.);
-    cubes[13].SetPos(90.,10.,90.);
-    cubes[14].SetPos(-90.,10.,90.);
-    cubes[15].SetPos(-90.,10.,-90.);
-    // set the plane they will lie in 
+        scubes[i].pHT = &P2; 
+    }
+    scubes[12].SetPos(90.,10.,-90.); 
+    scubes[13].SetPos(90.,10.,90.);
+    scubes[14].SetPos(-90.,10.,90.);
+    scubes[15].SetPos(-90.,10.,-90.);
     for (int i = 12; i < 16; ++i)
     {
-        cubes[i].SetPlanePos(-100.,100.,-400.);
-        cubes[i].SetPlaneOri(PI/2.,0.,0.); 
-    } 
-
-    cubes[16].SetPos(90.,10.,-90.);
-    cubes[17].SetPos(90.,10.,90.);
-    cubes[18].SetPos(-90.,10.,90.);
-    cubes[19].SetPos(-90.,10.,-90.);
-    // set the plane they will lie in 
+        scubes[i].pHT = &P3; 
+    }
+    scubes[16].SetPos(90.,10.,-90.); 
+    scubes[17].SetPos(90.,10.,90.);
+    scubes[18].SetPos(-90.,10.,90.);
+    scubes[19].SetPos(-90.,10.,-90.);
     for (int i = 16; i < 20; ++i)
     {
-        cubes[i].SetPlanePos(0.,100.,-300.);
-        cubes[i].SetPlaneOri(0.,0.,PI/2.); 
-    } 
-
-    cubes[20].SetPos(90.,10.,-90.);
-    cubes[21].SetPos(90.,10.,90.);
-    cubes[22].SetPos(-90.,10.,90.);
-    cubes[23].SetPos(-90.,10.,-90.);
-    // set the plane they will lie in 
+        scubes[i].pHT = &P4; 
+    }
+    scubes[20].SetPos(90.,10.,-90.); 
+    scubes[21].SetPos(90.,10.,90.);
+    scubes[22].SetPos(-90.,10.,90.);
+    scubes[23].SetPos(-90.,10.,-90.);
     for (int i = 20; i < 24; ++i)
     {
-        cubes[i].SetPlanePos(0.,100.,-500.);
-        cubes[i].SetPlaneOri(0.,0.,-PI/2.); 
-    } 
-
+        scubes[i].pHT = &P5; 
+    }
 
     int terminate=0;
-
-    CameraObject camera;
-	camera.y=100.0f;
-    camera.z=10.0;
-	camera.nearZ=1.0f;
+    TransformMatrix PC; 
+    PC.SetPos(0.,10.,100.); 
+    Camera camera;
+    camera.pHT = &PC; 
+	
+    camera.nearZ=1.0f;
 	camera.farZ=5000.0f;
 
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat; 
     dat.cameraPtr = &camera; 
-    // dat.cubePtr = &cube; 
-    // dat.cubePtr1 = &cube1; 
-    // dat.cubePtr2 = &cube2; 
-    dat.cubesPtr = cubes; 
+    dat.scubesPtr = scubes; 
     FsRegisterOnPaintCallBack(Render,&dat);
 
     while(0==terminate)
@@ -171,30 +165,53 @@ int main(void)
             break;
         }
 
+        // camera.PrintPlaneInfo(); 
 		if(0!=FsGetKeyState(FSKEY_LEFT))
 		{
-			camera.h+=PI/180.0;
+            camera.pHT->RotateYaw(PI/180.0); 
 		}
 		if(0!=FsGetKeyState(FSKEY_RIGHT))
 		{
-			camera.h-=PI/180.0;
+            camera.pHT->RotateYaw(-PI/180.0); 
 		}
 		if(0!=FsGetKeyState(FSKEY_UP))
 		{
-			camera.p+=PI/180.0;
+            camera.pHT->RotatePitch(PI/180.); 
 		}
 		if(0!=FsGetKeyState(FSKEY_DOWN))
 		{
-			camera.p-=PI/180.0;
+            camera.pHT->RotatePitch(-PI/180.); 
 		}
 		if(0!=FsGetKeyState(FSKEY_SPACE))
 		{
 			double vx,vy,vz;
-			camera.GetForwardVector(vx,vy,vz);
-			camera.x+=vx;
-			camera.y+=vy;
-			camera.z+=vz;
+            camera.GetForwardVector(vx,vy,vz);
+            camera.pHT->MovePos(-vx,-vy,-vz); 
 		}
+        if(0!=FsGetKeyState(FSKEY_W))
+        {
+            double vx,vy,vz;
+            camera.GetForwardVector(vx,vy,vz);
+            camera.pHT->MovePos(-vx,-vy,-vz); 
+        }
+        if(0!=FsGetKeyState(FSKEY_S))
+        {
+            double vx,vy,vz;
+            camera.GetForwardVector(vx,vy,vz);
+            camera.pHT->MovePos(vx,vy,vz); 
+        }
+        if(0!=FsGetKeyState(FSKEY_A))
+        {
+            double vx,vy,vz;
+            camera.GetSidewardVector(vx,vy,vz);
+            camera.pHT->MovePos(-vx,-vy,-vz); 
+        }
+        if(0!=FsGetKeyState(FSKEY_D))
+        {
+            double vx,vy,vz;
+            camera.GetSidewardVector(vx,vy,vz);
+            camera.pHT->MovePos(vx,vy,vz); 
+        }
 
 		FsPushOnPaintEvent();
         FsSleep(10);

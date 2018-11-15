@@ -4,47 +4,14 @@
 // #include "ysglfontdata.h"
 #include "huakelib.h"
 
-// ---------- Sprite -----------
-// initialize with 0,0,0 
-Sprite::Sprite()
+// ---------- Transform Matrix --------
+TransformMatrix::TransformMatrix()
 {
 	Initialize(); 
 }
-
-// initialize with x,y,z 0 vel
-Sprite::Sprite(double xx, double yy, double zz)
+void TransformMatrix::Initialize(void)
 {
-	Initialize();
-	SetPos(xx, yy, zz); 
-}
-
-// initialize with x,y,z and dx,dy,dz
-Sprite::Sprite(double xx, double yy, double zz, double dxx, double dyy, double dzz)
-{
-	Initialize();
-	SetPos(xx, yy, zz);  
-	dx = dxx; 
-	dy = dyy;
-	dz = dzz; 
-}
-
-// set the local position of the object
-void Sprite::SetPos(double xx, double yy, double zz)
-{
-	x = xx; 
-	y = yy; 
-	z = zz;  
-}
-
-void Sprite::Initialize(void)
-{
-	x = 0.; 
-	y = 0.; 
-	z = 0.; 
-	dx = 0.;
-	dy = 0.;
-	dz = 0.;
-	// set local origin
+	// identity matrix
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -60,102 +27,215 @@ void Sprite::Initialize(void)
 		}
 	} 
 }
-
-// the location of local coord origin
-// we will have four planes to play from
-// define what plane we are in (do we need orientation of the plane??)
-void Sprite::SetPlanePos(double x, double y, double z)
+void TransformMatrix::SetPos(double x, double y, double z)
 {
 	mat[0][3] = x; 
 	mat[1][3] = y; 
 	mat[2][3] = z;
 }
-
-// euler roll-pitch-yaw to rotation matrix
-// http://planning.cs.uiuc.edu/node102.html 
-void Sprite::SetPlaneOri(double a, double b, double g) 
+void TransformMatrix::SetOri(double r, double p, double y)
 {
-	mat[0][0] = cos(a)*cos(b);
-	mat[0][1] = cos(a)*sin(b)*sin(g) - sin(a)*cos(g);
-	mat[0][2] = cos(a)*sin(b)*cos(g) + sin(a)*sin(g);
-	mat[1][0] = sin(a)*cos(b); 
-	mat[1][1] = sin(a)*sin(b)*sin(g) + cos(a)*cos(g); 
-	mat[1][2] = sin(a)*sin(b)*cos(g) - cos(a)*sin(g); 
-	mat[2][0] = -sin(b); 
-	mat[2][1] = cos(b)*sin(g); 
-	mat[2][2] = cos(b)*cos(g); 
+	mat[0][0] = cos(r)*cos(y) + sin(p)*sin(r)*sin(y); 
+	mat[0][1] = cos(r)*sin(p)*sin(y) - cos(y)*sin(r);
+	mat[0][2] = cos(p)*sin(y); 
+	mat[1][0] = cos(p)*sin(r); 
+	mat[1][1] = cos(p)*cos(r); 
+	mat[1][2] = -sin(p);  
+	mat[2][0] = cos(y)*sin(p)*sin(r) - cos(r)*sin(y);  
+	mat[2][1] = sin(r)*sin(y) + cos(r)*cos(y)*sin(p); 
+	mat[2][2] = cos(p)*cos(y); 	
+}
+double TransformMatrix::GetX(void) const
+{
+	return mat[0][3]; 
+}
+double TransformMatrix::GetY(void) const
+{
+	return mat[1][3]; 
+}
+double TransformMatrix::GetZ(void) const
+{
+	return mat[2][3]; 
+}
+double TransformMatrix::GetRoll(void) const 
+{
+	double r = atan2(mat[1][0],mat[1][1]);
+	return r; 
+}
+double TransformMatrix::GetPitch(void) const
+{
+	double sq = sqrt(mat[0][2]*mat[0][2] + mat[2][2]*mat[2][2]);
+	double p = atan2(-mat[1][2],sq); 
+	return p; 
+}
+double TransformMatrix::GetYaw(void) const
+{
+	double y = atan2(mat[0][2],mat[2][2]);
+	return y; 
+}
+void TransformMatrix::MovePos(double dx, double dy, double dz)
+{
+	mat[0][3] += dx; 
+	mat[1][3] += dy;
+	mat[2][3] += dz; 
+}
+void TransformMatrix::RotateRoll(double dr)
+{
+	double r = GetRoll();  
+	double p = GetPitch(); 
+	double y = GetYaw(); 
+	r = r + dr;
+	SetOri(r,p,y); 
+}
+void TransformMatrix::RotatePitch(double dp)
+{
+	double r = GetRoll();  
+	double p = GetPitch(); 
+	double y = GetYaw(); 
+	p = p + dp;
+	SetOri(r,p,y); 
+}
+void TransformMatrix::RotateYaw(double dy)
+{
+	double r = GetRoll();  
+	double p = GetPitch(); 
+	double y = GetYaw(); 
+	y = y + dy;
+	SetOri(r,p,y); 
 }
 
-// lighter version of transform matrix
-// transform x,y,z local coordinate to
-// gx, gy, gz global coordinate 
-void Sprite::local2global(double x, double y, double z, double &gx, double &gy, double &gz)
+void TransformMatrix::Print(void) const 
 {
-	double p[4]; 
-	p[0] = x; 
-	p[1] = y; 
-	p[2] = z; 
-	p[3] = 1.; 
-	double buf[4]; 
-	// post multiplying
-	// matrix * vector = buf
-	for (int j = 0; j < 4; ++j)
+	printf("%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n\n",
+		    mat[0][0],mat[0][1],mat[0][2],mat[0][3],
+		    mat[1][0],mat[1][1],mat[1][2],mat[1][3],
+		    mat[2][0],mat[2][1],mat[2][2],mat[2][3],
+		    mat[3][0],mat[3][1],mat[3][2],mat[3][3]);	
+}
+void TransformMatrix::DoPostMult(const TransformMatrix R)
+{
+	double c[4][4]; 
+	for(int i=0;i<4;++i)
 	{
-		buf[j] = 0.; 
-		for (int i = 0; i < 4; ++i)
-		{
-			buf[j] += mat[j][i]*p[i]; 
+	    for(int j=0;j<4;++j)
+	    {
+	        c[i][j]=0.;
+	        for(int k=0;k<4;++k)
+	        {
+	            c[i][j]=c[i][j]+(mat[i][k]*R.mat[k][j]);
+	        }
 		}
-	}
-	gx = buf[0]; 
-	gy = buf[1]; 
-	gz = buf[2]; 
+	}   
+	for(int i=0;i<4;++i)
+	{
+	    for(int j=0;j<4;++j)
+	    {
+	        mat[i][j] = c[i][j];
+		}
+	}  
+}
+void TransformMatrix::DoPreMult(const TransformMatrix R)
+{
+	double c[4][4]; 
+	for(int i=0;i<4;++i)
+	{
+	    for(int j=0;j<4;++j)
+	    {
+	        c[i][j]=0.;
+	        for(int k=0;k<4;++k)
+	        {
+	            c[i][j]=c[i][j]+(R.mat[k][j]*mat[i][k]);
+	        }
+		}
+	}   
+	for(int i=0;i<4;++i)
+	{
+	    for(int j=0;j<4;++j)
+	    {
+	        mat[i][j] = c[i][j];
+		}
+	}  
 }
 
-// do the transform and put the coordinate 
-// in glVertex3d 
-void Sprite::gl3dLocal(double lx, double ly, double lz)
+
+// --------- Point -----------
+Point::Point()
 {
-	double gx, gy, gz; 
-	local2global(lx, ly, lz, gx, gy, gz); 
-	glVertex3d(gx, gy, gz); 
+	x = 0.;
+	y = 0.;
+	z = 0.; 
 }
-// for now we will define the shape of the
-// object from draw
+Point::Point(double xx,double yy,double zz)
+{
+	Set(xx,yy,zz); 
+}
+void Point::Set(double xx,double yy,double zz)
+{
+	x = xx; 
+	y = yy;
+	z = zz; 
+}
+
+
+// --------- Sprite -----------
+Sprite::Sprite()
+{
+	Initialize(); 
+}
+void Sprite::Initialize(void)
+{
+	// the most basic shape is cube with 8 points 
+	p[0].Set(-10., 10.,-10.);
+	p[1].Set( 10., 10.,-10.);
+	p[2].Set( 10., 10., 10.);
+	p[3].Set(-10., 10., 10.); 
+	p[4].Set(-10.,-10.,-10.);
+	p[5].Set( 10.,-10.,-10.);
+	p[6].Set( 10.,-10., 10.); 
+	p[7].Set(-10.,-10., 10.);  
+}
+void Sprite::SetPos(double x, double y, double z)
+{
+	HT.SetPos(x,y,z); 
+}
+void Sprite::SetOri(double r, double p, double y)
+{
+	HT.SetOri(r,p,y); 
+}
 void Sprite::Draw(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
 		glColor3f(0.0f,0.0f,1.0f);
-		gl3dLocal(-10.+x, -10.+y, -10.+z);
-		gl3dLocal( 10.+x, -10.+y, -10.+z);
-		gl3dLocal( 10.+x,  10.+y, -10.+z);
-		gl3dLocal(-10.+x,  10.+y, -10.+z);
+		Mygl3d(p[0]);
+		Mygl3d(p[1]);
+		Mygl3d(p[2]);
+		Mygl3d(p[3]);
 
-		gl3dLocal(-10.+x, -10.+y,  10.+z);
-		gl3dLocal( 10.+x, -10.+y,  10.+z);
-		gl3dLocal( 10.+x,  10.+y,  10.+z);
-		gl3dLocal(-10.+x,  10.+y,  10.+z);
+		Mygl3d(p[0]);
+		Mygl3d(p[3]);
+		Mygl3d(p[7]);
+		Mygl3d(p[4]);
 
-		gl3dLocal(-10.+x, -10.+y, -10.+z);
-		gl3dLocal( 10.+x, -10.+y, -10.+z);
-		gl3dLocal( 10.+x, -10.+y,  10.+z);
-		gl3dLocal(-10.+x, -10.+y,  10.+z);
+		Mygl3d(p[0]);
+		Mygl3d(p[1]);
+		Mygl3d(p[5]);
+		Mygl3d(p[4]);
 		             
-		gl3dLocal(-10.+x,  10.+y, -10.+z);
-		gl3dLocal( 10.+x,  10.+y, -10.+z);
-		gl3dLocal( 10.+x,  10.+y,  10.+z);
-		gl3dLocal(-10.+x,  10.+y,  10.+z);
+		Mygl3d(p[1]);
+		Mygl3d(p[2]);
+		Mygl3d(p[6]);
+		Mygl3d(p[5]);
 
-		gl3dLocal(-10.+x, -10.+y, -10.+z);
-		gl3dLocal(-10.+x,  10.+y, -10.+z);
-		gl3dLocal(-10.+x,  10.+y,  10.+z);
-		gl3dLocal(-10.+x, -10.+y,  10.+z);
+		Mygl3d(p[3]);
+		Mygl3d(p[2]);
+		Mygl3d(p[6]);
+		Mygl3d(p[7]);
 		             
-		gl3dLocal( 10.+x, -10.+y, -10.+z);
-		gl3dLocal( 10.+x,  10.+y, -10.+z);
-		gl3dLocal( 10.+x,  10.+y,  10.+z);
-		gl3dLocal( 10.+x, -10.+y,  10.+z);
+		Mygl3d(p[4]);
+		Mygl3d(p[5]);
+		Mygl3d(p[6]);
+		Mygl3d(p[7]);
 	glEnd();
 
 
@@ -163,80 +243,134 @@ void Sprite::Draw(void)
 	glColor3f(1.0f,1.0f,1.0f);
 	glBegin(GL_LINES);
 
-	gl3dLocal(-10.+x, -10.+y, -10.+z);
-	gl3dLocal( 10.+x, -10.+y, -10.+z);
+	Mygl3d(p[0]);
+	Mygl3d(p[1]);
+                                   
+	Mygl3d(p[1]);
+	Mygl3d(p[2]);
+                                        
+	Mygl3d(p[2]);
+	Mygl3d(p[3]);
+                                  
+	Mygl3d(p[3]);
+	Mygl3d(p[0]);
+                                     
+	Mygl3d(p[0]);
+	Mygl3d(p[4]);
+                                 
+	Mygl3d(p[4]);
+	Mygl3d(p[7]);
 
-	gl3dLocal( 10.+x, -10.+y, -10.+z);
-	gl3dLocal( 10.+x,  10.+y, -10.+z);
-
-	gl3dLocal( 10.+x,  10.+y, -10.+z);
-	gl3dLocal(-10.+x,  10.+y, -10.+z);
-
-	gl3dLocal(-10.+x,  10.+y, -10.+z);
-	gl3dLocal(-10.+x, -10.+y, -10.+z);
-
-	gl3dLocal(-10.+x, -10.+y,  10.+z);
-	gl3dLocal( 10.+x, -10.+y,  10.+z);
-
-	gl3dLocal( 10.+x, -10.+y,  10.+z);
-	gl3dLocal( 10.+x,  10.+y,  10.+z);
-
-	gl3dLocal( 10.+x,  10.+y,  10.+z);
-	gl3dLocal(-10.+x,  10.+y,  10.+z);
-
-	gl3dLocal(-10.+x,  10.+y,  10.+z);
-	gl3dLocal(-10.+x, -10.+y,  10.+z);
-
-	gl3dLocal(-10.+x, -10.+y, -10.+z);
-	gl3dLocal(-10.+x, -10.+y,  10.+z);
-
-	gl3dLocal( 10.+x, -10.+y, -10.+z);
-	gl3dLocal( 10.+x, -10.+y,  10.+z);
-
-	gl3dLocal( 10.+x,  10.+y, -10.+z);
-	gl3dLocal( 10.+x,  10.+y,  10.+z);
-
-	gl3dLocal(-10.+x,  10.+y, -10.+z);
-	gl3dLocal(-10.+x,  10.+y,  10.+z);
+	Mygl3d(p[7]);
+	Mygl3d(p[3]);
+                                             
+	Mygl3d(p[3]);
+	Mygl3d(p[2]);
+                                   
+	Mygl3d(p[2]);
+	Mygl3d(p[6]);
+                                   
+	Mygl3d(p[6]);
+	Mygl3d(p[7]);
+                                   
+	Mygl3d(p[1]);
+	Mygl3d(p[5]);
+                                   
+	Mygl3d(p[5]);
+	Mygl3d(p[6]);
 
 
-	gl3dLocal( 8.+x, -8.+y, 10.+z);
-	gl3dLocal( 8.+x,  8.+y, 10.+z);
+	// Mygl3d( 8.+x, -8.+y, 10.+z);
+	// Mygl3d( 8.+x,  8.+y, 10.+z);
 
-	gl3dLocal( 8.+x,  8.+y, 10.+z);
-	gl3dLocal(-8.+x,  8.+y, 10.+z);
+	// Mygl3d( 8.+x,  8.+y, 10.+z);
+	// Mygl3d(-8.+x,  8.+y, 10.+z);
 
-	gl3dLocal(-8.+x,  8.+y, 10.+z);
-	gl3dLocal(-8.+x, -8.+y, 10.+z);
+	// Mygl3d(-8.+x,  8.+y, 10.+z);
+	// Mygl3d(-8.+x, -8.+y, 10.+z);
 
-	gl3dLocal(-8.+x, -8.+y, 10.+z);
-	gl3dLocal( 8.+x, -8.+y, 10.+z);
+	// Mygl3d(-8.+x, -8.+y, 10.+z);
+	// Mygl3d( 8.+x, -8.+y, 10.+z);
 
 	glEnd();
 }
-
-
-// ---------- Camera -----------
-CameraObject::CameraObject()
+void Sprite::Print(void)
 {
-    Initialize();
+
+}
+// transform point pp local coordinate to
+// gx, gy, gz global coordinate 
+void Sprite::Local2Global(Point pp, double &gx, double &gy, double &gz)
+{
+	if (pHT == nullptr)
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+	}
+	double v[4]; 
+	v[0] = pp.x; 
+	v[1] = pp.y; 
+	v[2] = pp.z; 
+	v[3] = 1.; 
+	double buf[4]; 
+	// post multiplying
+	// matrix * vector = buf
+	// self to local 
+	for (int j = 0; j < 4; ++j)
+	{
+		buf[j] = 0.; 
+		for (int i = 0; i < 4; ++i)
+		{
+			buf[j] += HT.mat[j][i]*v[i]; 
+		}
+	}
+	// local coord
+	v[0] = buf[0]; 
+	v[1] = buf[1]; 
+	v[2] = buf[2]; 
+	v[3] = buf[3]; 
+	// post multiplying
+	// matrix * vector 
+	// local to global
+	for (int j = 0; j < 4; ++j)
+	{
+		buf[j] = 0.; 
+		for (int i = 0; i < 4; ++i)
+		{
+			buf[j] += pHT->mat[j][i]*v[i]; 
+		}
+	}
+	// global coord
+	gx = buf[0]; 
+	gy = buf[1]; 
+	gz = buf[2]; 
 }
 
-void CameraObject::Initialize(void)
+// do the transform and put the coordinate 
+// in glVertex3d 
+void Sprite::Mygl3d(Point pp)
 {
-    x=0;
-    y=0;
-    z=0;
-    h=0;
-    p=0;
-    b=0;
+	double gx, gy, gz; 
+	Local2Global(pp, gx, gy, gz); 
+	glVertex3d(gx, gy, gz);
+}
 
-    fov=PI/6.0;  // 30 degree
+
+// --------- Sprite Inherited Camera ----------
+// NOTE: the Camera origin moves and rotates!
+// the local position has to stay the same!
+// 0,0,0! 
+Camera::Camera()
+{
+	Initialize(); 
+}
+void Camera::Initialize(void)
+{
+	fov=PI/6.0;  // 30 degree
     nearZ=0.1;
     farZ=200.0;
 }
 
-void CameraObject::SetUpCameraProjection(void)
+void Camera::SetUpCameraProjection(void)
 {
     int wid,hei;
     double aspect;
@@ -249,21 +383,35 @@ void CameraObject::SetUpCameraProjection(void)
     gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
 }
 
-void CameraObject::SetUpCameraTransformation(void)
+void Camera::SetUpCameraTransformation(void)
 {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glRotated(-b*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
+    // roll-pitch-yaw order
+    double r = pHT->GetRoll();
+    double p = pHT->GetPitch();
+    double y = pHT->GetYaw();   
+    glRotated(-r*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
     glRotated(-p*180.0/PI,1.0,0.0,0.0);  // Rotation about X axis
-    glRotated(-h*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
-    glTranslated(-x,-y,-z);
+    glRotated(-y*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
+    double ox = pHT->GetX();
+    double oy = pHT->GetY();
+    double oz = pHT->GetZ();  
+    glTranslated(-ox,-oy,-oz);	
 }
 
-void CameraObject::GetForwardVector(double &vx,double &vy,double &vz)
+void Camera::GetForwardVector(double &vx,double &vy,double &vz)
 {
-    vx=-cos(p)*sin(h);
-    vy= sin(p);
-    vz=-cos(p)*cos(h);
+	vx = pHT->mat[0][2];
+	vy = pHT->mat[1][2];
+	vz = pHT->mat[2][2]; 
+}
+
+void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
+{
+	vx = pHT->mat[0][0];
+	vy = pHT->mat[1][0];
+	vz = pHT->mat[2][0]; 
 }
 
 
