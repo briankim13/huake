@@ -305,6 +305,7 @@ void Sprite::Local2Global(Point pp, double &gx, double &gy, double &gz)
 	if (pHT == nullptr)
 	{
 		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
 	}
 	double v[4]; 
 	v[0] = pp.x; 
