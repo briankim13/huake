@@ -1,6 +1,7 @@
 #include "huakelib.h"
 #include "fssimplewindow.h"
 
+// Yun is here
 // holds pointers for rendering everything 
 class MainData
 {
@@ -70,6 +71,8 @@ int main(void)
     // cube1.SetPlanePos(0.,0.,-400.); // x y z
     // cube2.SetPlanePos(0.,0.,-400.);
 
+	printf("Yun is here!\n"); 
+	
     Sprite cubes[24];
     // set local position of the cubes
     cubes[0].SetPos(90.,10.,-90.);
