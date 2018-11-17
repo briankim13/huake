@@ -176,7 +176,6 @@ void Point::Set(double xx,double yy,double zz)
 	z = zz; 
 }
 
-
 // --------- Sprite -----------
 Sprite::Sprite()
 {
