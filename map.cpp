@@ -109,11 +109,11 @@ void DrawObstacle(double gx, double gy, double gz)
 // Obstacles will be drawn as cubic shape.
 {
 	// According to Wooshik's cube explanation,
-	double length = 20.0;
+	double length = 60.0;
 	// lenght means the distance between the point 0 and 1.
-	double width = 10.0;
+	double width = 30.0;
 	// width means the distance between the point 0 and 3.
-	double height = 30.0;
+	double height = 70.0;
 	// height means the distance between the point 0 and 4.
 
 	glBegin(GL_QUADS);
@@ -366,7 +366,7 @@ int main(void)
     // png[0] calls the background figure.
     dat.png[1].Decode("Image/Ice/floor_1.png");
     // png[1] calls the ground figure.
-    dat.png[2].Decode("Image/Ice/wall_1.png");
+    dat.png[2].Decode("Image/Ice/wall_2.png");
     // png[2] calls the wall figure.
     dat.angle=0.0;
 
