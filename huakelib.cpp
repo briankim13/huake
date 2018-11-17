@@ -188,14 +188,14 @@ Sprite::Sprite()
 void Sprite::Initialize(void)
 {
 	// the most basic shape is cube with 8 points 
-	p[0].Set(-10., 10.,-10.);
-	p[1].Set( 10., 10.,-10.);
-	p[2].Set( 10., 10., 10.);
-	p[3].Set(-10., 10., 10.); 
-	p[4].Set(-10.,-10.,-10.);
-	p[5].Set( 10.,-10.,-10.);
-	p[6].Set( 10.,-10., 10.); 
-	p[7].Set(-10.,-10., 10.);  
+	p[0].Set(-10., 20.,-10.);
+	p[1].Set( 10., 20.,-10.);
+	p[2].Set( 10., 20., 10.);
+	p[3].Set(-10., 20., 10.);
+	p[4].Set(-10.,0.,-10.);
+	p[5].Set( 10.,0.,-10.);
+	p[6].Set( 10.,0., 10.);
+	p[7].Set(-10.,0., 10.);  
 }
 void Sprite::SetPos(double x, double y, double z)
 {
