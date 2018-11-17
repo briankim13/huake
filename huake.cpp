@@ -2,16 +2,22 @@
 #include <stdlib.h>
 #include "huakelib.h"
 #include "fssimplewindow.h"
+#include <math.h>
 
 // Yun is here
 // holds pointers for rendering everything 
 class MainData
 {
 public:
+    Camera * cameraPtr;
+    Sprite * scubesPtr; 
+    Sprite * helloPtr; 
+
 	Camera * cameraPtr;
 	Sprite * scubesPtr;
 	Obstacle *obsPtr;
 	Target *tgrPtr;
+
 };
 
 void Render(void *incoming)
@@ -37,6 +43,14 @@ void Render(void *incoming)
 
 	// 3D drawing from here
 	DrawGround();
+    for (int i = 0; i<24; ++i)
+    {
+        datPtr->scubesPtr[i].Draw(); 
+    } 
+    for (int i = 0; i<6; ++i)
+    {
+        datPtr->helloPtr[i].Draw(); 
+    }
 	for (int i = 0; i < 24; ++i)
 	{
 		datPtr->scubesPtr[i].Draw();
@@ -47,7 +61,6 @@ void Render(void *incoming)
 	}
 	for (int k = 0; k < 10; ++k)//number of Target, how many?;
 	{
-
 		datPtr->tgrPtr[k].Draw();
 
 	}
@@ -252,6 +265,13 @@ int main(void)
 			camera.GetSidewardVector(vx, vy, vz);
 			camera.pHT->MovePos(vx, vy, vz);
 		}
+
+        angle += 0.01; 
+        for (int i = 0; i < 6; ++i)
+        {
+            hellos[i].SetPos(100.*sin(angle),0.,-100.*cos(angle)); 
+            hellos[i].SetOri(0.,0.,angle); 
+        }
 
 		FsPushOnPaintEvent();
 		FsSleep(10);

@@ -180,7 +180,6 @@ void Point::Set(double xx,double yy,double zz)
 	z = zz; 
 }
 
-
 // --------- Sprite -----------
 Sprite::Sprite()
 {
@@ -419,6 +418,27 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
+void DrawTetra(void)
+{
+    glBegin(GL_TRIANGLES);
+    glColor3f(0.0f,1.0f,1.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(0., 2000., 2000.);
+    glVertex3d(2000., 2000., 0.);
+    glColor3f(0.0f,1.0f,0.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(0., 2000., 2000.);
+    glVertex3d(2000., 0., 2000.);
+    glColor3f(1.0f,1.0f,0.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(2000., 2000., 0.);
+    glVertex3d(2000., 0., 2000.);
+    glColor3f(1.0f,0.0f,1.0f);
+    glVertex3d(0., 2000., 2000.);
+    glVertex3d(2000., 2000., 0.);
+    glVertex3d(2000., 0., 2000.);
+    glEnd();
+}
 
 // --------- Draw background ---------
 void DrawGround(void)
@@ -593,6 +613,7 @@ void Target::Move(void)
 	}
 	HT.SetPos(x, y, z);
 }
+
 
 
 void Target::Draw()
