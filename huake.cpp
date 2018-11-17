@@ -1,5 +1,6 @@
 #include "huakelib.h"
 #include "fssimplewindow.h"
+#include <math.h>
 
 // Yun is here
 // holds pointers for rendering everything 
@@ -8,6 +9,7 @@ class MainData
 public:
     Camera * cameraPtr;
     Sprite * scubesPtr; 
+    Sprite * helloPtr; 
 };
 
 void Render(void *incoming)
@@ -37,6 +39,10 @@ void Render(void *incoming)
     {
         datPtr->scubesPtr[i].Draw(); 
     } 
+    for (int i = 0; i<6; ++i)
+    {
+        datPtr->helloPtr[i].Draw(); 
+    }
 
     // Set up 2D drawing
     glMatrixMode(GL_PROJECTION);
@@ -138,6 +144,15 @@ int main(void)
         scubes[i].pHT = &P5; 
     }
 
+    Sprite hellos[6]; 
+    hellos[0].pHT = &P0;
+    hellos[1].pHT = &P1;
+    hellos[2].pHT = &P2;
+    hellos[3].pHT = &P3;
+    hellos[4].pHT = &P4;
+    hellos[5].pHT = &P5; 
+
+
     int terminate=0;
     TransformMatrix PC; 
     PC.SetPos(0.,10.,100.); 
@@ -152,8 +167,11 @@ int main(void)
     MainData dat; 
     dat.cameraPtr = &camera; 
     dat.scubesPtr = scubes; 
+    dat.helloPtr  = hellos; 
     FsRegisterOnPaintCallBack(Render,&dat);
 
+
+    double angle = 0.; 
     while(0==terminate)
     {
         FsPollDevice();
@@ -212,6 +230,13 @@ int main(void)
             double vx,vy,vz;
             camera.GetSidewardVector(vx,vy,vz);
             camera.pHT->MovePos(vx,vy,vz); 
+        }
+
+        angle += 0.01; 
+        for (int i = 0; i < 6; ++i)
+        {
+            hellos[i].SetPos(100.*sin(angle),0.,-100.*cos(angle)); 
+            hellos[i].SetOri(0.,0.,angle); 
         }
 
 		FsPushOnPaintEvent();
