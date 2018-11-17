@@ -423,20 +423,20 @@ void DrawTetra(void)
     glBegin(GL_TRIANGLES);
     glColor3f(0.0f,1.0f,1.0f);
     glVertex3d(0., 0., 0.);
-    glVertex3d(0., 2000., 2000.);
-    glVertex3d(2000., 2000., 0.);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 1000., 0.);
     glColor3f(0.0f,1.0f,0.0f);
     glVertex3d(0., 0., 0.);
-    glVertex3d(0., 2000., 2000.);
-    glVertex3d(2000., 0., 2000.);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 0., 1000.);
     glColor3f(1.0f,1.0f,0.0f);
     glVertex3d(0., 0., 0.);
-    glVertex3d(2000., 2000., 0.);
-    glVertex3d(2000., 0., 2000.);
+    glVertex3d(1000., 1000., 0.);
+    glVertex3d(1000., 0., 1000.);
     glColor3f(1.0f,0.0f,1.0f);
-    glVertex3d(0., 2000., 2000.);
-    glVertex3d(2000., 2000., 0.);
-    glVertex3d(2000., 0., 2000.);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 1000., 0.);
+    glVertex3d(1000., 0., 1000.);
     glEnd();
 }
 
