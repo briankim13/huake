@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
+#include <stdlib.h>
 #include "fssimplewindow.h"
 // #include "ysglfontdata.h"
 #include "huakelib.h"
+
+const double YsPi = 3.1415927;
 
 // ---------- Transform Matrix --------
 TransformMatrix::TransformMatrix()
@@ -432,8 +436,209 @@ void DrawGround(void)
 	glEnd();
 }
 
+// --------- Obstacle -----------
+// Cubic shape, with y=0, x,z in the range of -500 to 500(??) and width of 20;
+Obstacle::Obstacle()
+{
+	Initialize();
+}
+
+void Obstacle::Initialize(void)
+{  
+	p[0].Set(-20., 20., -20.);
+	p[1].Set(20., 20., -20.);
+	p[2].Set(20., 20., 20.);
+	p[3].Set(-20., 20., 20.);
+	p[4].Set(-20., -20., -20.);
+	p[5].Set(20., -20., -20.);
+	p[6].Set(20., -20., 20.);
+	p[7].Set(-20., -20., 20.);
+}
+
+void Obstacle::SetPos()
+{
+	x = (double)(rand() % 1000) - (double)500;
+	y = 20.;
+	z = (double)(rand() % 1000) - (double)500;
+	HT.SetPos(x, y, z);
+}
+
+void Obstacle::Draw(void)
+{
+	// cube faces
+	glBegin(GL_QUADS);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	Mygl3d(p[0]);
+	Mygl3d(p[1]);
+	Mygl3d(p[2]);
+	Mygl3d(p[3]);
+
+	Mygl3d(p[0]);
+	Mygl3d(p[3]);
+	Mygl3d(p[7]);
+	Mygl3d(p[4]);
+
+	Mygl3d(p[0]);
+	Mygl3d(p[1]);
+	Mygl3d(p[5]);
+	Mygl3d(p[4]);
+
+	Mygl3d(p[1]);
+	Mygl3d(p[2]);
+	Mygl3d(p[6]);
+	Mygl3d(p[5]);
+
+	Mygl3d(p[3]);
+	Mygl3d(p[2]);
+	Mygl3d(p[6]);
+	Mygl3d(p[7]);
+
+	Mygl3d(p[4]);
+	Mygl3d(p[5]);
+	Mygl3d(p[6]);
+	Mygl3d(p[7]);
+	glEnd();
 
 
+	// square lines 
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glBegin(GL_LINES);
+
+	Mygl3d(p[0]);
+	Mygl3d(p[1]);
+
+	Mygl3d(p[1]);
+	Mygl3d(p[2]);
+
+	Mygl3d(p[2]);
+	Mygl3d(p[3]);
+
+	Mygl3d(p[3]);
+	Mygl3d(p[0]);
+
+	Mygl3d(p[0]);
+	Mygl3d(p[4]);
+
+	Mygl3d(p[4]);
+	Mygl3d(p[7]);
+
+	Mygl3d(p[7]);
+	Mygl3d(p[3]);
+
+	Mygl3d(p[3]);
+	Mygl3d(p[2]);
+
+	Mygl3d(p[2]);
+	Mygl3d(p[6]);
+
+	Mygl3d(p[6]);
+	Mygl3d(p[7]);
+
+	Mygl3d(p[1]);
+	Mygl3d(p[5]);
+
+	Mygl3d(p[5]);
+	Mygl3d(p[6]);
+
+	Mygl3d(p[5]);
+	Mygl3d(p[4]);
+
+	glEnd();
+}
+
+
+// --------- Target -----------
+// Sphere, with y>0, x,z in the range of -500 to 500(??) and radius of 20;
+Target::Target()
+{
+	Initialize();
+}
+
+void Target::Initialize(void)
+{
+	p[0].Set(-0., 0., -0.);
+	rad = 20.0;
+	divH = 36; 
+	divP=18;
+	  vx = (double)(rand() % 6)-(double)3;
+	  vy = (double)(rand() % 6) - (double)3;
+	  vz = (double)(rand() % 6) - (double)3;
+	 state = 1;
+}
+
+void Target::SetPos()
+{
+	x = (double)(rand() % 1000) - (double)500;
+	y = (double)(rand() % 500) ;
+	z = (double)(rand() % 1000) - (double)500;
+	HT.SetPos(x, y, z);
+}
+
+void Target::Move(void)
+{
+	x += vx;
+	y += vy;
+	z += vz;
+	if ((500 < x+rad  && 0 < vx) || (x-rad < -500 && vx < 0))
+	{
+		vx=-vx;
+	}
+	if ((500 < x + rad && 0 < vy) || (y-rad < 0 && vy < 0))
+	{
+		vy = -vy;
+	}
+	if ((500 < z + rad && 0 < vz) || (z - rad < -500 && vz < 0))
+	{
+		vz = -vz;
+	}
+	HT.SetPos(x, y, z);
+}
+
+
+void Target::Draw()
+{
+	
+		glBegin(GL_QUADS);
+		for (int i = -divP; i < divP; ++i)
+		{
+			double p0 = (double)i*YsPi*0.5 / (double)divP;
+			double p1 = (double)(i + 1)*YsPi*0.5 / (double)divP;
+			for (int j = 0; j < divH; ++j)
+			{
+				double h0 = (double)j*2.0*YsPi / (double)divH;
+				double h1 = (double)(j + 1)*2.0*YsPi / (double)divH;
+
+				double x0 = x + rad * cos(p0)*cos(h0);
+				double y0 = y + rad * sin(p0);
+				double z0 = z + rad * cos(p0)*sin(h0);
+
+				double x1 = x + rad * cos(p0)*cos(h1);
+				double y1 = y + rad * sin(p0);
+				double z1 = z + rad * cos(p0)*sin(h1);
+
+				double x2 = x + rad * cos(p1)*cos(h1);
+				double y2 = y + rad * sin(p1);
+				double z2 = z + rad * cos(p1)*sin(h1);
+
+				double x3 = x + rad * cos(p1)*cos(h0);
+				double y3 = y + rad * sin(p1);
+				double z3 = z + rad * cos(p1)*sin(h0);
+				
+				glColor3f(0, 1, 0);
+				glVertex3d(x0, y0, z0);
+				glVertex3d(x1, y1, z1);
+				glVertex3d(x2, y2, z2);
+				glVertex3d(x3, y3, z3);
+			}
+		}
+		glEnd();
+	
+}
+
+void Target::CheckHit(void)
+{
+	// state=0;
+}
 
 // -------- Dynamics Context ---------
 DynamicsContext::DynamicsContext()
@@ -447,3 +652,4 @@ void DynamicsContext::SimStep()
 	// Player.y += dT*dy
 	// ...  
 }
+
