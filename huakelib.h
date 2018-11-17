@@ -32,7 +32,7 @@ public:
     double GetPitch(void) const; 
     double GetYaw(void) const; 
 
-    void MovePos(double xx, double yy, double zz); 
+    void MovePos(double dx, double dy, double dz); 
     void RotateRoll(double dr);
     void RotatePitch(double dp);
     void RotateYaw(double dy); 
