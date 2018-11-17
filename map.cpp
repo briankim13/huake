@@ -79,27 +79,118 @@ static CameraObject camera;
 
 void DrawGround(void)
 {
-	glColor3f(0,0,1);
-	glBegin(GL_LINES);
-	for(int x=-2000; x<=2000; x+=100)
-	{
-		glVertex3i(-2000,0,x);
-		glVertex3i( 2000,0,x);
+	double totalSize = 4000.0;
+	double tileSize = 50.0;
 
-		glVertex3i(x,0,-2000);
-		glVertex3i(x,0, 2000);
+	for(int i = -((totalSize / tileSize) / 2); i < ((totalSize / tileSize) / 2); ++i)
+	{
+		for(int k = -((totalSize / tileSize) / 2); k < ((totalSize / tileSize) / 2); ++k)
+		{
+			double startX = (double) (tileSize * i);
+			double startZ = (double) (tileSize * k);
+
+		    glTexCoord2d(0.0,0.0);  
+		    glVertex3d(startX, 0.0, startZ);
+
+		    glTexCoord2d(1.0,0.0);
+		    glVertex3d(startX + tileSize, 0.0, startZ);
+
+		    glTexCoord2d(1.0,1.0);
+		    glVertex3d(startX + tileSize, 0.0, startZ + tileSize);
+
+		    glTexCoord2d(0.0,1.0);
+		    glVertex3d(startX, 0.0, startZ + tileSize);
+		}
 	}
-	glEnd();
 }
 
+void DrawObstacle(double gx, double gy, double gz)
+// gx, gy and gz are the global coordinates of the left bottom front corner of the obstacle.
+// Obstacles will be drawn as cubic shape.
+{
+	// According to Wooshik's cube explanation,
+	double length = 20.0;
+	// lenght means the distance between the point 0 and 1.
+	double width = 10.0;
+	// width means the distance between the point 0 and 3.
+	double height = 30.0;
+	// height means the distance between the point 0 and 4.
+
+	glBegin(GL_QUADS);
+
+	// This is the (0, 0, 1) face of the obstacle.
+	glTexCoord2d(0.0, 0.0);  
+	glVertex3d(gx, gy, gz);
+
+	glTexCoord2d((double) (length / (2 * (length + width))), 0.0);  
+	glVertex3d(gx + length, gy, gz);
+
+	glTexCoord2d((double) (length / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz);
+
+	glTexCoord2d(0.0, (double) (height / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz);	
+
+	// This is the (1, 0, 0) face of the obstacle.
+	glTexCoord2d((double) (length / (2 * (length + width))), 0.0);  
+	glVertex3d(gx + length, gy, gz);
+
+	glTexCoord2d((double) ((length + width) / (2 * (length + width))), 0.0);  
+	glVertex3d(gx + length, gy, gz - width);
+
+	glTexCoord2d((double) ((length + width) / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz - width);
+
+	glTexCoord2d((double) (length / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz);
+
+	// This is the (0, 0, -1) face of the obstacle. 
+	glTexCoord2d((double) ((length + width) / (2 * (length + width))), 0.0);  
+	glVertex3d(gx + length, gy, gz - width);
+
+	glTexCoord2d((double) ((2 * length + width) / (2 * (length + width))), 0.0);  
+	glVertex3d(gx, gy, gz - width);
+
+	glTexCoord2d((double) ((2 * length + width) / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz - width);
+
+	glTexCoord2d((double) ((length + width) / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz - width);
+
+	// This is the (-1, 0, 0) face of the obstacle. 
+	glTexCoord2d((double) ((2 * length + width) / (2 * (length + width))), 0.0);  
+	glVertex3d(gx, gy, gz - width);
+
+	glTexCoord2d((double) ((2 * length + 2 * width) / (2 * (length + width))), 0.0);  
+	glVertex3d(gx, gy, gz);
+
+	glTexCoord2d((double) ((2 * length + 2 * width) / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz);
+
+	glTexCoord2d((double) ((2 * length + width) / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz - width);
+
+	// This is the (0, 1, 0) face of the obstacle.
+	glTexCoord2d(0.0, (double) (height / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz);
+
+	glTexCoord2d((double) (length / (2 * (length + width))), (double) (height / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz);
+
+	glTexCoord2d((double) (length / (2 * (length + width))), (double) ((height + width) / (2 * (length + width))));  
+	glVertex3d(gx + length, gy + height, gz - width);
+
+	glTexCoord2d(0.0, (double) ((height + width) / (2 * (length + width))));  
+	glVertex3d(gx, gy + height, gz - width);	
+}	
 
 
 class Pngdata
 {
 public:
     bool firstRenderingPass;
-    YsRawPngDecoder png[2];
-    GLuint texId[2];
+    YsRawPngDecoder png[3];
+    GLuint texId[3];
     double angle;
 };
 
@@ -110,6 +201,7 @@ void Render(void *incoming)
     Pngdata *datPtr=(Pngdata *)incoming;
 
 	int wid,hei;
+
     FsGetWindowSize(wid,hei);
 
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
@@ -159,6 +251,25 @@ void Render(void *incoming)
              GL_RGBA,
              GL_UNSIGNED_BYTE,
              datPtr->png[1].rgba);
+
+        glGenTextures(1,&datPtr->texId[2]);  // Reserve one texture identifier
+        glBindTexture(GL_TEXTURE_2D,datPtr->texId[2]);  // Making the texture identifier current (or bring it to the deck)
+
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+        glTexImage2D
+            (GL_TEXTURE_2D,
+             0,
+             GL_RGBA,
+             datPtr->png[2].wid,
+             datPtr->png[2].hei,
+             0,
+             GL_RGBA,
+             GL_UNSIGNED_BYTE,
+             datPtr->png[2].rgba);
     }
 
     // Set up 3D drawing
@@ -171,32 +282,36 @@ void Render(void *incoming)
 
 
     // 3D drawing from here
-	
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
     glColor4d(1.0,1.0,1.0,1.0);
-
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
+    // The background will not be changed based on the view.
+    // THe background keeps following the camera without any change.
 
     glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
 
-    glBindTexture(GL_TEXTURE_2D,datPtr->texId[1]);
+    glBindTexture(GL_TEXTURE_2D,datPtr->texId[0]);
 
     glBegin(GL_QUADS);
+    // This part will draw the background of each map.
+    // The size of the background is 1600 by 1600 pixels.
+    // The background will be drawn at z = -2000.0.
 
-    glTexCoord2d(0.0,0.0);
-    glVertex3d(-1000.0,-1000.0,-2000.0);
-
-    glTexCoord2d(1.0,0.0);
-    glVertex3d(1000.0,-1000.0,-2000.0);
+    /////////////////////////////// Need to be fixed. 
+    glTexCoord2d(0.0,1.0);
+    glVertex3d(-800.0,-800.0,-2000.0);
 
     glTexCoord2d(1.0,1.0);
-    glVertex3d(1000.0,1000.0,-2000.0);
+    glVertex3d(800.0,-800.0,-2000.0);
 
-    glTexCoord2d(0.0,1.0);
-    glVertex3d(-1000.0,1000.0,-2000.0);
+    glTexCoord2d(1.0,0.0);
+    glVertex3d(800.0,800.0,-2000.0);
+
+    glTexCoord2d(0.0,0.0);
+    glVertex3d(-800.0,800.0,-2000.0);
 
     glEnd();
     
@@ -205,30 +320,31 @@ void Render(void *incoming)
     glPopMatrix();
 
 
+    // This part will draw the ground of each map.
+    // The size of each ground tile 50 by 50 pixels.
+    // The total ground size is 2000 by 2000 pixels. 
+    glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+
+	glBindTexture(GL_TEXTURE_2D,datPtr->texId[1]);
+
+	glBegin(GL_QUADS);
+
+    DrawGround();
+	
+	glEnd();
 
 
-	glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+	// This part will draw the obstacle of each map.
+	// 
+	glBindTexture(GL_TEXTURE_2D,datPtr->texId[2]);
 
-    glBindTexture(GL_TEXTURE_2D,datPtr->texId[0]);
+	glBegin(GL_QUADS);
 
-    glBegin(GL_QUADS);
-
-    glTexCoord2d(0.0,0.0);   // For each vertex, assign texture coordinate before vertex coordinate.
-    glVertex3d(400.0+200.0*cos(datPtr->angle),300.0-200.0*sin(datPtr->angle),-1000.0);
-
-    glTexCoord2d(1.0,0.0);
-    glVertex3d(400.0+200.0*cos(datPtr->angle+Pi/2.0),300.0-200.0*sin(datPtr->angle+Pi/2.0),-1000.0);
-
-    glTexCoord2d(1.0,1.0);
-    glVertex3d(400.0+200.0*cos(datPtr->angle+Pi),300.0-200.0*sin(datPtr->angle+Pi),-1000.0);
-
-    glTexCoord2d(0.0,1.0);
-    glVertex3d(400.0+200.0*cos(datPtr->angle-Pi/2.0),300.0-200.0*sin(datPtr->angle-Pi/2.0),-1000.0);
-
-    glEnd();
+    DrawObstacle(0.0, 0.0, -30.0);
+	
+	glEnd();
 
     glDisable(GL_TEXTURE_2D);  // End using texture mapping
-
 
     FsSwapBuffers();
 }
@@ -246,8 +362,12 @@ int main(void)
 
     Pngdata dat;
     dat.firstRenderingPass=true; // Make texture during the first rendering pass.
-    dat.png[0].Decode("Image/Forest/background_2.png");
-    dat.png[1].Decode("Image/Forest/background_1.png");
+    dat.png[0].Decode("Image/Ice/background_1.png");
+    // png[0] calls the background figure.
+    dat.png[1].Decode("Image/Ice/floor_1.png");
+    // png[1] calls the ground figure.
+    dat.png[2].Decode("Image/Ice/wall_1.png");
+    // png[2] calls the wall figure.
     dat.angle=0.0;
 
     FsOpenWindow(16,16,800,600,1);

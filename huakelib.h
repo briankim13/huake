@@ -71,6 +71,30 @@ public:
     void GetSidewardVector(double &vx,double &vy,double &vz); 
 };
 
+class Obstacle : public Sprite
+{
+public:
+	double x, y, z;
+	Obstacle();
+	void Initialize(void);
+	void SetPos(void);
+	void Draw(void);
+};
+
+class Target : public Sprite
+{
+public:
+	int state, divH, divP;
+	double x, y, z, vx, vy,vz, rad;
+	Target();
+	void Initialize(void);
+	void SetPos(void);
+	void Move(void);
+	void Draw(void);
+	void CheckHit(void);
+};
+
+
 // artifact of Soji's code,
 // should we make a Map class? 
 void DrawGround(void);
