@@ -4,3 +4,5 @@ yspng.obj
 fssimplewindow.obj
 map.obj
 huakelib.obj
+*.exe
+*.obj
