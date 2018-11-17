@@ -58,6 +58,19 @@ public:
     void Print(void); 
 };
 
+class Player: public Sprite
+{
+public:
+    double fov, nearZ, farZ;
+    Player();
+
+    void Initialize(void); 
+    void SetUpCameraProjection(void);
+    void SetUpCameraTransformation(void);
+    void MoveForward(void); 
+    void MoveSideward(void); 
+};
+
 class Camera: public Sprite
 {
 public:

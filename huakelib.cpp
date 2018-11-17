@@ -359,6 +359,7 @@ void Sprite::Mygl3d(Point pp)
 }
 
 
+
 // --------- Sprite Inherited Camera ----------
 // NOTE: the Camera origin moves and rotates!
 // the local position has to stay the same!
