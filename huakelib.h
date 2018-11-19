@@ -90,7 +90,7 @@ public:
 	double x, y, z;
 	Obstacle();
 	void Initialize(void);
-	void SetPos(void);
+	void SetPos(double xx, double yy, double zz);
 	void Draw(void);
 };
 
@@ -98,13 +98,13 @@ class Target : public Sprite
 {
 public:
 	int state, divH, divP;
-	double x, y, z, vx, vy,vz, rad;
+	double x, y, z, vx, vy, vz, rad;
 	Target();
 	void Initialize(void);
 	void SetPos(void);
 	void Move(void);
 	void Draw(void);
-	void CheckHit(void);
+	bool CheckCollision(double x1, double y1, double z1, double x2, double y2, double z2);
 };
 
 

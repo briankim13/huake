@@ -465,25 +465,23 @@ Obstacle::Obstacle()
 }
 
 void Obstacle::Initialize(void)
-{  
-	p[0].Set(-20., 20., -20.);
-	p[1].Set(20., 20., -20.);
-	p[2].Set(20., 20., 20.);
-	p[3].Set(-20., 20., 20.);
-	p[4].Set(-20., -20., -20.);
-	p[5].Set(20., -20., -20.);
-	p[6].Set(20., -20., 20.);
-	p[7].Set(-20., -20., 20.);
-}
-
-void Obstacle::SetPos()
 {
-	x = (double)(rand() % 1000) - (double)500;
-	y = 20.;
-	z = (double)(rand() % 1000) - (double)500;
+	p[0].Set(-15., 120., -15.);
+	p[1].Set(15., 120., -15.);
+	p[2].Set(15., 120., 15.);
+	p[3].Set(-15., 120., 15.);
+	p[4].Set(-15., 0., -15.);
+	p[5].Set(15., 0., -15.);
+	p[6].Set(15., 0., 15.);
+	p[7].Set(-15., 0., 15.);
+}
+void Obstacle::SetPos(double xx, double yy, double zz)
+{
+	x = xx;
+	y = yy;
+	z = zz;
 	HT.SetPos(x, y, z);
 }
-
 void Obstacle::Draw(void)
 {
 	// cube faces
@@ -569,7 +567,7 @@ void Obstacle::Draw(void)
 
 
 // --------- Target -----------
-// Sphere, with y>0, x,z in the range of -500 to 500(??) and radius of 20;
+// Sphere, with y>0, x,z in the range of -500 to 500(??) and radius of 10;
 Target::Target()
 {
 	Initialize();
@@ -577,21 +575,21 @@ Target::Target()
 
 void Target::Initialize(void)
 {
-	p[0].Set(-0., 0., -0.);
-	rad = 20.0;
-	divH = 36; 
-	divP=18;
-	  vx = (double)(rand() % 6)-(double)3;
-	  vy = (double)(rand() % 6) - (double)3;
-	  vz = (double)(rand() % 6) - (double)3;
-	 state = 1;
+	p[0].Set(-0., 10., -0.);
+	rad = 10.0;
+	divH = 36;
+	divP = 18;
+	vx = (double)(rand() % 6) - (double)3;
+	vy = (double)(rand() % 6) - (double)3;
+	vz = (double)(rand() % 6) - (double)3;
+	state = 1;
 }
 
 void Target::SetPos()
 {
-	x = (double)(rand() % 1000) - (double)500;
-	y = (double)(rand() % 500) ;
-	z = (double)(rand() % 1000) - (double)500;
+	x = (double)(rand() % 150);
+	y = (double)(rand() % 120);
+	z = (double)(rand() % 150);
 	HT.SetPos(x, y, z);
 }
 
@@ -600,11 +598,11 @@ void Target::Move(void)
 	x += vx;
 	y += vy;
 	z += vz;
-	if ((500 < x+rad  && 0 < vx) || (x-rad < -500 && vx < 0))
+	if ((500 < x + rad && 0 < vx) || (x - rad < -500 && vx < 0))
 	{
-		vx=-vx;
+		vx = -vx;
 	}
-	if ((500 < x + rad && 0 < vy) || (y-rad < 0 && vy < 0))
+	if ((120 < y + rad && 0 < vy) || (y - rad < 0 && vy < 0))
 	{
 		vy = -vy;
 	}
@@ -616,50 +614,60 @@ void Target::Move(void)
 }
 
 
-
 void Target::Draw()
 {
-	
-		glBegin(GL_QUADS);
-		for (int i = -divP; i < divP; ++i)
+
+	glBegin(GL_QUADS);
+	for (int i = -divP; i < divP; ++i)
+	{
+		double p0 = (double)i*YsPi*0.5 / (double)divP;
+		double p1 = (double)(i + 1)*YsPi*0.5 / (double)divP;
+		for (int j = 0; j < divH; ++j)
 		{
-			double p0 = (double)i*YsPi*0.5 / (double)divP;
-			double p1 = (double)(i + 1)*YsPi*0.5 / (double)divP;
-			for (int j = 0; j < divH; ++j)
-			{
-				double h0 = (double)j*2.0*YsPi / (double)divH;
-				double h1 = (double)(j + 1)*2.0*YsPi / (double)divH;
+			double h0 = (double)j*2.0*YsPi / (double)divH;
+			double h1 = (double)(j + 1)*2.0*YsPi / (double)divH;
 
-				double x0 = x + rad * cos(p0)*cos(h0);
-				double y0 = y + rad * sin(p0);
-				double z0 = z + rad * cos(p0)*sin(h0);
+			double x0 = x + rad * cos(p0)*cos(h0);
+			double y0 = y + rad * sin(p0);
+			double z0 = z + rad * cos(p0)*sin(h0);
 
-				double x1 = x + rad * cos(p0)*cos(h1);
-				double y1 = y + rad * sin(p0);
-				double z1 = z + rad * cos(p0)*sin(h1);
+			double x1 = x + rad * cos(p0)*cos(h1);
+			double y1 = y + rad * sin(p0);
+			double z1 = z + rad * cos(p0)*sin(h1);
 
-				double x2 = x + rad * cos(p1)*cos(h1);
-				double y2 = y + rad * sin(p1);
-				double z2 = z + rad * cos(p1)*sin(h1);
+			double x2 = x + rad * cos(p1)*cos(h1);
+			double y2 = y + rad * sin(p1);
+			double z2 = z + rad * cos(p1)*sin(h1);
 
-				double x3 = x + rad * cos(p1)*cos(h0);
-				double y3 = y + rad * sin(p1);
-				double z3 = z + rad * cos(p1)*sin(h0);
-				
-				glColor3f(0, 1, 0);
-				glVertex3d(x0, y0, z0);
-				glVertex3d(x1, y1, z1);
-				glVertex3d(x2, y2, z2);
-				glVertex3d(x3, y3, z3);
-			}
+			double x3 = x + rad * cos(p1)*cos(h0);
+			double y3 = y + rad * sin(p1);
+			double z3 = z + rad * cos(p1)*sin(h0);
+
+			glColor3f(0, 1, 0);
+			glVertex3d(x0, y0, z0);
+			glVertex3d(x1, y1, z1);
+			glVertex3d(x2, y2, z2);
+			glVertex3d(x3, y3, z3);
 		}
-		glEnd();
-	
+	}
+	glEnd();
+
 }
 
-void Target::CheckHit(void)
+bool Target::CheckCollision(double x1, double y1, double z1, double x2, double y2, double z2)
 {
-	// state=0;
+
+	double dx = x2 - x1;
+	double dz = z2 - z1;
+
+	if ((306.25 <= dx * dx) && (306.25 <= (dz * dz)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 // -------- Dynamics Context ---------
