@@ -466,14 +466,14 @@ Obstacle::Obstacle()
 
 void Obstacle::Initialize(void)
 {
-	p[0].Set(-15., 120., -15.);
-	p[1].Set(15., 120., -15.);
-	p[2].Set(15., 120., 15.);
-	p[3].Set(-15., 120., 15.);
-	p[4].Set(-15., 0., -15.);
-	p[5].Set(15., 0., -15.);
-	p[6].Set(15., 0., 15.);
-	p[7].Set(-15., 0., 15.);
+	p[0].Set(-15., 60., -15.);
+	p[1].Set(15., 60., -15.);
+	p[2].Set(15., 60., 15.);
+	p[3].Set(-15., 60., 15.);
+	p[4].Set(-15., -60., -15.);
+	p[5].Set(15., -60., -15.);
+	p[6].Set(15., -60., 15.);
+	p[7].Set(-15., -60., 15.);
 }
 void Obstacle::SetPos(double xx, double yy, double zz)
 {
@@ -575,7 +575,7 @@ Target::Target()
 
 void Target::Initialize(void)
 {
-	p[0].Set(-0., 10., -0.);
+	p[0].Set(-0., 0., -0.);
 	rad = 10.0;
 	divH = 36;
 	divP = 18;
@@ -643,11 +643,16 @@ void Target::Draw()
 			double y3 = y + rad * sin(p1);
 			double z3 = z + rad * cos(p1)*sin(h0);
 
+			p[0].Set(x0, y0, z0);
+			p[1].Set(x1, y1, z1);
+			p[2].Set(x2, y2, z2);
+			p[3].Set(x3, y3, z3);
+
 			glColor3f(0, 1, 0);
-			glVertex3d(x0, y0, z0);
-			glVertex3d(x1, y1, z1);
-			glVertex3d(x2, y2, z2);
-			glVertex3d(x3, y3, z3);
+			Mygl3d(p[0]);
+			Mygl3d(p[1]);
+			Mygl3d(p[2]);
+			Mygl3d(p[3]);
 		}
 	}
 	glEnd();
