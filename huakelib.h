@@ -45,8 +45,9 @@ public:
 class Sprite
 {
 public:
-    TransformMatrix HT;   // its pos/ori
+    TransformMatrix HT;   // its local pos/ori
     TransformMatrix *pHT; // its local origin's pos/ori
+    TransformMatrix gHT;  // its global pos/ori
     Point p[20]; // points for your object  
     Sprite();
     void Initialize(void);
@@ -56,6 +57,7 @@ public:
     void Mygl3d(Point pp);
     void Draw(void); 
     void Print(void); 
+    void GetGlobal(void); 
 };
 
 class Player: public Sprite
@@ -67,8 +69,8 @@ public:
     void Initialize(void); 
     void SetUpCameraProjection(void);
     void SetUpCameraTransformation(void);
-    void MoveForward(void); 
-    void MoveSideward(void); 
+    void GetForwardVector(double &vx,double &vy,double &vz); 
+    void GetSidewardVector(double &vx,double &vy,double &vz); 
 };
 
 class Camera: public Sprite

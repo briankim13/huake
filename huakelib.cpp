@@ -358,6 +358,98 @@ void Sprite::Mygl3d(Point pp)
 	glVertex3d(gx, gy, gz);
 }
 
+// find pos/orientation in global coord
+// and save results in gHT 
+void Sprite::GetGlobal(void)
+{
+	if (pHT == nullptr)
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
+	}
+
+	double c[4][4]; 
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        c[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            c[i][j] = c[i][j] + (pHT->mat[i][k] * HT.mat[k][j]);
+	        }
+	    }
+	}
+
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			gHT.mat[i][j] = c[i][j]; 
+		}
+	}
+
+}
+
+// --------- Sprite Inherited Player ----------
+// NOTE: the Camera origin moves and rotates!
+// the local position has to stay the same!
+// 0,0,0! 
+Player::Player()
+{
+	Initialize(); 
+}
+void Player::Initialize(void)
+{
+	fov=PI/6.0;  // 30 degree
+    nearZ=0.1;
+    farZ=200.0;
+}
+
+void Player::SetUpCameraProjection(void)
+{
+    int wid,hei;
+    double aspect;
+
+    FsGetWindowSize(wid,hei);
+    aspect=(double)wid/(double)hei;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
+}
+
+void Player::SetUpCameraTransformation(void)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // roll-pitch-yaw order
+    // GetGlobal(); 
+    double r = gHT.GetRoll();
+    double p = gHT.GetPitch();
+    double y = gHT.GetYaw();   
+    glRotated(-r*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
+    glRotated(-p*180.0/PI,1.0,0.0,0.0);  // Rotation about X axis
+    glRotated(-y*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
+    double ox = gHT.GetX();
+    double oy = gHT.GetY();
+    double oz = gHT.GetZ();  
+    glTranslated(-ox,-oy,-oz);	
+}
+
+void Player::GetForwardVector(double &vx,double &vy,double &vz)
+{
+	vx = HT.mat[0][2];
+	vy = HT.mat[1][2];
+	vz = HT.mat[2][2]; 
+}
+
+void Player::GetSidewardVector(double &vx,double &vy,double &vz)
+{ 
+	vx = HT.mat[0][0];
+	vy = HT.mat[1][0];
+	vz = HT.mat[2][0]; 
+}
 
 
 // --------- Sprite Inherited Camera ----------
