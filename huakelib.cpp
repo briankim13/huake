@@ -527,8 +527,102 @@ void Player::Initialize(void)
 	fov=PI/6.0;  // 30 degree
     nearZ=0.1;
     farZ=200.0;
-}
 
+    // player is long cube
+    p[0].Set(-10., 40.,-10.);
+	p[1].Set( 10., 40.,-10.);
+	p[2].Set( 10., 40., 10.);
+	p[3].Set(-10., 40., 10.);
+	p[4].Set(-10.,0.,-10.);
+	p[5].Set( 10.,0.,-10.);
+	p[6].Set( 10.,0., 10.);
+	p[7].Set(-10.,0., 10.);  
+
+	gp[0].Set(-10., 40.,-10.);
+	gp[1].Set( 10., 40.,-10.);
+	gp[2].Set( 10., 40., 10.);
+	gp[3].Set(-10., 40., 10.);
+	gp[4].Set(-10.,0.,-10.);
+	gp[5].Set( 10.,0.,-10.);
+	gp[6].Set( 10.,0., 10.);
+	gp[7].Set(-10.,0., 10.);
+}
+void Player::Draw(void)
+{
+	// cube faces
+	glBegin(GL_QUADS);
+		glColor3f(1.0f,0.0f,0.0f);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+                                                
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+                                                
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+                                                
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+                                                
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+	glEnd();
+
+	// square lines 
+	glColor3f(1.0f,1.0f,1.0f);
+	glBegin(GL_LINES);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	                                            
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	                                            
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	                                            
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	                                            
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+	                                            
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	                                            
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+	                                            
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+
+	    glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	    glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	                                          
+	    glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	    glVertex3d(gp[6].x, gp[6].y, gp[6].z);     
+	glEnd();
+}
 void Player::SetUpCameraProjection(void)
 {
     int wid,hei;

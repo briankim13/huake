@@ -11,6 +11,7 @@ public:
     Camera * cameraPtr;
     Sprite * scubesPtr;
     Player * playerPtr; 
+    Player * overvwPtr; 
 };
 
 void Render(void *incoming)
@@ -23,8 +24,8 @@ void Render(void *incoming)
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
     glClearColor(0.0, 0.0f, 0.0f, 0.0f);
     
+    // ----------- Main Drawing ---------------
     glViewport(0,0,wid,hei);
-    
     // Set up 3D drawing
     // datPtr->cameraPtr->SetUpCameraProjection();
     // datPtr->cameraPtr->SetUpCameraTransformation();
@@ -34,8 +35,6 @@ void Render(void *incoming)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1,1);
-    
-    
     // 3D drawing from here
     DrawGround();
     DrawTetra();
@@ -44,19 +43,51 @@ void Render(void *incoming)
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw1();
     }
-    
+
     // Set up 2D drawing
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
+    // glMatrixMode(GL_PROJECTION);
+    // glLoadIdentity();
+    // glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
     
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    // glMatrixMode(GL_MODELVIEW);
+    // glLoadIdentity();
     
-    glDisable(GL_DEPTH_TEST);
-    
+    // glDisable(GL_DEPTH_TEST);
     // 2D drawing from here
-    
+    // glViewport(wid/2,hei/2, wid/2,hei/2);
+    // glBegin(GL_QUADS);
+    // glColor3f(0.0f,0.0f,0.0f);
+    //     glVertex2i(  0,0);
+    //     glVertex2i(800,0);
+    //     glVertex2i(800,600);
+    //     glVertex2i(  0,600); 
+    // glEnd(); 
+
+
+    // ------------ MiniMap Visualization ----------
+    // need to fix overlapping problem 
+    // clear only certain portion 
+    glScissor(wid/2,hei/2, wid/2,hei/2); // (x0,y0, wid,hei)  
+    glEnable(GL_SCISSOR_TEST); 
+    glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+    glDisable(GL_SCISSOR_TEST); 
+    glEnable(GL_DEPTH_TEST);
+
+    glViewport(wid/2,hei/2, wid/2,hei/2); // (x0,y0, width,hei)
+    datPtr->overvwPtr->SetUpCameraProjection();
+    datPtr->overvwPtr->SetUpCameraTransformation();
+
+    // 3D drawing from here
+    // DrawGround();
+    DrawTetra();
+    for (int i = 0; i<16; ++i)
+    {
+        // datPtr->scubesPtr[i].Draw();
+        datPtr->scubesPtr[i].Draw1();
+    }
+    datPtr->playerPtr->Draw(); 
+
     FsSwapBuffers();
 }
 
@@ -170,13 +201,24 @@ int main(void)
     player.nearZ = 1.0f;
     player.farZ  = 5000.0f; 
     player.pHT   = &P0; 
-    player.UpdateGlobalHT(); // do it once 
-    
+    player.HT.SetPos(0.,10.,0.); 
+    player.UpdateGlobalHT();  // update global pos/ori of center
+    player.UpdateGlobalP(); // update global pos/ori of points
+
+    Player overview; 
+    overview.nearZ = 1.0f; 
+    overview.farZ  = 5000.f; 
+    overview.pHT   = &P0; 
+    overview.HT.SetPos(-680.,300.,1200.);
+    overview.HT.SetOri( 0.,-PI/8.,-PI/5.); 
+    overview.UpdateGlobalHT(); 
+
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
     // dat.cameraPtr = &camera;
-    dat.playerPtr = &player; 
+    dat.playerPtr = &player;
+    dat.overvwPtr = &overview;  
     dat.scubesPtr = scubes;
     FsRegisterOnPaintCallBack(Render,&dat);
     
@@ -195,23 +237,30 @@ int main(void)
         // dynamicsContext part 
         // player needs UpdateGlobalHT every step because 
         // he is moving every step 
-        player.UpdateGlobalHT(); // update global pos/ori 
+        player.UpdateGlobalP(); // update global pos/ori of points  
+        player.UpdateGlobalHT(); // update global pos/ori of its center
+        overview.UpdateGlobalHT(); // update global pos/ori of its center
+        overview.HT.Print(); 
 
         if(0!=FsGetKeyState(FSKEY_1))
         {
             player.pHT = &P0; 
+            overview.pHT = &P0; 
         }
         if(0!=FsGetKeyState(FSKEY_2))
         {
             player.pHT = &P1; 
+            overview.pHT = &P1; 
         }
         if(0!=FsGetKeyState(FSKEY_3))
         {
             player.pHT = &P2; 
+            overview.pHT = &P2; 
         }
         if(0!=FsGetKeyState(FSKEY_4))
         {
             player.pHT = &P3; 
+            overview.pHT = &P3; 
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
@@ -264,6 +313,48 @@ int main(void)
             double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
             player.HT.MovePos( vx, 0., vz);
+        }
+
+        // camera work 
+        if(0!=FsGetKeyState(FSKEY_F))
+        {
+            overview.HT.RotateYaw(PI/180.0);
+        }
+        if(0!=FsGetKeyState(FSKEY_H))
+        {
+            overview.HT.RotateYaw(-PI/180.0);
+        }
+        if(0!=FsGetKeyState(FSKEY_T))
+        {
+            overview.HT.RotatePitch(PI/180.);
+        }
+        if(0!=FsGetKeyState(FSKEY_G))
+        {
+            overview.HT.RotatePitch(-PI/180.);
+        }
+        if(0!=FsGetKeyState(FSKEY_I))
+        {
+            double vx,vy,vz;
+            player.GetForwardVector(vx,vy,vz);
+            overview.HT.MovePos(-vx, 0.,-vz);
+        }
+        if(0!=FsGetKeyState(FSKEY_K))
+        {
+            double vx,vy,vz;
+            player.GetForwardVector(vx,vy,vz);
+            overview.HT.MovePos( vx, 0., vz);
+        }
+        if(0!=FsGetKeyState(FSKEY_J))
+        {
+            double vx,vy,vz;
+            player.GetSidewardVector(vx,vy,vz);
+            overview.HT.MovePos(-vx, 0.,-vz);
+        }
+        if(0!=FsGetKeyState(FSKEY_L))
+        {
+            double vx,vy,vz;
+            player.GetSidewardVector(vx,vy,vz);
+            overview.HT.MovePos( vx, 0., vz);
         }
         
         FsPushOnPaintEvent();

@@ -74,6 +74,7 @@ public:
     void SetUpCameraTransformation(void);
     void GetForwardVector(double &vx,double &vy,double &vz); 
     void GetSidewardVector(double &vx,double &vy,double &vz); 
+    void Draw(void); 
 };
 
 class Camera: public Sprite
