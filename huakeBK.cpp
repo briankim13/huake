@@ -315,47 +315,47 @@ int main(void)
             player.HT.MovePos( vx, 0., vz);
         }
 
-        // camera work 
-        if(0!=FsGetKeyState(FSKEY_F))
-        {
-            overview.HT.RotateYaw(PI/180.0);
-        }
-        if(0!=FsGetKeyState(FSKEY_H))
-        {
-            overview.HT.RotateYaw(-PI/180.0);
-        }
-        if(0!=FsGetKeyState(FSKEY_T))
-        {
-            overview.HT.RotatePitch(PI/180.);
-        }
-        if(0!=FsGetKeyState(FSKEY_G))
-        {
-            overview.HT.RotatePitch(-PI/180.);
-        }
-        if(0!=FsGetKeyState(FSKEY_I))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            overview.HT.MovePos(-vx, 0.,-vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_K))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            overview.HT.MovePos( vx, 0., vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_J))
-        {
-            double vx,vy,vz;
-            player.GetSidewardVector(vx,vy,vz);
-            overview.HT.MovePos(-vx, 0.,-vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_L))
-        {
-            double vx,vy,vz;
-            player.GetSidewardVector(vx,vy,vz);
-            overview.HT.MovePos( vx, 0., vz);
-        }
+        // // camera work 
+        // if(0!=FsGetKeyState(FSKEY_F))
+        // {
+        //     overview.HT.RotateYaw(PI/180.0);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_H))
+        // {
+        //     overview.HT.RotateYaw(-PI/180.0);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_T))
+        // {
+        //     overview.HT.RotatePitch(PI/180.);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_G))
+        // {
+        //     overview.HT.RotatePitch(-PI/180.);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_I))
+        // {
+        //     double vx,vy,vz;
+        //     overview.GetForwardVector(vx,vy,vz);
+        //     overview.HT.MovePos(-vx, 0.,-vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_K))
+        // {
+        //     double vx,vy,vz;
+        //     overview.GetForwardVector(vx,vy,vz);
+        //     overview.HT.MovePos( vx, 0., vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_J))
+        // {
+        //     double vx,vy,vz;
+        //     overview.GetSidewardVector(vx,vy,vz);
+        //     overview.HT.MovePos(-vx, 0.,-vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_L))
+        // {
+        //     double vx,vy,vz;
+        //     overview.GetSidewardVector(vx,vy,vz);
+        //     overview.HT.MovePos( vx, 0., vz);
+        // }
         
         FsPushOnPaintEvent();
         FsSleep(10);
