@@ -48,7 +48,8 @@ public:
     TransformMatrix HT;   // its local pos/ori
     TransformMatrix *pHT; // its local origin's pos/ori
     TransformMatrix gHT;  // its global pos/ori
-    Point p[20]; // points for your object  
+    Point p[20];  // points for your object  
+    Point gp[20]; // global points for your object 
     Sprite();
     void Initialize(void);
     void SetPos(double x, double y, double z);
@@ -56,8 +57,10 @@ public:
     void Local2Global(Point pp, double &gx, double &gy, double &gz); 
     void Mygl3d(Point pp);
     void Draw(void); 
+    void Draw1(void);
     void Print(void); 
-    void GetGlobal(void); 
+    void UpdateGlobalHT(void); 
+    void UpdateGlobalP(void); 
 };
 
 class Player: public Sprite

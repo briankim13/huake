@@ -196,6 +196,15 @@ void Sprite::Initialize(void)
 	p[5].Set( 10.,0.,-10.);
 	p[6].Set( 10.,0., 10.);
 	p[7].Set(-10.,0., 10.);  
+
+	gp[0].Set(-10., 20.,-10.);
+	gp[1].Set( 10., 20.,-10.);
+	gp[2].Set( 10., 20., 10.);
+	gp[3].Set(-10., 20., 10.);
+	gp[4].Set(-10.,0.,-10.);
+	gp[5].Set( 10.,0.,-10.);
+	gp[6].Set( 10.,0., 10.);
+	gp[7].Set(-10.,0., 10.); 
 }
 void Sprite::SetPos(double x, double y, double z)
 {
@@ -282,7 +291,6 @@ void Sprite::Draw(void)
 	Mygl3d(p[5]);
 	Mygl3d(p[6]);
 
-
 	// Mygl3d( 8.+x, -8.+y, 10.+z);
 	// Mygl3d( 8.+x,  8.+y, 10.+z);
 
@@ -360,7 +368,7 @@ void Sprite::Mygl3d(Point pp)
 
 // find pos/orientation in global coord
 // and save results in gHT 
-void Sprite::GetGlobal(void)
+void Sprite::UpdateGlobalHT(void)
 {
 	if (pHT == nullptr)
 	{
@@ -388,7 +396,122 @@ void Sprite::GetGlobal(void)
 			gHT.mat[i][j] = c[i][j]; 
 		}
 	}
+}
 
+void Sprite::Draw1(void)
+{
+	// cube faces
+	glBegin(GL_QUADS);
+		glColor3f(0.0f,0.0f,1.0f);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+                                                
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+                                                
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+                                                
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+                                                
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+	glEnd();
+
+	// square lines 
+	glColor3f(1.0f,1.0f,1.0f);
+	glBegin(GL_LINES);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	                                            
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	                                            
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	                                            
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	                                            
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+	                                            
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	                                            
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+	                                            
+		glVertex3d(gp[6].x, gp[6].y, gp[6].z);
+		glVertex3d(gp[7].x, gp[7].y, gp[7].z);
+
+	    glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	    glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	                                          
+	    glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	    glVertex3d(gp[6].x, gp[6].y, gp[6].z);     
+	glEnd();
+}
+void Sprite::UpdateGlobalP(void)
+{
+	if (pHT == nullptr)
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
+	}
+	for (int pidx=0; pidx<8; ++pidx)
+	{
+		double v[4]; 
+		v[0] = p[pidx].x; 
+		v[1] = p[pidx].y; 
+		v[2] = p[pidx].z; 
+		v[3] = 1.; 
+		double buf[4]; 
+		// post multiplying  self to local 
+		for (int j = 0; j < 4; ++j)
+		{
+			buf[j] = 0.; 
+			for (int i = 0; i < 4; ++i)
+			{
+				buf[j] += HT.mat[j][i]*v[i]; 
+			}
+		}
+		// local coord
+		v[0] = buf[0]; v[1] = buf[1]; v[2] = buf[2]; v[3] = buf[3]; 
+		// post multiplying  local to global
+		for (int j = 0; j < 4; ++j)
+		{
+			buf[j] = 0.; 
+			for (int i = 0; i < 4; ++i)
+			{
+				buf[j] += pHT->mat[j][i]*v[i]; 
+			}
+		}
+		// global coord
+		gp[pidx].Set(buf[0],buf[1],buf[2]); 	
+	}
 }
 
 // --------- Sprite Inherited Player ----------
