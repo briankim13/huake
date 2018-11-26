@@ -67,14 +67,14 @@ void Render(void *incoming)
     // ------------ MiniMap Visualization ----------
     // need to fix overlapping problem 
     // clear only certain portion 
-    glScissor(wid/2,hei/2, wid/2,hei/2); // (x0,y0, wid,hei)  
+    glScissor(wid*3/4,0, wid/4,hei/4); // (x0,y0, wid,hei)  
     glEnable(GL_SCISSOR_TEST); 
     glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
     glClearColor(0.0, 0.0f, 0.0f, 0.0f);
     glDisable(GL_SCISSOR_TEST); 
     glEnable(GL_DEPTH_TEST);
 
-    glViewport(wid/2,hei/2, wid/2,hei/2); // (x0,y0, width,hei)
+    glViewport(wid*3/4,0, wid/4,hei/4); // (x0,y0, width,hei)
     datPtr->overvwPtr->SetUpCameraProjection();
     datPtr->overvwPtr->SetUpCameraTransformation();
 
@@ -209,8 +209,8 @@ int main(void)
     overview.nearZ = 1.0f; 
     overview.farZ  = 5000.f; 
     overview.pHT   = &P0; 
-    overview.HT.SetPos(-680.,300.,1200.);
-    overview.HT.SetOri( 0.,-PI/8.,-PI/5.); 
+    overview.HT.SetPos(-900.,1000.,1500.);
+    overview.HT.SetOri( 0.,-37.*PI/180.,-30.*PI/180.); 
     overview.UpdateGlobalHT(); 
 
     FsOpenWindow(16,16,800,600,1);
