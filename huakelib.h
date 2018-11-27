@@ -32,7 +32,7 @@ public:
     double GetPitch(void) const; 
     double GetYaw(void) const; 
 
-    void MovePos(double xx, double yy, double zz); 
+    void MovePos(double dx, double dy, double dz); 
     void RotateRoll(double dr);
     void RotatePitch(double dp);
     void RotateYaw(double dy); 
@@ -45,9 +45,11 @@ public:
 class Sprite
 {
 public:
-    TransformMatrix HT;   // its pos/ori
+    TransformMatrix HT;   // its local pos/ori
     TransformMatrix *pHT; // its local origin's pos/ori
-    Point p[20]; // points for your object  
+    TransformMatrix gHT;  // its global pos/ori
+    Point p[20];  // points for your object  
+    Point gp[20]; // global points for your object 
     Sprite();
     void Initialize(void);
     void SetPos(double x, double y, double z);
@@ -55,7 +57,24 @@ public:
     void Local2Global(Point pp, double &gx, double &gy, double &gz); 
     void Mygl3d(Point pp);
     void Draw(void); 
+    void Draw1(void);
     void Print(void); 
+    void UpdateGlobalHT(void); 
+    void UpdateGlobalP(void); 
+};
+
+class Player: public Sprite
+{
+public:
+    double fov, nearZ, farZ;
+    Player();
+
+    void Initialize(void); 
+    void SetUpCameraProjection(void);
+    void SetUpCameraTransformation(void);
+    void GetForwardVector(double &vx,double &vy,double &vz); 
+    void GetSidewardVector(double &vx,double &vy,double &vz); 
+    void Draw(void); 
 };
 
 class Camera: public Sprite
@@ -71,10 +90,34 @@ public:
     void GetSidewardVector(double &vx,double &vy,double &vz); 
 };
 
+class Obstacle : public Sprite
+{
+public:
+	double x, y, z;
+	Obstacle();
+	void Initialize(void);
+	void SetPos(double xx, double yy, double zz);
+	void Draw(void);
+};
+
+class Target : public Sprite
+{
+public:
+	int state, divH, divP;
+	double x, y, z, vx, vy, vz, rad;
+	Target();
+	void Initialize(void);
+	void SetPos(void);
+	void Move(void);
+	void Draw(void);
+	bool CheckCollision(double x1, double y1, double z1, double x2, double y2, double z2);
+};
+
+
 // artifact of Soji's code,
 // should we make a Map class? 
 void DrawGround(void);
-
+void DrawTetra(void);
 
 class DynamicsContext
 {

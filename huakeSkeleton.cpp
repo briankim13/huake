@@ -1,5 +1,6 @@
 #include "huakelib.h"
 #include "fssimplewindow.h"
+#include <math.h>
 
 // Yun is here
 // holds pointers for rendering everything 
@@ -154,6 +155,8 @@ int main(void)
     dat.scubesPtr = scubes; 
     FsRegisterOnPaintCallBack(Render,&dat);
 
+
+    double angle = 0.; 
     while(0==terminate)
     {
         FsPollDevice();
