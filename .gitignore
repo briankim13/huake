@@ -1,4 +1,5 @@
 # ignore obj
+# ignore exe
 huake.obj
 yspng.obj
 fssimplewindow.obj
