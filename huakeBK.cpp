@@ -233,10 +233,10 @@ int main(void)
     camera.farZ  = 5000.f; 
     camera.pHT   = &CP; 
     camera.ppHT  = &P0; 
-    camera.HT.SetPos(-900., 1000., 1500.); 
-    camera.HT.SetOri( 0., -37.*PI/180.,-30.*PI/180.);
-    // camera.HT.SetPos(-900.,1000.,1500.);  
-    // camera.HT.SetOri( 0., 0., 0.*PI/180.);
+    // camera.HT.SetPos(-900., 1000., 1500.); 
+    // camera.HT.SetOri( 0., -37.*PI/180.,-30.*PI/180.);
+    camera.HT.SetPos( 0., 0.,-1400.);  
+    camera.HT.SetOri( 0., 0.,180.*PI/180.);
     camera.UpdateGlobalHT(); 
 
     DynamicsContext ovdyn; // overview camera dynamics
