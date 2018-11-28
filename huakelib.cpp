@@ -215,6 +215,14 @@ void Sprite::SetOri(double r, double p, double y)
 {
 	HT.SetOri(r,p,y); 
 }
+void Sprite::SetGlobalPos(double x, double y, double z)
+{
+	gHT.SetPos(x,y,z); 
+}
+void Sprite::SetGlobalOri(double r, double p, double y)
+{
+	gHT.SetOri(r,p,y); 
+}
 void Sprite::Draw(void)
 {
 	// cube faces
@@ -636,7 +644,6 @@ void Player::SetUpCameraProjection(void)
     glLoadIdentity();
     gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
 }
-
 void Player::SetUpCameraTransformation(void)
 {
     glMatrixMode(GL_MODELVIEW);
@@ -654,14 +661,12 @@ void Player::SetUpCameraTransformation(void)
     double oz = gHT.GetZ();  
     glTranslated(-ox,-oy,-oz);	
 }
-
 void Player::GetForwardVector(double &vx,double &vy,double &vz)
 {
 	vx = HT.mat[0][2];
 	vy = HT.mat[1][2];
 	vz = HT.mat[2][2]; 
 }
-
 void Player::GetSidewardVector(double &vx,double &vy,double &vz)
 { 
 	vx = HT.mat[0][0];
@@ -684,7 +689,6 @@ void Camera::Initialize(void)
     nearZ=0.1;
     farZ=200.0;
 }
-
 void Camera::SetUpCameraProjection(void)
 {
     int wid,hei;
@@ -697,7 +701,6 @@ void Camera::SetUpCameraProjection(void)
     glLoadIdentity();
     gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
 }
-
 void Camera::SetUpCameraTransformation(void)
 {
     glMatrixMode(GL_MODELVIEW);
@@ -714,14 +717,12 @@ void Camera::SetUpCameraTransformation(void)
     double oz = pHT->GetZ();  
     glTranslated(-ox,-oy,-oz);	
 }
-
 void Camera::GetForwardVector(double &vx,double &vy,double &vz)
 {
 	vx = pHT->mat[0][2];
 	vy = pHT->mat[1][2];
 	vz = pHT->mat[2][2]; 
 }
-
 void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 {
 	vx = pHT->mat[0][0];
@@ -729,7 +730,12 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
+<<<<<<< HEAD
 // Independent function
+=======
+
+
+>>>>>>> fa99cc6875e9ad4e9b7a851c34b4d2d1ad492ce4
 void DrawBackground(void)
 {
 	glBegin(GL_QUADS);
@@ -748,6 +754,7 @@ void DrawBackground(void)
 
     glEnd();
 }
+
 
 void DrawFloor(void)
 {
@@ -776,31 +783,31 @@ void DrawFloor(void)
 }
 
 // From Jaejun
-// void DrawTetra(void)
-// {
-//     glBegin(GL_TRIANGLES);
-//     // Theme: Hell (#0)
-//     glColor3f(0.0f,1.0f,1.0f);
-//     glVertex3d(0., 0., 0.);
-//     glVertex3d(0., 1000., 1000.);
-//     glVertex3d(1000., 1000., 0.);
-//     // Theme: Ice (#1)
-//     glColor3f(0.0f,1.0f,0.0f);
-//     glVertex3d(0., 0., 0.);
-//     glVertex3d(0., 1000., 1000.);
-//     glVertex3d(1000., 0., 1000.);
-//     // Theme: Galaxy (#3)
-//     glColor3f(1.0f,1.0f,0.0f);
-//     glVertex3d(0., 0., 0.);
-//     glVertex3d(1000., 1000., 0.);
-//     glVertex3d(1000., 0., 1000.);
-//     // Theme: Forest (#3)
-//     glColor3f(1.0f,0.0f,1.0f);
-//     glVertex3d(0., 1000., 1000.);
-//     glVertex3d(1000., 1000., 0.);
-//     glVertex3d(1000., 0., 1000.);
-//     glEnd();
-// }
+void DrawTetra(void)
+{
+    glBegin(GL_TRIANGLES);
+    // Theme: Hell (#0)
+    glColor3f(0.0f,1.0f,1.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 1000., 0.);
+    // Theme: Ice (#1)
+    glColor3f(0.0f,1.0f,0.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 0., 1000.);
+    // Theme: Galaxy (#3)
+    glColor3f(1.0f,1.0f,0.0f);
+    glVertex3d(0., 0., 0.);
+    glVertex3d(1000., 1000., 0.);
+    glVertex3d(1000., 0., 1000.);
+    // Theme: Forest (#3)
+    glColor3f(1.0f,0.0f,1.0f);
+    glVertex3d(0., 1000., 1000.);
+    glVertex3d(1000., 1000., 0.);
+    glVertex3d(1000., 0., 1000.);
+    glEnd();
+}
 
 // --------- Draw background ---------
 void DrawGround(void)
@@ -1036,16 +1043,133 @@ bool Target::CheckCollision(double x1, double y1, double z1, double x2, double y
 	}
 }
 
+
+
 // -------- Dynamics Context ---------
 DynamicsContext::DynamicsContext()
 {
-	dT = 0.1; 
+	Initialize(); 
 }
 
-void DynamicsContext::SimStep()
+void DynamicsContext::Initialize(void)
 {
-	// Player.x += dT*dx (prolly from input)
-	// Player.y += dT*dy
-	// ...  
+	dT = 0.1; 
+	mx  = 1.; my  = 1.; mz  = 1.; 
+	x   = 0.; y   = 0.; z   = 0.; 
+	dx  = 0.; dy  = 0.; dz  = 0.; 
+	ddz = 0.; ddy = 0.; ddz = 0.; 
+	                          
+	Ir  = 1.; Ip  = 1.; Iw  = 1.; // inertia 
+	r   = 0.; p   = 0.; w   = 0.; 
+	dr  = 0.; dp  = 0.; dw  = 0.; 
+	ddr = 0.; ddp = 0.; ddw = 0.; 
 }
+double DynamicsContext::GetX(void) const
+{
+	return x; 
+}
+double DynamicsContext::GetY(void) const
+{
+	return y; 
+} 
+double DynamicsContext::GetZ(void) const
+{
+	return z; 
+} 
+double DynamicsContext::GetRoll(void) const
+{
+	return r; 
+}
+double DynamicsContext::GetPitch(void) const
+{
+	return p; 
+} 
+double DynamicsContext::GetYaw(void) const
+{
+	return w; 
+} 
+
+void DynamicsContext::SetMass(double mx, double my, double mz)
+{
+	this->mx = mx; 
+	this->my = my; 
+	this->mz = mz; 
+}
+void DynamicsContext::SetMass(double mx, double my, double mz, double Ir, double Ip, double Iw)
+{
+	SetMass(mx, my, mz);
+	this->Ir = Ir; 
+	this->Ip = Ip; 
+	this->Iw = Iw; 
+}
+void DynamicsContext::SetForce(double Fx, double Fy, double Fz, double Tr, double Tp, double Tw)
+{
+	ddx = Fx / mx; 
+	ddy = Fy / my; 
+	ddz = Fz / mz; 
+	ddr = Tr / Ir; 
+	ddp = Tp / Ip; 
+	ddw = Tw / Iw; 
+} 
+void DynamicsContext::SetZeroForce(void)
+{
+	ddx = 0.; 
+	ddy = 0.; 
+	ddz = 0.; 
+	ddr = 0.; 
+	ddp = 0.; 
+	ddw = 0.; 
+}
+void DynamicsContext::SetVel(double dx, double dy, double dz)
+{
+	this->dx = dx;
+	this->dy = dy; 
+	this->dz = dz; 
+}
+void DynamicsContext::SetVel(double dx, double dy, double dz, double dr, double dp, double dw)
+{
+	SetVel(dx, dy, dz); 
+	this->dr = dr; 
+	this->dp = dp; 
+	this->dw = dw; 
+}
+void DynamicsContext::SetZeroVel(void)
+{
+	dx = 0.;
+	dy = 0.; 
+	dz = 0.; 
+	dr = 0.; 
+	dp = 0.; 
+	dw = 0.; 
+}
+void DynamicsContext::SetPos(double x, double y, double z)
+{
+	this->x = x; 
+	this->y = y; 
+	this->z = z; 
+}
+void DynamicsContext::SetPos(double x, double y, double z, double r, double p, double w)
+{
+	SetPos(x, y, z);
+	this->r = r; 
+	this->p = p; 
+	this->w = w; 
+}
+void DynamicsContext::SimStep(void)
+{
+	dx += ddx*dT;
+	dy += ddy*dT; 
+	dz += ddz*dT;
+	dr += ddr*dT; 
+	dp += ddp*dT; 
+	dw += ddw*dT; 
+
+	x  += dx*dT; 
+	y  += dy*dT;
+	z  += dz*dT;
+	r  += dr*dT; 
+	p  += dp*dT; 
+	w  += dw*dT;  
+}
+
 

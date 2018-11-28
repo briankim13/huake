@@ -53,6 +53,8 @@ public:
     void Initialize(void);
     void SetPos(double x, double y, double z);
     void SetOri(double r, double p, double y); 
+    void SetGlobalPos(double x, double y, double z);
+    void SetGlobalOri(double r, double p, double y);
     void Local2Global(Point pp, double &gx, double &gy, double &gz); 
     void Mygl3d(Point pp);
     void Draw(void); 
@@ -123,12 +125,35 @@ class DynamicsContext
 {
 public: 
     DynamicsContext(); 
+    DynamicsContext(double dT); 
     // Player ptr
     // Obstacle ptr
     // Enemy ptr
+    double mx, x, dx, ddx; 
+    double my, y, dy, ddy; 
+    double mz, z, dz, ddz; 
+    double Ir, r, dr, ddr; // roll
+    double Ip, p, dp, ddp; // pitch
+    double Iw, w, dw, ddw; // yaw 
 
-    double dT; 
-    void SimStep(); 
+    double dT; // step time 
+    void Initialize(void); 
+    double GetX(void) const;
+    double GetY(void) const; 
+    double GetZ(void) const; 
+    double GetRoll(void) const;
+    double GetPitch(void) const; 
+    double GetYaw(void) const; 
+    void SetMass(double mx, double my, double mz);
+    void SetMass(double mx, double my, double mz, double Ir, double Ip, double Iw); 
+    void SetForce(double Fx, double Fy, double Fz, double Tr, double Tp, double Tw); 
+    void SetZeroForce(void);
+    void SetVel(double dx, double dy, double dz); 
+    void SetVel(double dx, double dy, double dz, double dr, double dp, double dw);  
+    void SetZeroVel(void); 
+    void SetPos(double x, double y, double z); 
+    void SetPos(double x, double y, double z, double r, double p, double w); 
+    void SimStep(void); 
     // simulate step (dT) from input, 
     // how should we get input? as a separate class?
 };
