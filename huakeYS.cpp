@@ -295,36 +295,36 @@ int main(void)
     Pngdata png;
     png.firstRenderingPass=true; // Make texture during the first rendering pass.
     // Theme: Hell (#0)
-    png.file[0*1+0].Decode("image/hell/background_1.png");
-    // png[0] calls the background figure.
-    png.file[0*1+1].Decode("image/hell/floor_1.png");
-    // png[1] calls the ground figure.
-    png.file[0*1+2].Decode("image/hell/wall_1.png");
-    // png[2] calls the wall figure.
+    png.file[0*3+0].Decode("image/hell/background_1.png");
+    // file[0] calls the background figure.
+    png.file[0*3+1].Decode("image/hell/floor_1.png");
+    // file[1] calls the ground figure.
+    png.file[0*3+2].Decode("image/hell/wall_1.png");
+    // file[2] calls the wall figure.
 
     // Theme: Ice (#1)
-    png.file[1*1+0].Decode("image/ice/background_1.png");
-    // png[0] calls the background figure.
-    png.file[1*1+1].Decode("image/ice/floor_1.png");
-    // png[1] calls the ground figure.
-    png.file[1*1+2].Decode("image/ice/wall_2.png");
-    // png[2] calls the wall figure.
+    png.file[1*3+0].Decode("image/ice/background_1.png");
+    // file[0] calls the background figure.
+    png.file[1*3+1].Decode("image/ice/floor_1.png");
+    // file[1] calls the ground figure.
+    png.file[1*3+2].Decode("image/ice/wall_2.png");
+    // file[2] calls the wall figure.
 
     // Theme: Galaxy (#2)
-    png.file[2*1+0].Decode("image/galaxy/background_1.png");
-    // png[0] calls the background figure.
-    png.file[2*1+1].Decode("image/galaxy/floor_1.png");
-    // png[1] calls the ground figure.
-    png.file[2*1+2].Decode("image/galaxy/wall_1.png");
-    // png[2] calls the wall figure.
+    png.file[2*3+0].Decode("image/galaxy/background_1.png");
+    // file[0] calls the background figure.
+    png.file[2*3+1].Decode("image/galaxy/floor_1.png");
+    // file[1] calls the ground figure.
+    png.file[2*3+2].Decode("image/galaxy/wall_1.png");
+    // file[2] calls the wall figure.
 
     // Theme: Forest (#3)
-    png.file[3*1+0].Decode("image/forest/background_1.png");
-    // png[0] calls the background figure.
-    png.file[3*1+1].Decode("image/forest/floor_1.png");
-    // png[1] calls the ground figure.
-    png.file[3*1+2].Decode("image/forest/wall_1.png");
-    // png[2] calls the wall figure.
+    png.file[3*3+0].Decode("image/forest/background_1.png");
+    // file[0] calls the background figure.
+    png.file[3*3+1].Decode("image/forest/floor_1.png");
+    // file[1] calls the ground figure.
+    png.file[3*3+2].Decode("image/forest/wall_1.png");
+    // file[2] calls the wall figure.
 
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
