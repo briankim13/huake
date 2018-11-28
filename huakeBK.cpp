@@ -213,6 +213,18 @@ int main(void)
     overview.HT.SetOri( 0.,-37.*PI/180.,-30.*PI/180.); 
     overview.UpdateGlobalHT(); 
 
+    DynamicsContext ovdyn; // overview camera dynamics
+    bool animationOn = false;   // state
+    double x, y, z, r, p, w; 
+    x = overview.HT.GetX(); // get global pos 
+    y = overview.HT.GetY();
+    z = overview.HT.GetZ(); 
+    r = overview.HT.GetRoll(); 
+    p = overview.HT.GetPitch();
+    w = overview.HT.GetYaw(); 
+    ovdyn.SetPos(x, y, z,  r, p, w); 
+    ovdyn.SetVel(0.,1.,0., 0.,-0.04*PI/180.,0.); 
+
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
@@ -240,27 +252,45 @@ int main(void)
         player.UpdateGlobalP(); // update global pos/ori of points  
         player.UpdateGlobalHT(); // update global pos/ori of its center
         overview.UpdateGlobalHT(); // update global pos/ori of its center
-        overview.HT.Print(); 
+        ovdyn.SimStep();
+        x = ovdyn.GetX(); 
+        y = ovdyn.GetY(); 
+        z = ovdyn.GetZ();  
+        r = ovdyn.GetRoll(); 
+        p = ovdyn.GetPitch(); 
+        w = ovdyn.GetYaw(); 
+        // overview.SetPos(x, y, z);
+        // overview.SetOri(r, p, w); 
 
+        overview.HT.Print(); // debugging
+
+        if animationOn
+        {
+            
+        }
         if(0!=FsGetKeyState(FSKEY_1))
         {
             player.pHT = &P0; 
             overview.pHT = &P0; 
+            animationOn  = true; 
         }
         if(0!=FsGetKeyState(FSKEY_2))
         {
             player.pHT = &P1; 
             overview.pHT = &P1; 
+            animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_3))
         {
             player.pHT = &P2; 
             overview.pHT = &P2; 
+            animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_4))
         {
             player.pHT = &P3; 
             overview.pHT = &P3; 
+            animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
@@ -315,47 +345,7 @@ int main(void)
             player.HT.MovePos( vx, 0., vz);
         }
 
-        // // camera work 
-        // if(0!=FsGetKeyState(FSKEY_F))
-        // {
-        //     overview.HT.RotateYaw(PI/180.0);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_H))
-        // {
-        //     overview.HT.RotateYaw(-PI/180.0);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_T))
-        // {
-        //     overview.HT.RotatePitch(PI/180.);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_G))
-        // {
-        //     overview.HT.RotatePitch(-PI/180.);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_I))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetForwardVector(vx,vy,vz);
-        //     overview.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_K))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetForwardVector(vx,vy,vz);
-        //     overview.HT.MovePos( vx, 0., vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_J))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetSidewardVector(vx,vy,vz);
-        //     overview.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_L))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetSidewardVector(vx,vy,vz);
-        //     overview.HT.MovePos( vx, 0., vz);
-        // }
+        
         
         FsPushOnPaintEvent();
         FsSleep(10);
