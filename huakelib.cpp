@@ -205,7 +205,12 @@ void Sprite::Initialize(void)
 	gp[4].Set(-10.,0.,-10.);
 	gp[5].Set( 10.,0.,-10.);
 	gp[6].Set( 10.,0., 10.);
-	gp[7].Set(-10.,0., 10.); 
+	gp[7].Set(-10.,0., 10.);
+    
+    c[0] = 0.;
+    c[1] = 0.;
+    c[2] = 1.;
+    
 }
 void Sprite::SetPos(double x, double y, double z)
 {
@@ -227,7 +232,7 @@ void Sprite::Draw(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
-		glColor3f(0.0f,0.0f,1.0f);
+		glColor3f(c[0],c[1],c[2]);
 		Mygl3d(p[0]);
 		Mygl3d(p[1]);
 		Mygl3d(p[2]);
@@ -317,6 +322,13 @@ void Sprite::Draw(void)
 void Sprite::Print(void)
 {
 
+}
+
+void Sprite::SetColor(float r, float g, float b)
+{
+    c[0] = r;
+    c[1] = g;
+    c[2] = b;
 }
 // transform point pp local coordinate to
 // gx, gy, gz global coordinate 
@@ -411,7 +423,7 @@ void Sprite::Draw1(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
-		glColor3f(0.0f,0.0f,1.0f);
+    glColor3f(c[0],c[1],c[2]);
 		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
@@ -730,12 +742,8 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
-<<<<<<< HEAD
 // Independent function
-=======
 
-
->>>>>>> fa99cc6875e9ad4e9b7a851c34b4d2d1ad492ce4
 void DrawBackground(void)
 {
 	glBegin(GL_QUADS);
@@ -787,22 +795,22 @@ void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
     // Theme: Hell (#0)
-    glColor3f(0.0f,1.0f,1.0f);
+    glColor3f(0.8f,0.1f,0.1f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     // Theme: Ice (#1)
-    glColor3f(0.0f,1.0f,0.0f);
+    glColor3f(0.8f,0.8f,0.9f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 0., 1000.);
-    // Theme: Galaxy (#3)
-    glColor3f(1.0f,1.0f,0.0f);
+    // Theme: Galaxy (#2)
+    glColor3f(0.7f,0.1f,0.7f);
     glVertex3d(0., 0., 0.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
     // Theme: Forest (#3)
-    glColor3f(1.0f,0.0f,1.0f);
+    glColor3f(0.1f,0.6f,0.2f);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);

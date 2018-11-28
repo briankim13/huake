@@ -44,6 +44,7 @@ public:
 class Sprite
 {
 public:
+    float c[3];
     TransformMatrix HT;   // its local pos/ori
     TransformMatrix *pHT; // its local origin's pos/ori
     TransformMatrix gHT;  // its global pos/ori
@@ -61,7 +62,8 @@ public:
     void Draw1(void);
     void Print(void); 
     void UpdateGlobalHT(void); 
-    void UpdateGlobalP(void); 
+    void UpdateGlobalP(void);
+    void SetColor(float r, float g, float b);
 };
 
 class Player: public Sprite
