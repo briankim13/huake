@@ -23,13 +23,14 @@ public:
     Sprite * scubesPtr;
     Player * playerPtr; 
     Player * overvwPtr; 
-    Pngdata * pngDat;
+    Pngdata * pngPtr;
 };
 
 void Render(void *incoming)
 {
     MainData *datPtr = (MainData *) incoming;
-    
+    Pngdata *pngDat = datPtr->pngPtr;
+
     int wid,hei;
     FsGetWindowSize(wid,hei);
     
@@ -44,16 +45,16 @@ void Render(void *incoming)
     datPtr->playerPtr->SetUpCameraProjection();
     datPtr->playerPtr->SetUpCameraTransformation();
 
-    if(true==datPtr->pngDat->firstRenderingPass)  // Do it only once.
+    if(true==pngDat->firstRenderingPass)  // Do it only once.
     {
-        datPtr->pngDat->firstRenderingPass=false; // And, don't do it again.
+        pngDat->firstRenderingPass=false; // And, don't do it again.
 
         // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
 
         for(int i=0; i<12; ++i)
         {
-            glGenTextures(1,&datPtr->pngDat->texId[i]);  // Reserve one texture identifier
-            glBindTexture(GL_TEXTURE_2D,datPtr->pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
+            glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
+            glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
 
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
@@ -64,12 +65,12 @@ void Render(void *incoming)
                 (GL_TEXTURE_2D,
                  0,    // Level of detail
                  GL_RGBA,
-                 datPtr->pngDat->file[i].wid,
-                 datPtr->pngDat->file[i].hei,
+                 pngDat->file[i].wid,
+                 pngDat->file[i].hei,
                  0,    // Border width, but not supported and needs to be 0.
                  GL_RGBA,
                  GL_UNSIGNED_BYTE,
-                 datPtr->pngDat->file[i].rgba);
+                 pngDat->file[i].rgba);
         }
     }
 
@@ -85,15 +86,15 @@ void Render(void *incoming)
     DrawGround();   // Soji's ground
 
     // Drawing background
-            glMatrixMode(GL_MODELVIEW);
-            glPushMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
             glLoadIdentity();
             // The background will not be changed based on the view.
             // THe background keeps following the camera without any change.
 
             glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
 
-                            glBindTexture(GL_TEXTURE_2D,datPtr->pngDat->texId[1]);
+                            glBindTexture(GL_TEXTURE_2D,pngDat->texId[9]);
 
             DrawBackground();
 
@@ -158,7 +159,7 @@ void Render(void *incoming)
 
     // 3D drawing from here
     // DrawGround();
-    DrawTetra();
+    // DrawTetra();
 
     for (int i = 0; i<16; ++i)
     {
@@ -333,7 +334,7 @@ int main(void)
     dat.playerPtr = &player;
     dat.overvwPtr = &overview;  
     dat.scubesPtr = scubes;
-    dat.pngDat = &png;
+    dat.pngPtr = &png;
 
     FsRegisterOnPaintCallBack(Render,&dat);
     
