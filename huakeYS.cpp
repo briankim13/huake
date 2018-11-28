@@ -12,6 +12,7 @@ public:
     bool firstRenderingPass;
     YsRawPngDecoder file[12];
     GLuint texId[12];
+    int state = 0;
     // 3 png figures for 4 themes.
 };
 
@@ -74,7 +75,6 @@ void Render(void *incoming)
         }
     }
 
-
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1,1);
@@ -83,24 +83,24 @@ void Render(void *incoming)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
     glColor4d(1.0,1.0,1.0,1.0);
 
-    DrawGround();   // Soji's ground
+    // DrawGround();   // Soji's ground
 
     // Drawing background
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-            glLoadIdentity();
-            // The background will not be changed based on the view.
-            // THe background keeps following the camera without any change.
+    glLoadIdentity();
+    // The background will not be changed based on the view.
+    // The background keeps following the camera without any change.
 
-            glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+    glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*(pngDat->state)]);
 
-                            glBindTexture(GL_TEXTURE_2D,pngDat->texId[9]);
+    DrawBackground();
 
-            DrawBackground();
+    glDisable(GL_TEXTURE_2D);  // End using texture mapping
+    glPopMatrix();
 
-            glDisable(GL_TEXTURE_2D);  // End using texture mapping
 
-            glPopMatrix();
     //     }
     //     else
     //     {
@@ -159,7 +159,7 @@ void Render(void *incoming)
 
     // 3D drawing from here
     // DrawGround();
-    // DrawTetra();
+    DrawTetra();
 
     for (int i = 0; i<16; ++i)
     {
@@ -360,23 +360,31 @@ int main(void)
 
         if(0!=FsGetKeyState(FSKEY_1))
         {
+            // Hell
             player.pHT = &P0; 
-            overview.pHT = &P0; 
+            overview.pHT = &P0;
+            png.state = 0; 
         }
         if(0!=FsGetKeyState(FSKEY_2))
         {
+            // Ice
             player.pHT = &P1; 
-            overview.pHT = &P1; 
+            overview.pHT = &P1;
+            png.state = 1; 
         }
         if(0!=FsGetKeyState(FSKEY_3))
         {
+            // Galaxy
             player.pHT = &P2; 
             overview.pHT = &P2; 
+            png.state = 2;
         }
         if(0!=FsGetKeyState(FSKEY_4))
         {
+            // Forest
             player.pHT = &P3; 
-            overview.pHT = &P3; 
+            overview.pHT = &P3;
+            png.state = 3; 
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {

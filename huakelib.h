@@ -80,6 +80,22 @@ public:
     void Draw(void); 
 };
 
+// this class has pHT and ppHT 
+class OverviewCamera: public Sprite
+{
+public:
+    TransformMatrix *ppHT; // parent's parent's HT (grandfather!)
+    double fov, nearZ, farZ;
+    OverviewCamera(void); 
+
+    void Initialize(void); 
+    void UpdateGlobalHT(void); 
+    void SetUpCameraProjection(void);
+    void SetUpCameraTransformation(void);
+    void GetForwardVector(double &vx,double &vy,double &vz); 
+    void GetSidewardVector(double &vx,double &vy,double &vz);
+};
+
 class Camera: public Sprite
 {
 public:
@@ -111,14 +127,17 @@ public:
 	Target();
 	void Initialize(void);
 	void SetPos(void);
+    void SetPos1(double x, double y, double z);
 	void Move(void);
 	void Draw(void);
+    void Draw1(void); 
 	bool CheckCollision(double x1, double y1, double z1, double x2, double y2, double z2);
 };
 
 
 // artifact of Soji's code,
 // should we make a Map class? 
+
 void DrawGround(void);
 void DrawTetra(void);
 void DrawBackground(void);

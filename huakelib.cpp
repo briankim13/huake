@@ -188,6 +188,7 @@ Sprite::Sprite()
 }
 void Sprite::Initialize(void)
 {
+	pHT = nullptr; 
 	// the most basic shape is cube with 8 points 
 	p[0].Set(-10., 20.,-10.);
 	p[1].Set( 10., 20.,-10.);
@@ -398,6 +399,7 @@ void Sprite::UpdateGlobalHT(void)
 	}
 
 	double c[4][4]; 
+	// pHT * HT 
 	for (int i = 0; i < 4; ++i)
 	{
 	    for (int j = 0; j < 4; ++j)
@@ -409,7 +411,7 @@ void Sprite::UpdateGlobalHT(void)
 	        }
 	    }
 	}
-
+	// set gHT 
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -534,6 +536,107 @@ void Sprite::UpdateGlobalP(void)
 		gp[pidx].Set(buf[0],buf[1],buf[2]); 	
 	}
 }
+
+
+OverviewCamera::OverviewCamera()
+{
+	Initialize(); 
+}
+void OverviewCamera::Initialize()
+{
+	ppHT = nullptr; 
+	pHT = nullptr; 
+	fov=PI/6.0;  // 30 degree
+    nearZ=0.1;
+    farZ=200.0;
+}
+// this is different!!!!
+// there is ppHT!!!!
+void OverviewCamera::UpdateGlobalHT(void)
+{
+	if ((pHT == nullptr) || (ppHT == nullptr)) 
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
+	}
+
+	// pHT * HT
+	double c[4][4]; 
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        c[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            c[i][j] = c[i][j] + (pHT->mat[i][k] * HT.mat[k][j]);
+	        }
+	    }
+	}
+	// ppHT * (pHT * HT)
+	double d[4][4];
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        d[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            d[i][j] = d[i][j] + (ppHT->mat[i][k] * c[k][j]);
+	        }
+	    }
+	}
+	// update gHT 
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			gHT.mat[i][j] = d[i][j]; 
+		}
+	}
+}
+void OverviewCamera::SetUpCameraProjection(void)
+{
+    int wid,hei;
+    double aspect;
+
+    FsGetWindowSize(wid,hei);
+    aspect=(double)wid/(double)hei;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
+}
+void OverviewCamera::SetUpCameraTransformation(void)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // roll-pitch-yaw order
+    // GetGlobal(); 
+    double r = gHT.GetRoll();
+    double p = gHT.GetPitch();
+    double y = gHT.GetYaw();   
+    glRotated(-r*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
+    glRotated(-p*180.0/PI,1.0,0.0,0.0);  // Rotation about X axis
+    glRotated(-y*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
+    double ox = gHT.GetX();
+    double oy = gHT.GetY();
+    double oz = gHT.GetZ();  
+    glTranslated(-ox,-oy,-oz);	
+}
+void OverviewCamera::GetForwardVector(double &vx,double &vy,double &vz)
+{
+	vx = HT.mat[0][2];
+	vy = HT.mat[1][2];
+	vz = HT.mat[2][2]; 
+}
+void OverviewCamera::GetSidewardVector(double &vx,double &vy,double &vz)
+{ 
+	vx = HT.mat[0][0];
+	vy = HT.mat[1][0];
+	vz = HT.mat[2][0]; 
+}
+
 
 // --------- Sprite Inherited Player ----------
 // NOTE: the Camera origin moves and rotates!
@@ -743,6 +846,10 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 }
 
 // Independent function
+<<<<<<< HEAD
+=======
+
+>>>>>>> 19dd61b633be3ecbdc2a1c12ff9ece9b0f1cd8a3
 
 void DrawBackground(void)
 {
@@ -762,7 +869,6 @@ void DrawBackground(void)
 
     glEnd();
 }
-
 
 void DrawFloor(void)
 {
@@ -951,13 +1057,15 @@ Target::Target()
 
 void Target::Initialize(void)
 {
-	p[0].Set(-0., 0., -0.);
+	// p[0].Set(-0., 0., -0.);
+	p[0].Set(0.,0.,0.); 
+	gp[0].Set(0.,0.,0.); 
 	rad = 10.0;
-	divH = 36;
-	divP = 18;
-	vx = (double)(rand() % 6) - (double)3;
-	vy = (double)(rand() % 6) - (double)3;
-	vz = (double)(rand() % 6) - (double)3;
+	divH = 6;
+	divP = 3;
+	vx = 1.; //(double)(rand() % 2) - (double)1;
+	vy = 0.;
+	vz = -0.3; // (double)(rand() % 2) - (double)1;
 	state = 1;
 }
 
@@ -968,13 +1076,17 @@ void Target::SetPos()
 	z = (double)(rand() % 150);
 	HT.SetPos(x, y, z);
 }
+void Target::SetPos1(double x, double y, double z)
+{
+	HT.SetPos(x, y, z); 
+}
 
 void Target::Move(void)
 {
 	x += vx;
 	y += vy;
 	z += vz;
-	if ((500 < x + rad && 0 < vx) || (x - rad < -500 && vx < 0))
+	if ((300 < x + rad && 0 < vx) || (x - rad < -300 && vx < 0))
 	{
 		vx = -vx;
 	}
@@ -982,7 +1094,7 @@ void Target::Move(void)
 	{
 		vy = -vy;
 	}
-	if ((500 < z + rad && 0 < vz) || (z - rad < -500 && vz < 0))
+	if ((300 < z + rad && 0 < vz) || (z - rad < -300 && vz < 0))
 	{
 		vz = -vz;
 	}
@@ -1029,6 +1141,49 @@ void Target::Draw()
 			Mygl3d(p[1]);
 			Mygl3d(p[2]);
 			Mygl3d(p[3]);
+		}
+	}
+	glEnd();
+
+}
+
+void Target::Draw1()
+{
+	double gx = gp[0].x; 
+	double gy = gp[0].y; 
+	double gz = gp[0].z; 
+
+	glBegin(GL_QUADS);
+	for (int i = -divP; i < divP; ++i)
+	{
+		double p0 = (double)i*PI*0.5 / (double)divP;
+		double p1 = (double)(i + 1)*PI*0.5 / (double)divP;
+		for (int j = 0; j < divH; ++j)
+		{
+			double h0 = (double)j*2.0*PI / (double)divH;
+			double h1 = (double)(j + 1)*2.0*PI / (double)divH;
+
+			double x0 = gx + rad * cos(p0)*cos(h0);
+			double y0 = gy + rad * sin(p0);
+			double z0 = gz + rad * cos(p0)*sin(h0);
+               
+			double x1 = gx + rad * cos(p0)*cos(h1);
+			double y1 = gy + rad * sin(p0);
+			double z1 = gz + rad * cos(p0)*sin(h1);
+
+			double x2 = gx + rad * cos(p1)*cos(h1);
+			double y2 = gy + rad * sin(p1);
+			double z2 = gz + rad * cos(p1)*sin(h1);
+
+			double x3 = gx + rad * cos(p1)*cos(h0);
+			double y3 = gy + rad * sin(p1);
+			double z3 = gz + rad * cos(p1)*sin(h0);
+
+			glColor3f(0, 1, 0);
+			glVertex3d(x0, y0, z0); 
+			glVertex3d(x1, y1, z1); 
+			glVertex3d(x2, y2, z2); 
+			glVertex3d(x3, y3, z3); 
 		}
 	}
 	glEnd();
