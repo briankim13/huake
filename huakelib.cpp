@@ -937,13 +937,15 @@ Target::Target()
 
 void Target::Initialize(void)
 {
-	p[0].Set(-0., 0., -0.);
+	// p[0].Set(-0., 0., -0.);
+	p[0].Set(0.,0.,0.); 
+	gp[0].Set(0.,0.,0.); 
 	rad = 10.0;
-	divH = 36;
-	divP = 18;
-	vx = (double)(rand() % 6) - (double)3;
-	vy = (double)(rand() % 6) - (double)3;
-	vz = (double)(rand() % 6) - (double)3;
+	divH = 6;
+	divP = 3;
+	vx = 1.; //(double)(rand() % 2) - (double)1;
+	vy = 0.;
+	vz = -0.3; // (double)(rand() % 2) - (double)1;
 	state = 1;
 }
 
@@ -954,13 +956,17 @@ void Target::SetPos()
 	z = (double)(rand() % 150);
 	HT.SetPos(x, y, z);
 }
+void Target::SetPos1(double x, double y, double z)
+{
+	HT.SetPos(x, y, z); 
+}
 
 void Target::Move(void)
 {
 	x += vx;
 	y += vy;
 	z += vz;
-	if ((500 < x + rad && 0 < vx) || (x - rad < -500 && vx < 0))
+	if ((300 < x + rad && 0 < vx) || (x - rad < -300 && vx < 0))
 	{
 		vx = -vx;
 	}
@@ -968,7 +974,7 @@ void Target::Move(void)
 	{
 		vy = -vy;
 	}
-	if ((500 < z + rad && 0 < vz) || (z - rad < -500 && vz < 0))
+	if ((300 < z + rad && 0 < vz) || (z - rad < -300 && vz < 0))
 	{
 		vz = -vz;
 	}
@@ -1015,6 +1021,50 @@ void Target::Draw()
 			Mygl3d(p[1]);
 			Mygl3d(p[2]);
 			Mygl3d(p[3]);
+		}
+	}
+	glEnd();
+
+}
+
+void Target::Draw1()
+{
+	double gx = gp[0].x; 
+	double gy = gp[0].y; 
+	double gz = gp[0].z; 
+	printf("%lf, %lf, %lf\n", gx,gy,gz); 
+
+	glBegin(GL_QUADS);
+	for (int i = -divP; i < divP; ++i)
+	{
+		double p0 = (double)i*PI*0.5 / (double)divP;
+		double p1 = (double)(i + 1)*PI*0.5 / (double)divP;
+		for (int j = 0; j < divH; ++j)
+		{
+			double h0 = (double)j*2.0*PI / (double)divH;
+			double h1 = (double)(j + 1)*2.0*PI / (double)divH;
+
+			double x0 = gx + rad * cos(p0)*cos(h0);
+			double y0 = gy + rad * sin(p0);
+			double z0 = gz + rad * cos(p0)*sin(h0);
+               
+			double x1 = gx + rad * cos(p0)*cos(h1);
+			double y1 = gy + rad * sin(p0);
+			double z1 = gz + rad * cos(p0)*sin(h1);
+
+			double x2 = gx + rad * cos(p1)*cos(h1);
+			double y2 = gy + rad * sin(p1);
+			double z2 = gz + rad * cos(p1)*sin(h1);
+
+			double x3 = gx + rad * cos(p1)*cos(h0);
+			double y3 = gy + rad * sin(p1);
+			double z3 = gz + rad * cos(p1)*sin(h0);
+
+			glColor3f(0, 1, 0);
+			glVertex3d(x0, y0, z0); 
+			glVertex3d(x1, y1, z1); 
+			glVertex3d(x2, y2, z2); 
+			glVertex3d(x3, y3, z3); 
 		}
 	}
 	glEnd();

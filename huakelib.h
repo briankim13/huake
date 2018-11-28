@@ -109,8 +109,10 @@ public:
 	Target();
 	void Initialize(void);
 	void SetPos(void);
+    void SetPos1(double x, double y, double z);
 	void Move(void);
 	void Draw(void);
+    void Draw1(void); 
 	bool CheckCollision(double x1, double y1, double z1, double x2, double y2, double z2);
 };
 
