@@ -117,6 +117,7 @@ public:
 // should we make a Map class? 
 void DrawGround(void);
 void DrawTetra(void);
+void DrawBackground(void);
 
 class DynamicsContext
 {
