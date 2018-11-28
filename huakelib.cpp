@@ -730,9 +730,13 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
+<<<<<<< HEAD
 
 // Independent function
 
+=======
+// Independent function
+>>>>>>> f0ebdf0674d9b8d64c5d7b92cc588fe536569993
 void DrawBackground(void)
 {
 	glBegin(GL_QUADS);
@@ -751,7 +755,6 @@ void DrawBackground(void)
 
     glEnd();
 }
-
 
 void DrawFloor(void)
 {
