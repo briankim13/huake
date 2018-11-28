@@ -5,6 +5,7 @@
 #include "fssimplewindow.h"
 // #include "ysglfontdata.h"
 #include "huakelib.h"
+#include "yspng.h"
 
 const double YsPi = 3.1415927;
 
@@ -728,27 +729,77 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
-void DrawTetra(void)
+void DrawBackground(void)
+{
+	glBegin(GL_QUADS);
+
+    glTexCoord2d(0.0,1.0);
+	glVertex3d(-800.0,-800.0,-2000.0);
+
+    glTexCoord2d(1.0,1.0);
+    glVertex3d(800.0,-800.0,-2000.0);
+
+    glTexCoord2d(1.0,0.0);
+    glVertex3d(800.0,800.0,-2000.0);
+
+    glTexCoord2d(0.0,0.0);
+    glVertex3d(-800.0,800.0,-2000.0);
+
+    glEnd();
+}
+
+void DrawFloor(void)
 {
     glBegin(GL_TRIANGLES);
+    // Theme: Hell (#0)
     glColor3f(0.0f,1.0f,1.0f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
+    // Theme: Ice (#1)
     glColor3f(0.0f,1.0f,0.0f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 0., 1000.);
+    // Theme: Galaxy (#3)
     glColor3f(1.0f,1.0f,0.0f);
     glVertex3d(0., 0., 0.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
+    // Theme: Forest (#3)
     glColor3f(1.0f,0.0f,1.0f);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
     glEnd();
 }
+
+// From Jaejun
+// void DrawTetra(void)
+// {
+//     glBegin(GL_TRIANGLES);
+//     // Theme: Hell (#0)
+//     glColor3f(0.0f,1.0f,1.0f);
+//     glVertex3d(0., 0., 0.);
+//     glVertex3d(0., 1000., 1000.);
+//     glVertex3d(1000., 1000., 0.);
+//     // Theme: Ice (#1)
+//     glColor3f(0.0f,1.0f,0.0f);
+//     glVertex3d(0., 0., 0.);
+//     glVertex3d(0., 1000., 1000.);
+//     glVertex3d(1000., 0., 1000.);
+//     // Theme: Galaxy (#3)
+//     glColor3f(1.0f,1.0f,0.0f);
+//     glVertex3d(0., 0., 0.);
+//     glVertex3d(1000., 1000., 0.);
+//     glVertex3d(1000., 0., 1000.);
+//     // Theme: Forest (#3)
+//     glColor3f(1.0f,0.0f,1.0f);
+//     glVertex3d(0., 1000., 1000.);
+//     glVertex3d(1000., 1000., 0.);
+//     glVertex3d(1000., 0., 1000.);
+//     glEnd();
+// }
 
 // --------- Draw background ---------
 void DrawGround(void)
