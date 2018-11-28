@@ -12,6 +12,7 @@ public:
     Sprite * scubesPtr;
     Player * playerPtr; 
     Player * overvwPtr; 
+    Target * targetPtr; 
 };
 
 void Render(void *incoming)
@@ -43,6 +44,7 @@ void Render(void *incoming)
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw1();
     }
+    datPtr->targetPtr->Draw1(); 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -87,6 +89,7 @@ void Render(void *incoming)
         datPtr->scubesPtr[i].Draw1();
     }
     datPtr->playerPtr->Draw(); 
+    datPtr->targetPtr->Draw1(); 
 
     FsSwapBuffers();
 }
@@ -193,6 +196,11 @@ int main(void)
         scubes[i].UpdateGlobalP(); 
     }
     
+    Target target; 
+    target.SetPos1(0.,0.,0.); // local 
+    target.pHT = &P0; 
+    target.UpdateGlobalP(); // now I have gp[]
+
     int terminate=0;
     // TransformMatrix PC;
     // PC.SetPos(0.,0.,0.); //camera position
@@ -232,6 +240,7 @@ int main(void)
     dat.playerPtr = &player;
     dat.overvwPtr = &overview;  
     dat.scubesPtr = scubes;
+    dat.targetPtr = &target; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     while(0==terminate)
@@ -262,12 +271,15 @@ int main(void)
         // overview.SetPos(x, y, z);
         // overview.SetOri(r, p, w); 
 
+        target.Move(); 
+        target.UpdateGlobalP(); 
+
         overview.HT.Print(); // debugging
 
-        if animationOn
-        {
-            
-        }
+        // if (animationOn)
+        // {
+
+        // }
         if(0!=FsGetKeyState(FSKEY_1))
         {
             player.pHT = &P0; 
@@ -344,6 +356,32 @@ int main(void)
             player.GetSidewardVector(vx,vy,vz);
             player.HT.MovePos( vx, 0., vz);
         }
+
+        // // minimap moving 
+        // if(0!=FsGetKeyState(FSKEY_I))
+        // {
+        //     double vx,vy,vz;
+        //     player.GetForwardVector(vx,vy,vz);
+        //     player.HT.MovePos(-vx, 0.,-vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_J))
+        // {
+        //     double vx,vy,vz;
+        //     player.GetForwardVector(vx,vy,vz);
+        //     player.HT.MovePos( vx, 0., vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_K))
+        // {
+        //     double vx,vy,vz;
+        //     player.GetSidewardVector(vx,vy,vz);
+        //     player.HT.MovePos(-vx, 0.,-vz);
+        // }
+        // if(0!=FsGetKeyState(FSKEY_L))
+        // {
+        //     double vx,vy,vz;
+        //     player.GetSidewardVector(vx,vy,vz);
+        //     player.HT.MovePos( vx, 0., vz);
+        // }
 
         
         
