@@ -188,6 +188,7 @@ Sprite::Sprite()
 }
 void Sprite::Initialize(void)
 {
+	pHT = nullptr; 
 	// the most basic shape is cube with 8 points 
 	p[0].Set(-10., 20.,-10.);
 	p[1].Set( 10., 20.,-10.);
@@ -386,6 +387,7 @@ void Sprite::UpdateGlobalHT(void)
 	}
 
 	double c[4][4]; 
+	// pHT * HT 
 	for (int i = 0; i < 4; ++i)
 	{
 	    for (int j = 0; j < 4; ++j)
@@ -397,7 +399,7 @@ void Sprite::UpdateGlobalHT(void)
 	        }
 	    }
 	}
-
+	// set gHT 
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -522,6 +524,107 @@ void Sprite::UpdateGlobalP(void)
 		gp[pidx].Set(buf[0],buf[1],buf[2]); 	
 	}
 }
+
+
+OverviewCamera::OverviewCamera()
+{
+	Initialize(); 
+}
+void OverviewCamera::Initialize()
+{
+	ppHT = nullptr; 
+	pHT = nullptr; 
+	fov=PI/6.0;  // 30 degree
+    nearZ=0.1;
+    farZ=200.0;
+}
+// this is different!!!!
+// there is ppHT!!!!
+void OverviewCamera::UpdateGlobalHT(void)
+{
+	if ((pHT == nullptr) || (ppHT == nullptr)) 
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
+	}
+
+	// pHT * HT
+	double c[4][4]; 
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        c[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            c[i][j] = c[i][j] + (pHT->mat[i][k] * HT.mat[k][j]);
+	        }
+	    }
+	}
+	// ppHT * (pHT * HT)
+	double d[4][4];
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        d[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            d[i][j] = d[i][j] + (ppHT->mat[i][k] * c[k][j]);
+	        }
+	    }
+	}
+	// update gHT 
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			gHT.mat[i][j] = d[i][j]; 
+		}
+	}
+}
+void OverviewCamera::SetUpCameraProjection(void)
+{
+    int wid,hei;
+    double aspect;
+
+    FsGetWindowSize(wid,hei);
+    aspect=(double)wid/(double)hei;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
+}
+void OverviewCamera::SetUpCameraTransformation(void)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // roll-pitch-yaw order
+    // GetGlobal(); 
+    double r = gHT.GetRoll();
+    double p = gHT.GetPitch();
+    double y = gHT.GetYaw();   
+    glRotated(-r*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
+    glRotated(-p*180.0/PI,1.0,0.0,0.0);  // Rotation about X axis
+    glRotated(-y*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
+    double ox = gHT.GetX();
+    double oy = gHT.GetY();
+    double oz = gHT.GetZ();  
+    glTranslated(-ox,-oy,-oz);	
+}
+void OverviewCamera::GetForwardVector(double &vx,double &vy,double &vz)
+{
+	vx = HT.mat[0][2];
+	vy = HT.mat[1][2];
+	vz = HT.mat[2][2]; 
+}
+void OverviewCamera::GetSidewardVector(double &vx,double &vy,double &vz)
+{ 
+	vx = HT.mat[0][0];
+	vy = HT.mat[1][0];
+	vz = HT.mat[2][0]; 
+}
+
 
 // --------- Sprite Inherited Player ----------
 // NOTE: the Camera origin moves and rotates!
@@ -1034,7 +1137,6 @@ void Target::Draw1()
 	double gx = gp[0].x; 
 	double gy = gp[0].y; 
 	double gz = gp[0].z; 
-	printf("%lf, %lf, %lf\n", gx,gy,gz); 
 
 	glBegin(GL_QUADS);
 	for (int i = -divP; i < divP; ++i)

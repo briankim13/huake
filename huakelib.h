@@ -78,6 +78,22 @@ public:
     void Draw(void); 
 };
 
+// this class has pHT and ppHT 
+class OverviewCamera: public Sprite
+{
+public:
+    TransformMatrix *ppHT; // parent's parent's HT (grandfather!)
+    double fov, nearZ, farZ;
+    OverviewCamera(void); 
+
+    void Initialize(void); 
+    void UpdateGlobalHT(void); 
+    void SetUpCameraProjection(void);
+    void SetUpCameraTransformation(void);
+    void GetForwardVector(double &vx,double &vy,double &vz); 
+    void GetSidewardVector(double &vx,double &vy,double &vz);
+};
+
 class Camera: public Sprite
 {
 public:
