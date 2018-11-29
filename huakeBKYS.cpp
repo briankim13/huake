@@ -123,7 +123,7 @@ void Render(void *incoming)
     glDisable(GL_TEXTURE_2D);
 
 
-    for (int i = 0; i<16; ++i)
+    for (int i = 0; i<12; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw1();
@@ -167,7 +167,7 @@ void Render(void *incoming)
     // DrawGround();
     DrawTetra();
 
-    for (int i = 0; i<16; ++i)
+    for (int i = 0; i<12; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw1();
@@ -240,42 +240,54 @@ int main(void)
     //    origin.SetPos(0., 0., 0.);
     
     // make object
-    Sprite scubes[16];
-    scubes[0].SetPos(30.,0,30.);
-    scubes[1].SetPos(-30.,0,30.);
-    scubes[2].SetPos(30.,0,-30.);
-    scubes[3].SetPos(-30.,0,-30.);
-    for (int i = 0; i < 4; ++i)
+    Sprite scubes[12];
+    scubes[0].SetPos(1000.*sqrt(6.)/3.,0.,0.);
+    scubes[0].SetColor(0.f, 0.f, 1.f);
+    scubes[1].SetPos(-1000.*sqrt(6.)/6.,0,-1000.*sqrt(2.)/2.);
+    scubes[1].SetColor(1.f, 0.f, 0.f);
+    scubes[2].SetPos(-1000.*sqrt(6.)/6.,0,1000.*sqrt(2.)/2.);
+    scubes[2].SetColor(0.f, 1.f, 0.f);
+    //    scubes[3].SetPos(-30.,0,-30.);
+    for (int i = 0; i < 3; ++i)
     {
         scubes[i].pHT = &P0;
     }
-    scubes[4].SetPos(30.,0,30.);
-    scubes[5].SetPos(-30.,0,30.);
-    scubes[6].SetPos(30.,0,-30.);
-    scubes[7].SetPos(-30.,0,-30.);
-    for (int i = 4; i < 8; ++i)
+    scubes[3].SetPos(1000.*sqrt(6.)/3.,0.,0.);
+    scubes[3].SetColor(0.f, 0.f, 1.f);
+    scubes[4].SetPos(-1000.*sqrt(6.)/6.,0,-1000.*sqrt(2.)/2.);
+    scubes[4].SetColor(1.f, 0.f, 0.f);
+    scubes[5].SetPos(-1000.*sqrt(6.)/6.,0,1000.*sqrt(2.)/2.);
+    scubes[5].SetColor(0.f, 1.f, 0.f);
+    //    scubes[7].SetPos(-30.,0,-30.);
+    for (int i = 3; i < 6; ++i)
     {
         scubes[i].pHT = &P1;
     }
-    scubes[8].SetPos(30.,0,30.);
-    scubes[9].SetPos(-30.,0,30.);
-    scubes[10].SetPos(30.,0,-30.);
-    scubes[11].SetPos(-30.,0,-30.);
-    for (int i = 8; i < 12; ++i)
+    scubes[6].SetPos(1000.*sqrt(6.)/3.,0.,0.);
+    scubes[6].SetColor(0.f, 0.f, 1.f);
+    scubes[7].SetPos(-1000.*sqrt(6.)/6.,0,-1000.*sqrt(2.)/2.);
+    scubes[7].SetColor(1.f, 0.f, 0.f);
+    scubes[8].SetPos(-1000.*sqrt(6.)/6.,0,1000.*sqrt(2.)/2.);
+    scubes[8].SetColor(0.f, 1.f, 0.f);
+    //    scubes[11].SetPos(-30.,0,-30.);
+    for (int i = 6; i < 9; ++i)
     {
         scubes[i].pHT = &P2;
     }
-    scubes[12].SetPos(30.,0,30.);
-    scubes[13].SetPos(-30.,0,30.);
-    scubes[14].SetPos(30.,0,-30.);
-    scubes[15].SetPos(-30.,0,-30.);
-    for (int i = 12; i < 16; ++i)
+    scubes[9].SetPos(1000.*sqrt(6.)/3.,0.,0.);
+    scubes[9].SetColor(0.f, 0.f, 1.f);
+    scubes[10].SetPos(-1000.*sqrt(6.)/6.,0,-1000.*sqrt(2.)/2.);
+    scubes[10].SetColor(1.f, 0.f, 0.f);
+    scubes[11].SetPos(-1000.*sqrt(6.)/6.,0,1000.*sqrt(2.)/2.);
+    scubes[11].SetColor(0.f, 1.f, 0.f);
+    //    scubes[15].SetPos(-30.,2,-30.);
+    for (int i = 9; i < 12; ++i)
     {
         scubes[i].pHT = &P3;
     }
 
     // update its global position for drawing 
-    for (int i=0; i<16; ++i)
+    for (int i=0; i<12; ++i)
     {
         scubes[i].UpdateGlobalP(); 
     }

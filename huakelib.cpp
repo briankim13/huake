@@ -1064,7 +1064,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 1) // P0 to P2
 	{
-        t = 2./sqrt(2.)/a*pz;
+        t = -2./sqrt(2.)/a*pz;
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (-1.+t)*sqrt(2.)/2.*a;
@@ -1078,7 +1078,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 3) // P1 to P0
 	{
-        t = 2./sqrt(2.)/a*pz;
+        t = -2./sqrt(2.)/a*pz;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
@@ -1106,7 +1106,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 7) // P2 to P1
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
+        t = -2./sqrt(2.)/a*pz+1.;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
@@ -1134,7 +1134,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 11) // P3 to P2
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
+        t = -2./sqrt(2.)/a*pz+1.;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
