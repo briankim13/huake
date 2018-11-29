@@ -135,10 +135,8 @@ public:
 };
 
 
-<<<<<<< HEAD
 // artifact of Soji's code,
 // should we make a Map class? 
-=======
 class TriWall : public Sprite
 {
 public:
@@ -165,7 +163,6 @@ public:
     void UpdateGlobalP(void); 
     void Draw(void) const; 
 };
->>>>>>> 860b6f30abfe59e644782dcb5f12d510b88b6814
 
 void DrawGround(void);
 void DrawTetra(void);
