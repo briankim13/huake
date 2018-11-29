@@ -135,8 +135,29 @@ public:
 };
 
 
+<<<<<<< HEAD
 // artifact of Soji's code,
 // should we make a Map class? 
+=======
+class TriWall : public Sprite
+{
+public:
+    double l, h; 
+    TriWall();
+    void Initialize(void);
+    void Draw(void) const;
+};
+
+class TriMaze
+{
+public:
+    const char * map[]; 
+    TriWall walls[400]; // for now keep things fixed  
+    void TriMaze();
+    void Initialize(); 
+    void Draw() const; 
+};
+>>>>>>> 860b6f30abfe59e644782dcb5f12d510b88b6814
 
 void DrawGround(void);
 void DrawTetra(void);

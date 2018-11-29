@@ -230,97 +230,6 @@ void Sprite::SetGlobalOri(double r, double p, double y)
 {
 	gHT.SetOri(r,p,y); 
 }
-void Sprite::Draw(void)
-{
-	// cube faces
-	glBegin(GL_QUADS);
-		glColor3f(c[0],c[1],c[2]);
-		Mygl3d(p[0]);
-		Mygl3d(p[1]);
-		Mygl3d(p[2]);
-		Mygl3d(p[3]);
-
-		Mygl3d(p[0]);
-		Mygl3d(p[3]);
-		Mygl3d(p[7]);
-		Mygl3d(p[4]);
-
-		Mygl3d(p[0]);
-		Mygl3d(p[1]);
-		Mygl3d(p[5]);
-		Mygl3d(p[4]);
-		             
-		Mygl3d(p[1]);
-		Mygl3d(p[2]);
-		Mygl3d(p[6]);
-		Mygl3d(p[5]);
-
-		Mygl3d(p[3]);
-		Mygl3d(p[2]);
-		Mygl3d(p[6]);
-		Mygl3d(p[7]);
-		             
-		Mygl3d(p[4]);
-		Mygl3d(p[5]);
-		Mygl3d(p[6]);
-		Mygl3d(p[7]);
-	glEnd();
-
-
-	// square lines 
-	glColor3f(1.0f,1.0f,1.0f);
-	glBegin(GL_LINES);
-
-	Mygl3d(p[0]);
-	Mygl3d(p[1]);
-                                   
-	Mygl3d(p[1]);
-	Mygl3d(p[2]);
-                                        
-	Mygl3d(p[2]);
-	Mygl3d(p[3]);
-                                  
-	Mygl3d(p[3]);
-	Mygl3d(p[0]);
-                                     
-	Mygl3d(p[0]);
-	Mygl3d(p[4]);
-                                 
-	Mygl3d(p[4]);
-	Mygl3d(p[7]);
-
-	Mygl3d(p[7]);
-	Mygl3d(p[3]);
-                                             
-	Mygl3d(p[3]);
-	Mygl3d(p[2]);
-                                   
-	Mygl3d(p[2]);
-	Mygl3d(p[6]);
-                                   
-	Mygl3d(p[6]);
-	Mygl3d(p[7]);
-                                   
-	Mygl3d(p[1]);
-	Mygl3d(p[5]);
-                                   
-	Mygl3d(p[5]);
-	Mygl3d(p[6]);
-
-	// Mygl3d( 8.+x, -8.+y, 10.+z);
-	// Mygl3d( 8.+x,  8.+y, 10.+z);
-
-	// Mygl3d( 8.+x,  8.+y, 10.+z);
-	// Mygl3d(-8.+x,  8.+y, 10.+z);
-
-	// Mygl3d(-8.+x,  8.+y, 10.+z);
-	// Mygl3d(-8.+x, -8.+y, 10.+z);
-
-	// Mygl3d(-8.+x, -8.+y, 10.+z);
-	// Mygl3d( 8.+x, -8.+y, 10.+z);
-
-	glEnd();
-}
 void Sprite::Print(void)
 {
 
@@ -422,7 +331,7 @@ void Sprite::UpdateGlobalHT(void)
 	}
 }
 
-void Sprite::Draw1(void)
+void Sprite::Draw(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
@@ -845,6 +754,114 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vy = pHT->mat[1][0];
 	vz = pHT->mat[2][0]; 
 }
+
+
+
+// TRIANGULAR WALL
+TriWall::TriWall()
+{
+	Initialize(); 
+}
+void TriWall::Initialize(void)
+{
+	l = 1000./20.; 
+	h = 60.; 
+	c[0] = 0.f;
+	c[1] = 0.f;
+	c[2] = 0.f; 
+	double a = l/2.; 
+	double b = sqrt(3)*l/4.; 
+    p[0].Set(-a, h,-b);
+	p[1].Set( a, h,-b);
+	p[2].Set(0., h, b);
+	p[3].Set(-a,0.,-b);
+	p[4].Set( a,0.,-b);
+    p[5].Set(0.,0., b);
+
+    gp[0].Set(-a, h,-b);
+	gp[1].Set( a, h,-b);
+	gp[2].Set(0., h, b);
+	gp[3].Set(-a,0.,-b);
+	gp[4].Set( a,0.,-b);
+    gp[5].Set(0.,0., b);
+}
+void TriWall::Draw(void)
+{
+	// side faces
+	glBegin(GL_QUADS);
+		glColor3f(c[0],c[1],c[2]);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+                                              
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+                                                                                              
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);                                                                                        
+	glEnd();
+
+	glBegin(GL_TRIANGLES);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+                                              
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);                                                                                 
+	glEnd();
+
+	// lines 
+	glBegin(GL_LINES);
+		glColor3f(1.0f,1.0f,1.0f);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	                                            
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	                                            
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	                                            
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	                                            
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	                                            
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	                                            
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	                                            
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);  
+	glEnd();	
+}
+
+// Tri MAZE 
+TriMaze::TriMaze()
+{
+	
+}
+// class TriMaze
+// {
+// public:
+//     const char * map[]; 
+//     TriWall walls[400]; // for now keep things fixed  
+//     void TriMaze();
+//     void Initialize(); 
+//     void Draw() const; 
+// };
 
 // Independent function
 void DrawBackground(void)
