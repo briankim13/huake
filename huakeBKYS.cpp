@@ -431,28 +431,28 @@ int main(void)
 
         if(0!=FsGetKeyState(FSKEY_1))
         {
-            // Hell
+            // Hell Red
             player.pHT = &P0; 
             camera.ppHT = &P0;
             png.state = 0; 
         }
         if(0!=FsGetKeyState(FSKEY_2))
         {
-            // Ice
+            // Ice White
             player.pHT = &P1; 
             camera.ppHT = &P1;
             png.state = 1; 
         }
         if(0!=FsGetKeyState(FSKEY_3))
         {
-            // Galaxy
+            // Galaxy Purple
             player.pHT = &P2; 
             camera.ppHT = &P2; 
             png.state = 2;
         }
         if(0!=FsGetKeyState(FSKEY_4))
         {
-            // Forest
+            // Forest Green
             player.pHT = &P3; 
             camera.ppHT = &P3;
             png.state = 3; 

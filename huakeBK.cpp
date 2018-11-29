@@ -303,6 +303,7 @@ int main(void)
         }
         if(key == FSKEY_1)
         {
+            // red
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
@@ -317,6 +318,7 @@ int main(void)
         }
         if(key == FSKEY_2)
         {
+            // white
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
@@ -331,6 +333,7 @@ int main(void)
         }
         if(key == FSKEY_3)
         {
+            // purple 
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
@@ -345,6 +348,7 @@ int main(void)
         }
         if(key == FSKEY_4)
         {
+            // green
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
