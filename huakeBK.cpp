@@ -8,7 +8,7 @@
 class MainData
 {
 public:
-    Camera * cameraPtr;
+    OverviewCamera * cameraPtr;
     Sprite * scubesPtr;
     Player * playerPtr; 
     Player * overvwPtr; 
@@ -77,8 +77,10 @@ void Render(void *incoming)
     glEnable(GL_DEPTH_TEST);
 
     glViewport(wid*3/4,0, wid/4,hei/4); // (x0,y0, width,hei)
-    datPtr->overvwPtr->SetUpCameraProjection();
-    datPtr->overvwPtr->SetUpCameraTransformation();
+    // datPtr->overvwPtr->SetUpCameraProjection();
+    // datPtr->overvwPtr->SetUpCameraTransformation();
+    datPtr->cameraPtr->SetUpCameraProjection();
+    datPtr->cameraPtr->SetUpCameraTransformation();
 
     // 3D drawing from here
     // DrawGround();
@@ -104,6 +106,7 @@ int main(void)
     TransformMatrix P1;
     TransformMatrix P2;
     TransformMatrix P3;
+    TransformMatrix CP; // for camera work
 
     GP.SetPos(0.,0.,0.); // THE GLOBAL
 
@@ -152,6 +155,10 @@ int main(void)
     P3.mat[2][1]=1./sqrt(3.);
     P3.mat[2][2]=0.;
     
+    // camera's parent HT 
+    CP.SetPos(0.,0.,0.);
+    CP.SetOri(0.,0.,0.); 
+
     //    Sprite origin;
     //    origin.SetPos(0., 0., 0.);
     
@@ -221,6 +228,17 @@ int main(void)
     overview.HT.SetOri( 0.,-37.*PI/180.,-30.*PI/180.); 
     overview.UpdateGlobalHT(); 
 
+    OverviewCamera camera; 
+    camera.nearZ = 1.0f; 
+    camera.farZ  = 5000.f; 
+    camera.pHT   = &CP; 
+    camera.ppHT  = &P0; 
+    // camera.HT.SetPos(-900., 1000., 1500.); 
+    // camera.HT.SetOri( 0., -37.*PI/180.,-30.*PI/180.);
+    camera.HT.SetPos( 0., 0.,-1400.);  
+    camera.HT.SetOri( 0., 0.,180.*PI/180.);
+    camera.UpdateGlobalHT(); 
+
     DynamicsContext ovdyn; // overview camera dynamics
     bool animationOn = false;   // state
     double x, y, z, r, p, w; 
@@ -241,6 +259,7 @@ int main(void)
     dat.overvwPtr = &overview;  
     dat.scubesPtr = scubes;
     dat.targetPtr = &target; 
+    dat.cameraPtr = &camera; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     while(0==terminate)
@@ -274,7 +293,9 @@ int main(void)
         target.Move(); 
         target.UpdateGlobalP(); 
 
-        overview.HT.Print(); // debugging
+        camera.UpdateGlobalHT(); 
+
+        // overview.HT.Print(); // debugging
 
         // if (animationOn)
         // {
@@ -284,24 +305,28 @@ int main(void)
         {
             player.pHT = &P0; 
             overview.pHT = &P0; 
+            camera.ppHT = &P0; 
             animationOn  = true; 
         }
         if(0!=FsGetKeyState(FSKEY_2))
         {
             player.pHT = &P1; 
             overview.pHT = &P1; 
+            camera.ppHT = &P1; 
             animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_3))
         {
             player.pHT = &P2; 
             overview.pHT = &P2; 
+            camera.ppHT = &P2; 
             animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_4))
         {
             player.pHT = &P3; 
             overview.pHT = &P3; 
+            camera.ppHT = &P3; 
             animationOn  = true;
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -357,33 +382,23 @@ int main(void)
             player.HT.MovePos( vx, 0., vz);
         }
 
-        // // minimap moving 
-        // if(0!=FsGetKeyState(FSKEY_I))
-        // {
-        //     double vx,vy,vz;
-        //     player.GetForwardVector(vx,vy,vz);
-        //     player.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_J))
-        // {
-        //     double vx,vy,vz;
-        //     player.GetForwardVector(vx,vy,vz);
-        //     player.HT.MovePos( vx, 0., vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_K))
-        // {
-        //     double vx,vy,vz;
-        //     player.GetSidewardVector(vx,vy,vz);
-        //     player.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_L))
-        // {
-        //     double vx,vy,vz;
-        //     player.GetSidewardVector(vx,vy,vz);
-        //     player.HT.MovePos( vx, 0., vz);
-        // }
-
-        
+        // minimap moving 
+        if(0!=FsGetKeyState(FSKEY_I))
+        {
+            CP.RotatePitch(-1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_J))
+        {
+            CP.RotateYaw( 1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_K))
+        {
+            CP.RotatePitch( 1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_L))
+        {
+            CP.RotateYaw(-1.*PI/180.); 
+        }
         
         FsPushOnPaintEvent();
         FsSleep(10);

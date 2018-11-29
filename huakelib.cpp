@@ -189,6 +189,7 @@ Sprite::Sprite()
 }
 void Sprite::Initialize(void)
 {
+	pHT = nullptr; 
 	// the most basic shape is cube with 8 points 
 	p[0].Set(-10., 20.,-10.);
 	p[1].Set( 10., 20.,-10.);
@@ -206,7 +207,12 @@ void Sprite::Initialize(void)
 	gp[4].Set(-10.,0.,-10.);
 	gp[5].Set( 10.,0.,-10.);
 	gp[6].Set( 10.,0., 10.);
-	gp[7].Set(-10.,0., 10.); 
+	gp[7].Set(-10.,0., 10.);
+    
+    c[0] = 0.;
+    c[1] = 0.;
+    c[2] = 1.;
+    
 }
 void Sprite::SetPos(double x, double y, double z)
 {
@@ -228,7 +234,7 @@ void Sprite::Draw(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
-		glColor3f(0.0f,0.0f,1.0f);
+		glColor3f(c[0],c[1],c[2]);
 		Mygl3d(p[0]);
 		Mygl3d(p[1]);
 		Mygl3d(p[2]);
@@ -319,6 +325,13 @@ void Sprite::Print(void)
 {
 
 }
+
+void Sprite::SetColor(float r, float g, float b)
+{
+    c[0] = r;
+    c[1] = g;
+    c[2] = b;
+}
 // transform point pp local coordinate to
 // gx, gy, gz global coordinate 
 void Sprite::Local2Global(Point pp, double &gx, double &gy, double &gz)
@@ -387,6 +400,7 @@ void Sprite::UpdateGlobalHT(void)
 	}
 
 	double c[4][4]; 
+	// pHT * HT 
 	for (int i = 0; i < 4; ++i)
 	{
 	    for (int j = 0; j < 4; ++j)
@@ -398,7 +412,7 @@ void Sprite::UpdateGlobalHT(void)
 	        }
 	    }
 	}
-
+	// set gHT 
 	for (int i = 0; i < 4; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
@@ -412,7 +426,7 @@ void Sprite::Draw1(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
-		glColor3f(0.0f,0.0f,1.0f);
+    glColor3f(c[0],c[1],c[2]);
 		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
@@ -523,6 +537,107 @@ void Sprite::UpdateGlobalP(void)
 		gp[pidx].Set(buf[0],buf[1],buf[2]); 	
 	}
 }
+
+
+OverviewCamera::OverviewCamera()
+{
+	Initialize(); 
+}
+void OverviewCamera::Initialize()
+{
+	ppHT = nullptr; 
+	pHT = nullptr; 
+	fov=PI/6.0;  // 30 degree
+    nearZ=0.1;
+    farZ=200.0;
+}
+// this is different!!!!
+// there is ppHT!!!!
+void OverviewCamera::UpdateGlobalHT(void)
+{
+	if ((pHT == nullptr) || (ppHT == nullptr)) 
+	{
+		printf("ERROR: this SPRITE does not have parent coordinate!!\n");
+		printf("%s %d\n",__FUNCTION__,__LINE__); 
+	}
+
+	// pHT * HT
+	double c[4][4]; 
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        c[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            c[i][j] = c[i][j] + (pHT->mat[i][k] * HT.mat[k][j]);
+	        }
+	    }
+	}
+	// ppHT * (pHT * HT)
+	double d[4][4];
+	for (int i = 0; i < 4; ++i)
+	{
+	    for (int j = 0; j < 4; ++j)
+	    {
+	        d[i][j] = 0;
+	        for (int k = 0; k < 4; ++k)
+	        {
+	            d[i][j] = d[i][j] + (ppHT->mat[i][k] * c[k][j]);
+	        }
+	    }
+	}
+	// update gHT 
+	for (int i = 0; i < 4; ++i)
+	{
+		for (int j = 0; j < 4; ++j)
+		{
+			gHT.mat[i][j] = d[i][j]; 
+		}
+	}
+}
+void OverviewCamera::SetUpCameraProjection(void)
+{
+    int wid,hei;
+    double aspect;
+
+    FsGetWindowSize(wid,hei);
+    aspect=(double)wid/(double)hei;
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(fov*180.0/PI,aspect,nearZ,farZ);
+}
+void OverviewCamera::SetUpCameraTransformation(void)
+{
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // roll-pitch-yaw order
+    // GetGlobal(); 
+    double r = gHT.GetRoll();
+    double p = gHT.GetPitch();
+    double y = gHT.GetYaw();   
+    glRotated(-r*180.0/PI,0.0,0.0,1.0);  // Rotation about Z axis
+    glRotated(-p*180.0/PI,1.0,0.0,0.0);  // Rotation about X axis
+    glRotated(-y*180.0/PI,0.0,1.0,0.0);  // Rotation about Y axis
+    double ox = gHT.GetX();
+    double oy = gHT.GetY();
+    double oz = gHT.GetZ();  
+    glTranslated(-ox,-oy,-oz);	
+}
+void OverviewCamera::GetForwardVector(double &vx,double &vy,double &vz)
+{
+	vx = HT.mat[0][2];
+	vy = HT.mat[1][2];
+	vz = HT.mat[2][2]; 
+}
+void OverviewCamera::GetSidewardVector(double &vx,double &vy,double &vz)
+{ 
+	vx = HT.mat[0][0];
+	vy = HT.mat[1][0];
+	vz = HT.mat[2][0]; 
+}
+
 
 // --------- Sprite Inherited Player ----------
 // NOTE: the Camera origin moves and rotates!
@@ -732,6 +847,11 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 }
 
 // Independent function
+<<<<<<< HEAD
+=======
+
+>>>>>>> 19dd61b633be3ecbdc2a1c12ff9ece9b0f1cd8a3
+
 void DrawBackground(void)
 {
 	glBegin(GL_QUADS);
@@ -848,22 +968,38 @@ void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
     // Theme: Hell (#0)
+<<<<<<< HEAD
     glColor3f(0.9f,0.1f,0.1f);
+=======
+    glColor3f(0.8f,0.1f,0.1f);
+>>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     // Theme: Ice (#1)
+<<<<<<< HEAD
     glColor3f(0.9f,0.9f,0.9f);
+=======
+    glColor3f(0.8f,0.8f,0.9f);
+>>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 0., 1000.);
     // Theme: Galaxy (#2)
+<<<<<<< HEAD
     glColor3f(0.6f,0.1f,0.55f);
+=======
+    glColor3f(0.7f,0.1f,0.7f);
+>>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
     // Theme: Forest (#3)
+<<<<<<< HEAD
     glColor3f(0.04f,0.5f,0.13f);
+=======
+    glColor3f(0.1f,0.6f,0.2f);
+>>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
@@ -1099,7 +1235,6 @@ void Target::Draw1()
 	double gx = gp[0].x; 
 	double gy = gp[0].y; 
 	double gz = gp[0].z; 
-	printf("%lf, %lf, %lf\n", gx,gy,gz); 
 
 	glBegin(GL_QUADS);
 	for (int i = -divP; i < divP; ++i)

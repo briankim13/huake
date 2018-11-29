@@ -44,6 +44,7 @@ public:
 class Sprite
 {
 public:
+    float c[3];
     TransformMatrix HT;   // its local pos/ori
     TransformMatrix *pHT; // its local origin's pos/ori
     TransformMatrix gHT;  // its global pos/ori
@@ -61,7 +62,8 @@ public:
     void Draw1(void);
     void Print(void); 
     void UpdateGlobalHT(void); 
-    void UpdateGlobalP(void); 
+    void UpdateGlobalP(void);
+    void SetColor(float r, float g, float b);
 };
 
 class Player: public Sprite
@@ -76,6 +78,22 @@ public:
     void GetForwardVector(double &vx,double &vy,double &vz); 
     void GetSidewardVector(double &vx,double &vy,double &vz); 
     void Draw(void); 
+};
+
+// this class has pHT and ppHT 
+class OverviewCamera: public Sprite
+{
+public:
+    TransformMatrix *ppHT; // parent's parent's HT (grandfather!)
+    double fov, nearZ, farZ;
+    OverviewCamera(void); 
+
+    void Initialize(void); 
+    void UpdateGlobalHT(void); 
+    void SetUpCameraProjection(void);
+    void SetUpCameraTransformation(void);
+    void GetForwardVector(double &vx,double &vy,double &vz); 
+    void GetSidewardVector(double &vx,double &vy,double &vz);
 };
 
 class Camera: public Sprite
