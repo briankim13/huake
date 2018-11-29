@@ -262,64 +262,16 @@ int main(void)
     dat.cameraPtr = &camera; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
-    double t, x0,y0,z0, x1,y1,z1, x2,y2,z2, x3,y3,z3;
+    double t, px, py, pz;
     int plane = 0; // curr plane
+    Teleporter teleporter; 
+
+    double movespeed = 3.; // increase movement speed 
     while(0==terminate)
     {
         FsPollDevice();
         
         int key=FsInkey();
-        // switch(key)
-        // {
-        //     case FSKEY_ESC:
-        //         terminate=1;
-        //         break;
-        //     // case FSKEY_1:
-        //     //     player.pHT = &P0; 
-        //     //     overview.pHT = &P0; 
-        //     //     camera.ppHT = &P0;
-
-        //     // case FSKEY_2:
-        //     //     // x0 = player.HT.GetX(); 
-        //     //     // y0 = player.HT.GetY();
-        //     //     // z0 = player.HT.GetZ(); 
-        //     //     // a =  sqrt(6.)/3.;  b = -sqrt(6.)/6.;
-        //     //     // c = -sqrt(6.)/6.;  d =  sqrt(6.)/3.; 
-        //     //     // x1 = (c-a)/(d-b)*(x0-b)+a;
-        //     //     // a =  0.;           b = -sqrt(2.)/2.;
-        //     //     // c = -sqrt(2.)/2.;  d = 0; 
-        //     //     // z1 = (c-a)/(d-b)*(z0-b)+a;
-        //     //     // y1 = y0; 
-        //     //     // player.HT.SetPos(x1,y1,z1);
-
-        //     //     player.pHT = &P1; 
-        //     //     overview.pHT = &P1; 
-        //     //     camera.ppHT = &P1; 
-        //     //     animationOn  = true;
-
-        //     // case FSKEY_3:
-        //     //     // x0 = player.HT.GetX(); 
-        //     //     // y0 = player.HT.GetY();
-        //     //     // z0 = player.HT.GetZ(); 
-        //     //     // a =  sqrt(6.)/3.;  b = -sqrt(6.)/6.;
-        //     //     // c = -sqrt(6.)/6.;  d =  sqrt(6.)/3.; 
-        //     //     // x2 = (d-b)/(c-a)*(x0-a)+b;
-        //     //     // a =  0.;           b = -sqrt(2.)/2.;
-        //     //     // c = -sqrt(2.)/2.;  d = 0; 
-        //     //     // z2 = (d-b)/(c-a)*(z0-a)+b;
-        //     //     // y2 = y0; 
-        //     //     // player.HT.SetPos(x2,y2,z2);
-
-        //     //     player.pHT = &P2; 
-        //     //     overview.pHT = &P2; 
-        //     //     camera.ppHT = &P2; 
-        //     //     animationOn  = true;
-
-        //     // case FSKEY_4:
-        //     //     player.pHT = &P3; 
-        //     //     overview.pHT = &P3; 
-        //     //     camera.ppHT = &P3;
-        // }
         
         // dynamicsContext part 
         // player needs UpdateGlobalHT every step because 
@@ -351,46 +303,58 @@ int main(void)
         }
         if(key == FSKEY_1)
         {
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
             player.pHT = &P0; 
             overview.pHT = &P0; 
             camera.ppHT = &P0;
-            // teleporter.Teleport(plane, 0); 
+            
+            teleporter.Teleport(plane, 0, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
             plane = 0; 
         }
         if(key == FSKEY_2)
         {
-            x0 = player.HT.GetX(); 
-            y0 = player.HT.GetY(); 
-            z0 = player.HT.GetZ(); 
-
-            t  = -1./2. * (2./(sqrt(2)*1000.)*z0 - 1.);
-            x1 = (2.-3.*t)*sqrt(6.)/6.*1000.; 
-            y1 = y0; 
-            z1 = -t*sqrt(2.)/2.*1000.; 
-            printf("%lf, %lf, %lf\n",x1,y1,z1); 
-            player.HT.SetPos(x1,y1,z1);
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
 
             player.pHT = &P1; 
             overview.pHT = &P1; 
             camera.ppHT = &P1; 
             // WILL USE TELEPORTER 
-            // teleporter.Teleport(plane, 1); 
+            teleporter.Teleport(plane, 1, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
             plane = 1; 
         }
         if(key == FSKEY_3)
         {
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
             player.pHT = &P2; 
             overview.pHT = &P2; 
             camera.ppHT = &P2;
-            // teleporter.Teleport(plane, 2); 
+
+            teleporter.Teleport(plane, 2, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
             plane = 2; 
         }
         if(key == FSKEY_4)
         {
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
             player.pHT = &P3; 
             overview.pHT = &P3; 
             camera.ppHT = &P3;
-            // teleporter.Teleport(plane, 3); 
+            
+            teleporter.Teleport(plane, 3, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
             plane = 3; 
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -413,37 +377,37 @@ int main(void)
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-0., 1.,-0.);
+            player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_C))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-0.,-1.,-0.);
+            player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_W))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-vx, 0.,-vz);
+            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_S))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos( vx, 0., vz);
+            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_A))
         {
             double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos(-vx, 0.,-vz);
+            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
         {
             double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos( vx, 0., vz);
+            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
 
         // minimap moving 

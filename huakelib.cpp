@@ -1022,6 +1022,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 		if (cplane == 1) mode = 0; 
 		else if (cplane == 2) mode = 1; 
 		else if (cplane == 3) mode = 2; 
+		else if (cplane == 0) mode = -1; 
 		else printf("pplane and cplane must be int 0,1,2,3!!!\n");  
 	}
 	else if (pplane ==1)
@@ -1029,6 +1030,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 		if (cplane == 0) mode = 3; 
 		else if (cplane == 2) mode = 4; 
 		else if (cplane == 3) mode = 5; 
+		else if (cplane == 1) mode = -1;
 		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
 	}
 	else if (pplane ==2)
@@ -1036,6 +1038,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 		if (cplane == 0) mode = 6; 
 		else if (cplane == 1) mode = 7; 
 		else if (cplane == 3) mode = 8; 
+		else if (cplane == 2) mode = -1; 
 		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
 	}
 	else if (pplane ==3)
@@ -1043,7 +1046,12 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 		if (cplane == 0) mode = 9; 
 		else if (cplane == 1) mode = 10; 
 		else if (cplane == 2) mode = 11; 
+		else if (cplane == 3) mode = -1; 
 		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
+	}
+	else
+	{
+		printf("pplane and cplane must be int 0,1,2,3!!!\n");
 	}
 
 
@@ -1130,6 +1138,10 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
+	}
+	else if (mode == -1)
+	{
+		// nothing happens
 	}
 	else
 	{
