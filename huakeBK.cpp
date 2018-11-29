@@ -349,7 +349,7 @@ int main(void)
             terminate = 1; 
             break; 
         }
-        if(0!=FsGetKeyState(FSKEY_1))
+        if(key == FSKEY_1)
         {
             player.pHT = &P0; 
             overview.pHT = &P0; 
@@ -362,6 +362,7 @@ int main(void)
             x0 = player.HT.GetX(); 
             y0 = player.HT.GetY(); 
             z0 = player.HT.GetZ(); 
+
             t  = -1./2. * (2./(sqrt(2)*1000.)*z0 - 1.);
             x1 = (2.-3.*t)*sqrt(6.)/6.*1000.; 
             y1 = y0; 
@@ -372,52 +373,25 @@ int main(void)
             player.pHT = &P1; 
             overview.pHT = &P1; 
             camera.ppHT = &P1; 
+            // WILL USE TELEPORTER 
             // teleporter.Teleport(plane, 1); 
             plane = 1; 
         }
-        // if(0!=FsGetKeyState(FSKEY_2))
-        // {
-        //     x0 = player.HT.GetX(); 
-        //     y0 = player.HT.GetY(); 
-        //     z0 = player.HT.GetZ(); 
-        //     t  = -1./2. * (2./(sqrt(2)*1000.)*z0 - 1.);
-        //     x1 = (2.-3.*t)*sqrt(6.)/6.*1000.; 
-        //     y1 = y0; 
-        //     z1 = -t*sqrt(2.)/2.*1000.; 
-        //     printf("%lf, %lf, %lf\n",x1,y1,z1); 
-        //     player.HT.SetPos(x1,y1,z1);
-
-        //     player.pHT = &P1; 
-        //     overview.pHT = &P1; 
-        //     camera.ppHT = &P1; 
-        // }
-        if(0!=FsGetKeyState(FSKEY_3))
+        if(key == FSKEY_3)
         {
-            // double x0,y0,z0, x2,y2,z2, a, b, c, d;
-            // x0 = player.HT.GetX(); 
-            // y0 = player.HT.GetY();
-            // z0 = player.HT.GetZ(); 
-            // a =  sqrt(6.)/3.;  b = -sqrt(6.)/6.;
-            // c = -sqrt(6.)/6.;  d =  sqrt(6.)/3.; 
-            // x2 = (d-b)/(c-a)*(x0-a)+b;
-            // a =  0.;           b = -sqrt(2.)/2.;
-            // c = -sqrt(2.)/2.;  d = 0; 
-            // z2 = (d-b)/(c-a)*(z0-a)+b;
-            // y2 = y0; 
-            // player.HT.SetPos(x2,y2,z2); 
             player.pHT = &P2; 
             overview.pHT = &P2; 
             camera.ppHT = &P2;
             // teleporter.Teleport(plane, 2); 
             plane = 2; 
         }
-        if(0!=FsGetKeyState(FSKEY_4))
+        if(key == FSKEY_4)
         {
             player.pHT = &P3; 
             overview.pHT = &P3; 
-            camera.ppHT = &P3; 
+            camera.ppHT = &P3;
             // teleporter.Teleport(plane, 3); 
-            plane = 3;  
+            plane = 3; 
         }
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
