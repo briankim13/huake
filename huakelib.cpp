@@ -230,6 +230,97 @@ void Sprite::SetGlobalOri(double r, double p, double y)
 {
 	gHT.SetOri(r,p,y); 
 }
+void Sprite::Draw(void)
+{
+	// cube faces
+	glBegin(GL_QUADS);
+		glColor3f(c[0],c[1],c[2]);
+		Mygl3d(p[0]);
+		Mygl3d(p[1]);
+		Mygl3d(p[2]);
+		Mygl3d(p[3]);
+
+		Mygl3d(p[0]);
+		Mygl3d(p[3]);
+		Mygl3d(p[7]);
+		Mygl3d(p[4]);
+
+		Mygl3d(p[0]);
+		Mygl3d(p[1]);
+		Mygl3d(p[5]);
+		Mygl3d(p[4]);
+		             
+		Mygl3d(p[1]);
+		Mygl3d(p[2]);
+		Mygl3d(p[6]);
+		Mygl3d(p[5]);
+
+		Mygl3d(p[3]);
+		Mygl3d(p[2]);
+		Mygl3d(p[6]);
+		Mygl3d(p[7]);
+		             
+		Mygl3d(p[4]);
+		Mygl3d(p[5]);
+		Mygl3d(p[6]);
+		Mygl3d(p[7]);
+	glEnd();
+
+
+	// square lines 
+	glColor3f(1.0f,1.0f,1.0f);
+	glBegin(GL_LINES);
+
+	Mygl3d(p[0]);
+	Mygl3d(p[1]);
+                                   
+	Mygl3d(p[1]);
+	Mygl3d(p[2]);
+                                        
+	Mygl3d(p[2]);
+	Mygl3d(p[3]);
+                                  
+	Mygl3d(p[3]);
+	Mygl3d(p[0]);
+                                     
+	Mygl3d(p[0]);
+	Mygl3d(p[4]);
+                                 
+	Mygl3d(p[4]);
+	Mygl3d(p[7]);
+
+	Mygl3d(p[7]);
+	Mygl3d(p[3]);
+                                             
+	Mygl3d(p[3]);
+	Mygl3d(p[2]);
+                                   
+	Mygl3d(p[2]);
+	Mygl3d(p[6]);
+                                   
+	Mygl3d(p[6]);
+	Mygl3d(p[7]);
+                                   
+	Mygl3d(p[1]);
+	Mygl3d(p[5]);
+                                   
+	Mygl3d(p[5]);
+	Mygl3d(p[6]);
+
+	// Mygl3d( 8.+x, -8.+y, 10.+z);
+	// Mygl3d( 8.+x,  8.+y, 10.+z);
+
+	// Mygl3d( 8.+x,  8.+y, 10.+z);
+	// Mygl3d(-8.+x,  8.+y, 10.+z);
+
+	// Mygl3d(-8.+x,  8.+y, 10.+z);
+	// Mygl3d(-8.+x, -8.+y, 10.+z);
+
+	// Mygl3d(-8.+x, -8.+y, 10.+z);
+	// Mygl3d( 8.+x, -8.+y, 10.+z);
+
+	glEnd();
+}
 void Sprite::Print(void)
 {
 
@@ -330,12 +421,8 @@ void Sprite::UpdateGlobalHT(void)
 		}
 	}
 }
-// when using draw 
-// if your object is MOVING (like ghost)
-// make sure you do UpdateGlobalP() every loop!!!!!!!!
-// if NOT MOVING
-// do NOT UpdateGlobalP() 
-void Sprite::Draw(void)
+
+void Sprite::Draw1(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
@@ -759,6 +846,7 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
+<<<<<<< HEAD
 
 // TRIANGULAR WALL
 TriWall::TriWall()
@@ -866,6 +954,8 @@ public:
     void Draw() const; 
 };
 
+=======
+>>>>>>> b6f0a42b28e6ecbc5ae0076a484a2c3f5990235c
 // Independent function
 void DrawBackground(void)
 {
@@ -1084,7 +1174,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 1) // P0 to P2
 	{
-        t = 2./sqrt(2.)/a*pz;
+        t = -2./sqrt(2.)/a*pz;
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (-1.+t)*sqrt(2.)/2.*a;
@@ -1098,7 +1188,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 3) // P1 to P0
 	{
-        t = 2./sqrt(2.)/a*pz;
+        t = -2./sqrt(2.)/a*pz;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
@@ -1126,7 +1216,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 7) // P2 to P1
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
+        t = -2./sqrt(2.)/a*pz+1.;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
@@ -1154,7 +1244,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 	else if (mode == 11) // P3 to P2
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
+        t = -2./sqrt(2.)/a*pz+1.;
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
