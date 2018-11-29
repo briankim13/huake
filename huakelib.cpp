@@ -968,38 +968,25 @@ void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
     // Theme: Hell (#0)
-<<<<<<< HEAD
-    glColor3f(0.9f,0.1f,0.1f);
-=======
     glColor3f(0.8f,0.1f,0.1f);
->>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
+    
     // Theme: Ice (#1)
-<<<<<<< HEAD
-    glColor3f(0.9f,0.9f,0.9f);
-=======
     glColor3f(0.8f,0.8f,0.9f);
->>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 0., 1000.);
+
     // Theme: Galaxy (#2)
-<<<<<<< HEAD
-    glColor3f(0.6f,0.1f,0.55f);
-=======
     glColor3f(0.7f,0.1f,0.7f);
->>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 0., 0.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
+
     // Theme: Forest (#3)
-<<<<<<< HEAD
-    glColor3f(0.04f,0.5f,0.13f);
-=======
     glColor3f(0.1f,0.6f,0.2f);
->>>>>>> 1eed4a2df4781f400e783baeafa6b83208152a02
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
