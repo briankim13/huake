@@ -392,7 +392,7 @@ int main(void)
 
     wavDat.Start();
 
-    wavDat.PlayBackground(wav);
+    
 
     // if(png.state==0)
     // {
@@ -416,6 +416,8 @@ int main(void)
     while(0==terminate)
     {
         FsPollDevice();
+        
+        wavDat.PlayBackground(wav);
         
         int key=FsInkey();
         
