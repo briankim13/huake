@@ -21,10 +21,9 @@ public:
 class MainData
 {
 public:
-    Camera * cameraPtr;
+    OverviewCamera * cameraPtr;
     Sprite * scubesPtr;
     Player * playerPtr; 
-    Player * overvwPtr; 
     Pngdata * pngPtr;
 };
 
@@ -161,8 +160,8 @@ void Render(void *incoming)
     glEnable(GL_DEPTH_TEST);
 
     glViewport(wid*3/4,0, wid/4,hei/4); // (x0,y0, width,hei)
-    datPtr->overvwPtr->SetUpCameraProjection();
-    datPtr->overvwPtr->SetUpCameraTransformation();
+    datPtr->cameraPtr->SetUpCameraProjection();
+    datPtr->cameraPtr->SetUpCameraTransformation();
 
     // 3D drawing from here
     // DrawGround();
@@ -188,6 +187,7 @@ int main(void)
     TransformMatrix P1;
     TransformMatrix P2;
     TransformMatrix P3;
+    TransformMatrix CP; 
 
     GP.SetPos(0.,0.,0.); // THE GLOBAL
 
@@ -292,13 +292,17 @@ int main(void)
     player.UpdateGlobalHT();  // update global pos/ori of center
     player.UpdateGlobalP(); // update global pos/ori of points
 
-    Player overview; 
-    overview.nearZ = 1.0f; 
-    overview.farZ  = 5000.f; 
-    overview.pHT   = &P0; 
-    overview.HT.SetPos(-900.,1000.,1500.);
-    overview.HT.SetOri( 0.,-37.*PI/180.,-30.*PI/180.); 
-    overview.UpdateGlobalHT(); 
+    // camera's parent HT 
+    CP.SetPos(0.,0.,0.);
+    CP.SetOri(0.,0.,0.);
+    OverviewCamera camera; 
+    camera.nearZ = 1.0f; 
+    camera.farZ  = 5000.f; 
+    camera.pHT   = &CP; 
+    camera.ppHT  = &P0; 
+    camera.HT.SetPos( 0., 0.,-1700.);  
+    camera.HT.SetOri( 0., 0.,180.*PI/180.);
+    camera.UpdateGlobalHT(); 
 
     Pngdata png;
     png.firstRenderingPass=true; // Make texture during the first rendering pass.
@@ -333,63 +337,23 @@ int main(void)
     // file[1] calls the ground figure.
     png.file[3*3+2].Decode("image/forest/wall_1.png");
     // file[2] calls the wall figure.
-//
+
     YsSoundPlayer wavDat;
     YsSoundPlayer::SoundData wav;
+    bool firstPlayingPass = true;
 
-    if(png.state == 0)
-    {
-        char fName[256] = "music/hell_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 1)
-    {
-        char fName[256] = "music/ice_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 2)
-    {
-        char fName[256] = "music/galaxy_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 3)
-    {
-        char fName[256] = "music/forest_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
 //
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
-    // dat.cameraPtr = &camera;
-    dat.playerPtr = &player;
-    dat.overvwPtr = &overview;  
+    dat.playerPtr = &player; 
     dat.scubesPtr = scubes;
     dat.pngPtr = &png;
+    dat.cameraPtr = &camera; 
 
     wavDat.Start();
 
-    wavDat.PlayBackground(wav);
+    
 
     // if(png.state==0)
     // {
@@ -402,7 +366,12 @@ int main(void)
     //     }
     // }
 
+    double t, px, py, pz;
+    Teleporter teleporter; 
+    int plane = 0; 
 
+
+    double movespeed = 2.5; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     while(0==terminate)
@@ -410,49 +379,84 @@ int main(void)
         FsPollDevice();
         
         int key=FsInkey();
-        switch(key)
-        {
-            case FSKEY_ESC:
-                terminate=1;
-                break;
-        }
         
         // dynamicsContext part 
         // player needs UpdateGlobalHT every step because 
         // he is moving every step 
         player.UpdateGlobalP(); // update global pos/ori of points  
         player.UpdateGlobalHT(); // update global pos/ori of its center
-        overview.UpdateGlobalHT(); // update global pos/ori of its center
-        overview.HT.Print(); 
+        camera.UpdateGlobalHT(); 
 
-        if(0!=FsGetKeyState(FSKEY_1))
+        if(key == FSKEY_ESC)
         {
-            // Hell
-            player.pHT = &P0; 
-            overview.pHT = &P0;
+            terminate = 1; 
+            break; 
+        }
+        if(key == FSKEY_1)
+        {
+            // red
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P0;  
+            camera.ppHT = &P0;
+            
+            teleporter.Teleport(plane, 0, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
+            plane = 0; 
             png.state = 0; 
+            firstPlayingPass = true;
         }
-        if(0!=FsGetKeyState(FSKEY_2))
+        if(key == FSKEY_2)
         {
-            // Ice
-            player.pHT = &P1; 
-            overview.pHT = &P1;
-            png.state = 1; 
+            // white
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P1;  
+            camera.ppHT = &P1; 
+            // WILL USE TELEPORTER 
+            teleporter.Teleport(plane, 1, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
+            plane = 1; 
+            png.state = 1;
+            firstPlayingPass = true; 
         }
-        if(0!=FsGetKeyState(FSKEY_3))
+        if(key == FSKEY_3)
         {
-            // Galaxy
-            player.pHT = &P2; 
-            overview.pHT = &P2; 
-            png.state = 2;
+            // purple 
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P2;  
+            camera.ppHT = &P2;
+
+            teleporter.Teleport(plane, 2, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
+            plane = 2; 
+            png.state = 2; 
+            firstPlayingPass = true;
         }
-        if(0!=FsGetKeyState(FSKEY_4))
+        if(key == FSKEY_4)
         {
-            // Forest
-            player.pHT = &P3; 
-            overview.pHT = &P3;
+            // green
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P3;  
+            camera.ppHT = &P3;
+            
+            teleporter.Teleport(plane, 3, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
+            plane = 3; 
             png.state = 3; 
+            firstPlayingPass = true;
         }
+
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
             player.HT.RotateYaw(PI/180.0);
@@ -473,81 +477,105 @@ int main(void)
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-0., 1.,-0.);
+            player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_C))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-0.,-1.,-0.);
+            player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_W))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-vx, 0.,-vz);
+            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_S))
         {
             double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos( vx, 0., vz);
+            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_A))
         {
             double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos(-vx, 0.,-vz);
+            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
         {
             double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos( vx, 0., vz);
+            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
 
-        // // camera work 
-        // if(0!=FsGetKeyState(FSKEY_F))
-        // {
-        //     overview.HT.RotateYaw(PI/180.0);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_H))
-        // {
-        //     overview.HT.RotateYaw(-PI/180.0);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_T))
-        // {
-        //     overview.HT.RotatePitch(PI/180.);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_G))
-        // {
-        //     overview.HT.RotatePitch(-PI/180.);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_I))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetForwardVector(vx,vy,vz);
-        //     overview.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_K))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetForwardVector(vx,vy,vz);
-        //     overview.HT.MovePos( vx, 0., vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_J))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetSidewardVector(vx,vy,vz);
-        //     overview.HT.MovePos(-vx, 0.,-vz);
-        // }
-        // if(0!=FsGetKeyState(FSKEY_L))
-        // {
-        //     double vx,vy,vz;
-        //     overview.GetSidewardVector(vx,vy,vz);
-        //     overview.HT.MovePos( vx, 0., vz);
-        // }
-        
+        // minimap moving 
+        if(0!=FsGetKeyState(FSKEY_I))
+        {
+            CP.RotatePitch(-1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_J))
+        {
+            CP.RotateYaw( 1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_K))
+        {
+            CP.RotatePitch( 1.*PI/180.); 
+        }
+        if(0!=FsGetKeyState(FSKEY_L))
+        {
+            CP.RotateYaw(-1.*PI/180.); 
+        }
+
+
+        if(png.state == 0 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/hell_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 1 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/ice_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 2 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/galaxy_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 3 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/forest_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+
+        wavDat.PlayBackground(wav);
+
         wavDat.KeepPlaying();
 
         FsPushOnPaintEvent();

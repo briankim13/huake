@@ -25,6 +25,7 @@ public:
     Sprite * scubesPtr;
     Player * playerPtr; 
     Pngdata * pngPtr;
+    TriWall * wallPtr; 
 };
 
 void Render(void *incoming)
@@ -128,6 +129,7 @@ void Render(void *incoming)
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw1();
     }
+    datPtr->wallPtr->Draw(); 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -173,6 +175,7 @@ void Render(void *incoming)
         datPtr->scubesPtr[i].Draw1();
     }
     datPtr->playerPtr->Draw(); 
+    datPtr->wallPtr->Draw();
 
     FsSwapBuffers();
 }
@@ -285,17 +288,19 @@ int main(void)
     {
         scubes[i].pHT = &P3;
     }
-
     // update its global position for drawing 
     for (int i=0; i<12; ++i)
     {
         scubes[i].UpdateGlobalP(); 
     }
-    
+
+    // make tri wall!
+    TriWall wall; 
+    wall.SetPos(0.,0.,0.); 
+    wall.pHT = &P0; 
+    wall.UpdateGlobalP(); 
+
     int terminate=0;
-    // TransformMatrix PC;
-    // PC.SetPos(0.,0.,0.); //camera position
-    
     Player player; 
     player.nearZ = 1.0f;
     player.farZ  = 5000.0f; 
@@ -393,7 +398,7 @@ int main(void)
             return 1;
         }
     }
-//
+
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
@@ -401,10 +406,9 @@ int main(void)
     dat.scubesPtr = scubes;
     dat.pngPtr = &png;
     dat.cameraPtr = &camera; 
+    dat.wallPtr = &wall; 
 
     wavDat.Start();
-
-    
 
     // if(png.state==0)
     // {
