@@ -59,6 +59,7 @@ public:
     void Local2Global(Point pp, double &gx, double &gy, double &gz); 
     void Mygl3d(Point pp);
     void Draw(void); 
+    void Draw1(void);
     void Print(void); 
     void UpdateGlobalHT(void); 
     void UpdateGlobalP(void);
@@ -134,6 +135,10 @@ public:
 };
 
 
+<<<<<<< HEAD
+// artifact of Soji's code,
+// should we make a Map class? 
+=======
 class TriWall : public Sprite
 {
 public:
@@ -160,6 +165,7 @@ public:
     void UpdateGlobalP(void); 
     void Draw(void) const; 
 };
+>>>>>>> 860b6f30abfe59e644782dcb5f12d510b88b6814
 
 void DrawGround(void);
 void DrawTetra(void);
