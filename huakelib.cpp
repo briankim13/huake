@@ -230,97 +230,6 @@ void Sprite::SetGlobalOri(double r, double p, double y)
 {
 	gHT.SetOri(r,p,y); 
 }
-void Sprite::Draw(void)
-{
-	// cube faces
-	glBegin(GL_QUADS);
-		glColor3f(c[0],c[1],c[2]);
-		Mygl3d(p[0]);
-		Mygl3d(p[1]);
-		Mygl3d(p[2]);
-		Mygl3d(p[3]);
-
-		Mygl3d(p[0]);
-		Mygl3d(p[3]);
-		Mygl3d(p[7]);
-		Mygl3d(p[4]);
-
-		Mygl3d(p[0]);
-		Mygl3d(p[1]);
-		Mygl3d(p[5]);
-		Mygl3d(p[4]);
-		             
-		Mygl3d(p[1]);
-		Mygl3d(p[2]);
-		Mygl3d(p[6]);
-		Mygl3d(p[5]);
-
-		Mygl3d(p[3]);
-		Mygl3d(p[2]);
-		Mygl3d(p[6]);
-		Mygl3d(p[7]);
-		             
-		Mygl3d(p[4]);
-		Mygl3d(p[5]);
-		Mygl3d(p[6]);
-		Mygl3d(p[7]);
-	glEnd();
-
-
-	// square lines 
-	glColor3f(1.0f,1.0f,1.0f);
-	glBegin(GL_LINES);
-
-	Mygl3d(p[0]);
-	Mygl3d(p[1]);
-                                   
-	Mygl3d(p[1]);
-	Mygl3d(p[2]);
-                                        
-	Mygl3d(p[2]);
-	Mygl3d(p[3]);
-                                  
-	Mygl3d(p[3]);
-	Mygl3d(p[0]);
-                                     
-	Mygl3d(p[0]);
-	Mygl3d(p[4]);
-                                 
-	Mygl3d(p[4]);
-	Mygl3d(p[7]);
-
-	Mygl3d(p[7]);
-	Mygl3d(p[3]);
-                                             
-	Mygl3d(p[3]);
-	Mygl3d(p[2]);
-                                   
-	Mygl3d(p[2]);
-	Mygl3d(p[6]);
-                                   
-	Mygl3d(p[6]);
-	Mygl3d(p[7]);
-                                   
-	Mygl3d(p[1]);
-	Mygl3d(p[5]);
-                                   
-	Mygl3d(p[5]);
-	Mygl3d(p[6]);
-
-	// Mygl3d( 8.+x, -8.+y, 10.+z);
-	// Mygl3d( 8.+x,  8.+y, 10.+z);
-
-	// Mygl3d( 8.+x,  8.+y, 10.+z);
-	// Mygl3d(-8.+x,  8.+y, 10.+z);
-
-	// Mygl3d(-8.+x,  8.+y, 10.+z);
-	// Mygl3d(-8.+x, -8.+y, 10.+z);
-
-	// Mygl3d(-8.+x, -8.+y, 10.+z);
-	// Mygl3d( 8.+x, -8.+y, 10.+z);
-
-	glEnd();
-}
 void Sprite::Print(void)
 {
 
@@ -422,7 +331,7 @@ void Sprite::UpdateGlobalHT(void)
 	}
 }
 
-void Sprite::Draw1(void)
+void Sprite::Draw(void)
 {
 	// cube faces
 	glBegin(GL_QUADS);
@@ -846,7 +755,7 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 	vz = pHT->mat[2][0]; 
 }
 
-<<<<<<< HEAD
+
 
 // TRIANGULAR WALL
 TriWall::TriWall()
@@ -944,18 +853,16 @@ TriMaze::TriMaze()
 {
 	
 }
-class TriMaze
-{
-public:
-    const char * map[]; 
-    TriWall walls[400]; // for now keep things fixed  
-    void TriMaze();
-    void Initialize(); 
-    void Draw() const; 
-};
+// class TriMaze
+// {
+// public:
+//     const char * map[]; 
+//     TriWall walls[400]; // for now keep things fixed  
+//     void TriMaze();
+//     void Initialize(); 
+//     void Draw() const; 
+// };
 
-=======
->>>>>>> b6f0a42b28e6ecbc5ae0076a484a2c3f5990235c
 // Independent function
 void DrawBackground(void)
 {
