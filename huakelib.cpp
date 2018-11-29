@@ -659,7 +659,7 @@ void Player::Initialize(void)
 	p[2].Set( 10., 40., 10.);
 	p[3].Set(-10., 40., 10.);
 	p[4].Set(-10.,0.,-10.);
-	p[5].Set( 10.,0.,-10.);
+    p[5].Set( 10.,0.,-10.);
 	p[6].Set( 10.,0., 10.);
 	p[7].Set(-10.,0., 10.);  
 
@@ -1013,7 +1013,7 @@ Teleporter::Teleporter()
 void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z)
 {
 	int mode; // there will be 12 
-	double px, py, pz; 
+	double px, py, pz, t;
 	px = x; 
 	py = y; 
 	pz = z; 
@@ -1047,53 +1047,89 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 	}
 
 
-	if (mode == 0)
+	if (mode == 0) // P0 to P1
 	{
-
+        t = (2./sqrt(2.)/a*pz-1)/(-2.);
+        x = (2.-3.*t)*sqrt(6.)*a/6.;
+        y = py;
+        z = -t*sqrt(2.)/2.*a;
 	}
-	else if (mode == 1)
+	else if (mode == 1) // P0 to P2
 	{
-
+        t = 2./sqrt(2.)/a*pz;
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (-1.+t)*sqrt(2.)/2.*a;
 	}
-	else if (mode == 2)
+	else if (mode == 2) // P0 to P3
 	{
-
+        t = -2./sqrt(2.)/a*pz+1;
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (-1.+t)*sqrt(2.)/2*a;
 	}
-	else if (mode == 3)
+	else if (mode == 3) // P1 to P0
 	{
-
+        t = 2./sqrt(2.)/a*pz;
+        x = -sqrt(6.)*a/6.;
+        y = py;
+        z = (1.-2.*t)*sqrt(2.)*a/2.;
 	}
-	else if (mode == 4)
+	else if (mode == 4) // P1 to P2
 	{
-
+        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (1.-t)*sqrt(2.)/2.*a;
 	}
-	else if (mode == 5)
+	else if (mode == 5) // P1 to P3
 	{
-
+        t = -2./sqrt(2.)/a*pz+1;
+        x = -sqrt(6.)*a/6.;
+        y = py;
+        z = (1.-2.*t)*sqrt(2.)*a/2.;
 	}
-	else if (mode == 6)
+	else if (mode == 6) // P2 to P0
 	{
-
+        t = 2.*pz/sqrt(2.)/a+1;
+        x = (2.-3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = -t*sqrt(2.)/2.*a;
 	}
-	else if (mode == 7)
+	else if (mode == 7) // P2 to P1
 	{
-
+        t = 2./sqrt(2.)/a*pz+1.;
+        x = -sqrt(6.)*a/6.;
+        y = py;
+        z = (1.-2.*t)*sqrt(2.)*a/2.;
 	}
-	else if (mode == 8)
+	else if (mode == 8) // P2 to P3
 	{
-
+        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (1.-t)*sqrt(2.)/2.*a;
 	}
-	else if (mode == 9)
+	else if (mode == 9) // P3 to P0
 	{
-
+        t = 2./sqrt(2.)/a*pz+1.;
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (1.-t)*sqrt(2.)/2.*a;
 	}
-	else if (mode == 10)
+	else if (mode == 10) // P3 to P1
 	{
-
+        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        y = py;
+        z = (1.-t)*sqrt(2.)/2.*a;
 	}
-	else if (mode == 11)
+	else if (mode == 11) // P3 to P2
 	{
-
+        t = 2./sqrt(2.)/a*pz+1.;
+        x = -sqrt(6.)*a/6.;
+        y = py;
+        z = (1.-2.*t)*sqrt(2.)*a/2.;
 	}
 	else
 	{

@@ -274,7 +274,7 @@ int main(void)
         // overview.SetPos(x, y, z);
         // overview.SetOri(r, p, w);
         
-        player.HT.Print(); // debugging
+//        player.HT.Print(); // debugging
         
 
         if(0!=FsGetKeyState(FSKEY_1))
