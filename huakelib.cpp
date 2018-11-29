@@ -847,11 +847,6 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 }
 
 // Independent function
-<<<<<<< HEAD
-=======
-
->>>>>>> 19dd61b633be3ecbdc2a1c12ff9ece9b0f1cd8a3
-
 void DrawBackground(void)
 {
 	glBegin(GL_QUADS);
