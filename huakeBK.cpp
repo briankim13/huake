@@ -11,8 +11,8 @@ public:
     OverviewCamera * cameraPtr;
     Sprite * scubesPtr;
     Player * playerPtr; 
-    Player * overvwPtr; 
     Target * targetPtr; 
+    TriWall * wallPtr; 
 };
 
 void Render(void *incoming)
@@ -42,9 +42,13 @@ void Render(void *incoming)
     for (int i = 0; i<16; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw1();
+        datPtr->scubesPtr[i].Draw();
     }
     datPtr->targetPtr->Draw1(); 
+    for (int i = 0; i < 3; ++i)
+    {
+        datPtr->wallPtr[i].Draw();
+    } 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -88,10 +92,14 @@ void Render(void *incoming)
     for (int i = 0; i<16; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw1();
+        datPtr->scubesPtr[i].Draw();
     }
     datPtr->playerPtr->Draw(); 
     datPtr->targetPtr->Draw1(); 
+    for (int i = 0; i < 3; ++i)
+    {
+        datPtr->wallPtr[i].Draw();
+    } 
 
     FsSwapBuffers();
 }
@@ -196,7 +204,6 @@ int main(void)
     {
         scubes[i].pHT = &P3;
     }
-
     // update its global position for drawing 
     for (int i=0; i<16; ++i)
     {
@@ -207,6 +214,19 @@ int main(void)
     target.SetPos1(0.,0.,0.); // local 
     target.pHT = &P0; 
     target.UpdateGlobalP(); // now I have gp[]
+
+    TriWall walls[3];
+    double a, b; 
+    a = 100.*sqrt(3.)/4.; 
+    b = 100./2.;  
+    walls[0].SetPos(-a,0.,-b); 
+    walls[1].SetPos( a,0.,-b);
+    walls[2].SetPos(0.,0., b); 
+    for (int i = 0; i < 3; ++i)
+    {
+        walls[i].pHT = &P0; 
+        walls[i].UpdateGlobalP(); 
+    }
 
     int terminate=0;
     // TransformMatrix PC;
@@ -219,14 +239,6 @@ int main(void)
     player.HT.SetPos(0.,10.,0.); 
     player.UpdateGlobalHT();  // update global pos/ori of center
     player.UpdateGlobalP(); // update global pos/ori of points
-
-    Player overview; 
-    overview.nearZ = 1.0f; 
-    overview.farZ  = 5000.f; 
-    overview.pHT   = &P0; 
-    overview.HT.SetPos(-900.,1000.,1500.);
-    overview.HT.SetOri( 0.,-37.*PI/180.,-30.*PI/180.); 
-    overview.UpdateGlobalHT(); 
 
     OverviewCamera camera; 
     camera.nearZ = 1.0f; 
@@ -242,12 +254,12 @@ int main(void)
     DynamicsContext ovdyn; // overview camera dynamics
     bool animationOn = false;   // state
     double x, y, z, r, p, w; 
-    x = overview.HT.GetX(); // get global pos 
-    y = overview.HT.GetY();
-    z = overview.HT.GetZ(); 
-    r = overview.HT.GetRoll(); 
-    p = overview.HT.GetPitch();
-    w = overview.HT.GetYaw(); 
+    x = camera.HT.GetX(); // get global pos 
+    y = camera.HT.GetY();
+    z = camera.HT.GetZ(); 
+    r = camera.HT.GetRoll(); 
+    p = camera.HT.GetPitch();
+    w = camera.HT.GetYaw(); 
     ovdyn.SetPos(x, y, z,  r, p, w); 
     ovdyn.SetVel(0.,1.,0., 0.,-0.04*PI/180.,0.); 
 
@@ -255,11 +267,11 @@ int main(void)
     // For rendering -------------
     MainData dat;
     // dat.cameraPtr = &camera;
-    dat.playerPtr = &player;
-    dat.overvwPtr = &overview;  
+    dat.playerPtr = &player;  
     dat.scubesPtr = scubes;
     dat.targetPtr = &target; 
     dat.cameraPtr = &camera; 
+    dat.wallPtr   = walls; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     double t, px, py, pz;
@@ -278,7 +290,7 @@ int main(void)
         // he is moving every step 
         player.UpdateGlobalP(); // update global pos/ori of points  
         player.UpdateGlobalHT(); // update global pos/ori of its center
-        overview.UpdateGlobalHT(); // update global pos/ori of its center
+        camera.UpdateGlobalHT();
         ovdyn.SimStep();
         x = ovdyn.GetX(); 
         y = ovdyn.GetY(); 
@@ -286,16 +298,11 @@ int main(void)
         r = ovdyn.GetRoll(); 
         p = ovdyn.GetPitch(); 
         w = ovdyn.GetYaw(); 
-        // overview.SetPos(x, y, z);
-        // overview.SetOri(r, p, w); 
 
         target.Move(); 
-        target.UpdateGlobalP(); 
-
-        camera.UpdateGlobalHT(); 
+        target.UpdateGlobalP();  
 
         // overview.HT.Print(); // debugging
-
         if(key == FSKEY_ESC)
         {
             terminate = 1; 
@@ -308,10 +315,8 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
 
-            player.pHT = &P0; 
-            overview.pHT = &P0; 
+            player.pHT = &P0;  
             camera.ppHT = &P0;
-            
             teleporter.Teleport(plane, 0, px, py, pz); 
             player.HT.SetPos(px, py, pz);  
             plane = 0; 
@@ -323,10 +328,8 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
 
-            player.pHT = &P1; 
-            overview.pHT = &P1; 
+            player.pHT = &P1;  
             camera.ppHT = &P1; 
-            // WILL USE TELEPORTER 
             teleporter.Teleport(plane, 1, px, py, pz); 
             player.HT.SetPos(px, py, pz); 
             plane = 1; 
@@ -338,8 +341,7 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
 
-            player.pHT = &P2; 
-            overview.pHT = &P2; 
+            player.pHT = &P2;  
             camera.ppHT = &P2;
 
             teleporter.Teleport(plane, 2, px, py, pz); 
@@ -353,8 +355,7 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
 
-            player.pHT = &P3; 
-            overview.pHT = &P3; 
+            player.pHT = &P3;  
             camera.ppHT = &P3;
             
             teleporter.Teleport(plane, 3, px, py, pz); 
