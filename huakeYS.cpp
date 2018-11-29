@@ -340,47 +340,8 @@ int main(void)
 
     YsSoundPlayer wavDat;
     YsSoundPlayer::SoundData wav;
+    bool firstPlayingPass = true;
 
-    if(png.state == 0)
-    {
-        char fName[256] = "music/hell_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 1)
-    {
-        char fName[256] = "music/ice_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 2)
-    {
-        char fName[256] = "music/galaxy_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 3)
-    {
-        char fName[256] = "music/forest_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
 //
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
@@ -417,8 +378,6 @@ int main(void)
     {
         FsPollDevice();
         
-        wavDat.PlayBackground(wav);
-        
         int key=FsInkey();
         
         // dynamicsContext part 
@@ -447,6 +406,7 @@ int main(void)
             player.HT.SetPos(px, py, pz);  
             plane = 0; 
             png.state = 0; 
+            firstPlayingPass = true;
         }
         if(key == FSKEY_2)
         {
@@ -461,7 +421,8 @@ int main(void)
             teleporter.Teleport(plane, 1, px, py, pz); 
             player.HT.SetPos(px, py, pz); 
             plane = 1; 
-            png.state = 1; 
+            png.state = 1;
+            firstPlayingPass = true; 
         }
         if(key == FSKEY_3)
         {
@@ -477,6 +438,7 @@ int main(void)
             player.HT.SetPos(px, py, pz); 
             plane = 2; 
             png.state = 2; 
+            firstPlayingPass = true;
         }
         if(key == FSKEY_4)
         {
@@ -492,6 +454,7 @@ int main(void)
             player.HT.SetPos(px, py, pz);  
             plane = 3; 
             png.state = 3; 
+            firstPlayingPass = true;
         }
 
         if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -564,7 +527,55 @@ int main(void)
         {
             CP.RotateYaw(-1.*PI/180.); 
         }
-        
+
+
+        if(png.state == 0 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/hell_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 1 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/ice_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 2 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/galaxy_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 3 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/forest_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+
+        wavDat.PlayBackground(wav);
+
         wavDat.KeepPlaying();
 
         FsPushOnPaintEvent();
