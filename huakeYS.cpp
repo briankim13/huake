@@ -389,8 +389,6 @@ int main(void)
 
     wavDat.Start();
 
-    wavDat.PlayBackground(wav);
-
     // if(png.state==0)
     // {
     //     char fName[256] = "music/hell_1.wav";
@@ -505,6 +503,9 @@ int main(void)
             player.GetSidewardVector(vx,vy,vz);
             player.HT.MovePos( vx, 0., vz);
         }
+        
+        wavDat.PlayBackground(wav);
+
 
         // // camera work 
         // if(0!=FsGetKeyState(FSKEY_F))
