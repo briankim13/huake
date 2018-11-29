@@ -1,6 +1,7 @@
 #include "huakelib.h"
 #include "fssimplewindow.h"
 #include "yspng.h"
+#include "yssimplesound.h"
 #include <math.h>
 #include <time.h>
 #include <stdio.h> 
@@ -83,8 +84,6 @@ void Render(void *incoming)
     glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
     glColor4d(1.0,1.0,1.0,1.0);
 
-    // DrawGround();   // Soji's ground
-
     // Drawing background
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -100,21 +99,29 @@ void Render(void *incoming)
     glDisable(GL_TEXTURE_2D);  // End using texture mapping
     glPopMatrix();
 
+    // Draw floor of each plane
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*0+1]);
+    DrawFloor(   0.0,    0.0,    0.0,
+                 0.0, 1000.0, 1000.0,
+              1000.0, 1000.0,    0.0); 
 
-    //     }
-    //     else
-    //     {
-    //         glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*1+1]);
+    DrawFloor(   0.0,    0.0,    0.0,
+                 0.0, 1000.0, 1000.0,
+              1000.0,    0.0, 1000.0);
+              
+    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*2+1]);
+    DrawFloor(   0.0,    0.0,    0.0,
+              1000.0, 1000.0,    0.0,
+              1000.0,    0.0, 1000.0);                    
 
-    //         glBindTexture(GL_TEXTURE_2D,datPtr->texId[i]);
+    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*3+1]);
+    DrawFloor(   0.0, 1000.0, 1000.0,
+              1000.0, 1000.0,    0.0,
+              1000.0,    0.0, 1000.0);
 
-    //         glBegin(GL_TRIANGLES);
-
-    //         DrawFloor();
-            
-    //         glEnd();
-    //     }
-    // }
+    glDisable(GL_TEXTURE_2D);
 
 
     for (int i = 0; i<16; ++i)
@@ -326,7 +333,51 @@ int main(void)
     // file[1] calls the ground figure.
     png.file[3*3+2].Decode("image/forest/wall_1.png");
     // file[2] calls the wall figure.
+//
+    YsSoundPlayer wavDat;
+    YsSoundPlayer::SoundData wav;
 
+    if(png.state == 0)
+    {
+        char fName[256] = "music/hell_1.wav";
+        if(YSOK != wav.LoadWav(fName))
+        {
+            printf("Failed to read %s.\n", fName);
+
+            return 1;
+        }
+    }
+    else if(png.state == 1)
+    {
+        char fName[256] = "music/ice_1.wav";
+        if(YSOK != wav.LoadWav(fName))
+        {
+            printf("Failed to read %s.\n", fName);
+
+            return 1;
+        }
+    }
+    else if(png.state == 2)
+    {
+        char fName[256] = "music/galaxy_1.wav";
+        if(YSOK != wav.LoadWav(fName))
+        {
+            printf("Failed to read %s.\n", fName);
+
+            return 1;
+        }
+    }
+    else if(png.state == 3)
+    {
+        char fName[256] = "music/forest_1.wav";
+        if(YSOK != wav.LoadWav(fName))
+        {
+            printf("Failed to read %s.\n", fName);
+
+            return 1;
+        }
+    }
+//
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
@@ -335,6 +386,22 @@ int main(void)
     dat.overvwPtr = &overview;  
     dat.scubesPtr = scubes;
     dat.pngPtr = &png;
+
+    wavDat.Start();
+
+    wavDat.PlayBackground(wav);
+
+    // if(png.state==0)
+    // {
+    //     char fName[256] = "music/hell_1.wav";
+    //     wavDat.Start();
+    //     wavDat.PlayBackground(wav);
+    //     while(YSTRUE==wavDat.IsPlaying(wav))
+    //     {
+    //         wavDat.KeepPlaying();
+    //     }
+    // }
+
 
     FsRegisterOnPaintCallBack(Render,&dat);
     
@@ -481,9 +548,13 @@ int main(void)
         //     overview.HT.MovePos( vx, 0., vz);
         // }
         
+        wavDat.KeepPlaying();
+
         FsPushOnPaintEvent();
         FsSleep(10);
     }
     
+    wavDat.End();
+
     return 0;
 }

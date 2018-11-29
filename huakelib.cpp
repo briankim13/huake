@@ -6,6 +6,7 @@
 // #include "ysglfontdata.h"
 #include "huakelib.h"
 #include "yspng.h"
+#include "yssimplesound.h"
 
 const double YsPi = 3.1415927;
 
@@ -750,30 +751,96 @@ void DrawBackground(void)
     glEnd();
 }
 
-void DrawFloor(void)
+void DrawFloor(double x1, double y1, double z1,
+			   double x2, double y2, double z2,
+			   double x3, double y3, double z3)
 {
-    glBegin(GL_TRIANGLES);
-    // Theme: Hell (#0)
-    glColor3f(0.0f,1.0f,1.0f);
-    glVertex3d(0., 0., 0.);
-    glVertex3d(0., 1000., 1000.);
-    glVertex3d(1000., 1000., 0.);
-    // Theme: Ice (#1)
-    glColor3f(0.0f,1.0f,0.0f);
-    glVertex3d(0., 0., 0.);
-    glVertex3d(0., 1000., 1000.);
-    glVertex3d(1000., 0., 1000.);
-    // Theme: Galaxy (#3)
-    glColor3f(1.0f,1.0f,0.0f);
-    glVertex3d(0., 0., 0.);
-    glVertex3d(1000., 1000., 0.);
-    glVertex3d(1000., 0., 1000.);
-    // Theme: Forest (#3)
-    glColor3f(1.0f,0.0f,1.0f);
-    glVertex3d(0., 1000., 1000.);
-    glVertex3d(1000., 1000., 0.);
-    glVertex3d(1000., 0., 1000.);
-    glEnd();
+	int divider = 20;
+
+	for(int j=0; j<divider; ++j)
+	{
+		for(int i=0; i<divider-j; ++i)
+		{
+			double step_ix = (x2 - x1) / ((double) divider);
+			double step_iy = (y2 - y1) / ((double) divider);
+			double step_iz = (z2 - z1) / ((double) divider);
+
+			double step_jx = (x3 - x1) / ((double) divider);
+			double step_jy = (y3 - y1) / ((double) divider);
+			double step_jz = (z3 - z1) / ((double) divider);
+
+			glBegin(GL_TRIANGLES);
+		    
+		    glTexCoord2d(0.0,0.0);
+		    glVertex3d(x1+step_ix*((double) i)+step_jx*((double) j),
+		    	       y1+step_iy*((double) i)+step_jy*((double) j),
+		    	       z1+step_iz*((double) i)+step_jz*((double) j));
+		    
+		    glTexCoord2d(1.0,0.0);
+		    glVertex3d(x1+step_ix*((double) (i+1))+step_jx*((double) j),
+		    	       y1+step_iy*((double) (i+1))+step_jy*((double) j),
+		    	       z1+step_iz*((double) (i+1))+step_jz*((double) j));
+		    
+		    glTexCoord2d(0.5,1.0);
+		    glVertex3d(x1+step_ix*((double) i)+step_jx*((double) (j+1)),
+		    	       y1+step_iy*((double) i)+step_jy*((double) (j+1)),
+		    	       z1+step_iz*((double) i)+step_jz*((double) (j+1)));
+		    
+		    glEnd();
+		}
+	}
+
+	for(int j=0; j<divider-1; ++j)
+	{
+		for(int i=0; i<divider-1-j; ++i)
+		{
+			double step_ix = (x2 - x1) / ((double) divider);
+			double step_iy = (y2 - y1) / ((double) divider);
+			double step_iz = (z2 - z1) / ((double) divider);
+
+			double step_jx = (x3 - x1) / ((double) divider);
+			double step_jy = (y3 - y1) / ((double) divider);
+			double step_jz = (z3 - z1) / ((double) divider);
+
+			glBegin(GL_TRIANGLES);
+		    
+		    glTexCoord2d(0.5,1.0);
+		    glVertex3d(x1+step_ix*((double) i)+step_jx*((double) (j+1)),
+		    	       y1+step_iy*((double) i)+step_jy*((double) (j+1)),
+		    	       z1+step_iz*((double) i)+step_jz*((double) (j+1)));
+		    
+		    glTexCoord2d(1.0,1.0);
+		    glVertex3d(x1+step_ix*((double) (i+0.5))+step_jx*((double) (j+1)),
+		    	       y1+step_iy*((double) (i+0.5))+step_jy*((double) (j+1)),
+		    	       z1+step_iz*((double) (i+0.5))+step_jz*((double) (j+1)));
+		    
+		    glTexCoord2d(1.0,0.0);
+		    glVertex3d(x1+step_ix*((double) (i+1))+step_jx*((double) j),
+		    	       y1+step_iy*((double) (i+1))+step_jy*((double) j),
+		    	       z1+step_iz*((double) (i+1))+step_jz*((double) j));
+		    
+		    glEnd();
+
+		    glBegin(GL_TRIANGLES);
+		    
+		    glTexCoord2d(0.5,1.0);
+		    glVertex3d(x1+step_ix*((double) (i+1))+step_jx*((double) (j+1)),
+		    	       y1+step_iy*((double) (i+1))+step_jy*((double) (j+1)),
+		    	       z1+step_iz*((double) (i+1))+step_jz*((double) (j+1)));
+		    
+		    glTexCoord2d(0.0,1.0);
+		    glVertex3d(x1+step_ix*((double) (i+0.5))+step_jx*((double) (j+1)),
+		    	       y1+step_iy*((double) (i+0.5))+step_jy*((double) (j+1)),
+		    	       z1+step_iz*((double) (i+0.5))+step_jz*((double) (j+1)));
+		    
+		    glTexCoord2d(0.0,0.0);
+		    glVertex3d(x1+step_ix*((double) (i+1))+step_jx*((double) j),
+		    	       y1+step_iy*((double) (i+1))+step_jy*((double) j),
+		    	       z1+step_iz*((double) (i+1))+step_jz*((double) j));
+		    
+		    glEnd();
+		}
+	}
 }
 
 // From Jaejun
@@ -781,22 +848,22 @@ void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
     // Theme: Hell (#0)
-    glColor3f(0.0f,1.0f,1.0f);
+    glColor3f(0.9f,0.1f,0.1f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     // Theme: Ice (#1)
-    glColor3f(0.0f,1.0f,0.0f);
+    glColor3f(0.9f,0.9f,0.9f);
     glVertex3d(0., 0., 0.);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 0., 1000.);
-    // Theme: Galaxy (#3)
-    glColor3f(1.0f,1.0f,0.0f);
+    // Theme: Galaxy (#2)
+    glColor3f(0.6f,0.1f,0.55f);
     glVertex3d(0., 0., 0.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);
     // Theme: Forest (#3)
-    glColor3f(1.0f,0.0f,1.0f);
+    glColor3f(0.04f,0.5f,0.13f);
     glVertex3d(0., 1000., 1000.);
     glVertex3d(1000., 1000., 0.);
     glVertex3d(1000., 0., 1000.);

@@ -123,6 +123,9 @@ public:
 void DrawGround(void);
 void DrawTetra(void);
 void DrawBackground(void);
+void DrawFloor(double x1, double y1, double z1,
+               double x2, double y2, double z2,
+               double x3, double y3, double z3);
 
 class DynamicsContext
 {
