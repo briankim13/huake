@@ -140,13 +140,17 @@ public:
     double l, h; 
     TriWall();
     void Initialize(void);
-    void Draw(void);
+    void Draw(void) const;
 };
 
 class TriMaze
 {
-public: 
-
+public:
+    const char * map[]; 
+    TriWall walls[400]; // for now keep things fixed  
+    void TriMaze();
+    void Initialize(); 
+    void Draw() const; 
 };
 
 void DrawGround(void);

@@ -11,7 +11,7 @@ public:
     OverviewCamera * cameraPtr;
     Sprite * scubesPtr;
     Player * playerPtr; 
-    Target * targetPtr; 
+    // Target * targetPtr; 
     TriWall * wallPtr; 
 };
 
@@ -44,7 +44,6 @@ void Render(void *incoming)
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw();
     }
-    datPtr->targetPtr->Draw1(); 
     for (int i = 0; i < 3; ++i)
     {
         datPtr->wallPtr[i].Draw();
@@ -95,7 +94,6 @@ void Render(void *incoming)
         datPtr->scubesPtr[i].Draw();
     }
     datPtr->playerPtr->Draw(); 
-    datPtr->targetPtr->Draw1(); 
     for (int i = 0; i < 3; ++i)
     {
         datPtr->wallPtr[i].Draw();
@@ -209,11 +207,6 @@ int main(void)
     {
         scubes[i].UpdateGlobalP(); 
     }
-    
-    Target target; 
-    target.SetPos1(0.,0.,0.); // local 
-    target.pHT = &P0; 
-    target.UpdateGlobalP(); // now I have gp[]
 
     TriWall walls[3];
     double a, b; 
@@ -268,8 +261,7 @@ int main(void)
     MainData dat;
     // dat.cameraPtr = &camera;
     dat.playerPtr = &player;  
-    dat.scubesPtr = scubes;
-    dat.targetPtr = &target; 
+    dat.scubesPtr = scubes; 
     dat.cameraPtr = &camera; 
     dat.wallPtr   = walls; 
     FsRegisterOnPaintCallBack(Render,&dat);
@@ -298,9 +290,6 @@ int main(void)
         r = ovdyn.GetRoll(); 
         p = ovdyn.GetPitch(); 
         w = ovdyn.GetYaw(); 
-
-        target.Move(); 
-        target.UpdateGlobalP();  
 
         // overview.HT.Print(); // debugging
         if(key == FSKEY_ESC)

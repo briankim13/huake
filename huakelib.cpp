@@ -760,7 +760,7 @@ void Camera::GetSidewardVector(double &vx,double &vy,double &vz)
 }
 
 
-// TRIANGULAR MAZE 
+// TRIANGULAR WALL
 TriWall::TriWall()
 {
 	Initialize(); 
@@ -851,6 +851,20 @@ void TriWall::Draw(void)
 	glEnd();	
 }
 
+// Tri MAZE 
+TriMaze::TriMaze()
+{
+	
+}
+class TriMaze
+{
+public:
+    const char * map[]; 
+    TriWall walls[400]; // for now keep things fixed  
+    void TriMaze();
+    void Initialize(); 
+    void Draw() const; 
+};
 
 // Independent function
 void DrawBackground(void)
