@@ -143,14 +143,22 @@ public:
     void Draw(void) const;
 };
 
+// template <const int n>; 
 class TriMaze
 {
 public:
-    const char * map[]; 
-    TriWall walls[400]; // for now keep things fixed  
-    void TriMaze();
-    void Initialize(); 
-    void Draw() const; 
+    const char * map; 
+    TriWall * walls;
+    int n; 
+
+    TriMaze();
+    ~TriMaze(); 
+    void Initialize(void); 
+    void CleanUp(void); 
+    void SetMaze(int w, int h, char incoming[]); 
+    void SetParentHT(TransformMatrix *HT); 
+    void UpdateGlobalP(void); 
+    void Draw(void) const; 
 };
 
 void DrawGround(void);

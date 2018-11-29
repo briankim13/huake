@@ -785,7 +785,7 @@ void TriWall::Initialize(void)
 	gp[4].Set( a,0.,-b);
     gp[5].Set(0.,0., b);
 }
-void TriWall::Draw(void)
+void TriWall::Draw(void) const
 {
 	// side faces
 	glBegin(GL_QUADS);
@@ -848,20 +848,96 @@ void TriWall::Draw(void)
 	glEnd();	
 }
 
-// Tri MAZE 
+// MAZE 
 TriMaze::TriMaze()
 {
-	
+	Initialize(); 
 }
-// class TriMaze
-// {
-// public:
-//     const char * map[]; 
-//     TriWall walls[400]; // for now keep things fixed  
-//     void TriMaze();
-//     void Initialize(); 
-//     void Draw() const; 
-// };
+void TriMaze::Initialize(void)
+{
+	map = nullptr; 
+	walls = nullptr; 
+	n = 0; 
+}
+TriMaze::~TriMaze()
+{
+	CleanUp(); 
+}
+void TriMaze::CleanUp()
+{
+	delete [] walls; 
+	if (map != nullptr)
+	{
+		map = nullptr; 
+	}
+	n = 0; 
+}
+void TriMaze::SetMaze(int w, int h, char incoming[])
+{
+	map = incoming;
+	int buf = 0;  
+	for (int x=0; x<w; ++x)
+	{
+		for (int z=0; z<h; ++z)
+		{
+			auto b = incoming[z*w+x];
+			if (b == '#')
+			{
+				buf += 1; 
+			}
+		}
+	}
+	n = buf; // number of walls 
+	walls = new TriWall[n]; 
+	// set up position and orientation of the walls
+	double px, py, pz; 
+	double th; 
+	int idx = 0; 
+	for (int x=0; x<w; ++x)
+	{
+		for (int z=0; z<h; ++z)
+		{
+			auto b = incoming[z*w+x];
+			if (b == '#')
+			{
+				px = 70.*x; 
+				pz = 70.*z;
+				py = 0.; 
+				printf("Setting: %lf, %lf, %lf\n",px,py,pz); 
+				walls[idx].HT.SetPos(px,py,pz);   
+				idx += 1; 
+				if (idx > n)
+				{
+					printf("Out of bound in TriWall!\n"); 
+				}
+			}
+		}
+	}
+}
+void TriMaze::SetParentHT(TransformMatrix *HT)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		walls[i].pHT = HT; 
+		printf("Its Pos is: %lf, %lf, %lf\n",walls[i].HT.GetX(),walls[i].HT.GetY(),walls[i].HT.GetZ()); 
+	}
+}
+void TriMaze::UpdateGlobalP(void)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		walls[i].UpdateGlobalP(); 
+		printf("%lf, %lf, %lf\n",walls[i].p[0].x,walls[i].p[0].y,walls[i].p[0].z);
+	}
+}
+void TriMaze::Draw(void) const
+{
+	for (int i = 0; i < n; ++i)
+	{
+		walls[i].Draw(); 
+	}
+}
+
 
 // Independent function
 void DrawBackground(void)

@@ -13,6 +13,7 @@ public:
     Player * playerPtr; 
     // Target * targetPtr; 
     TriWall * wallPtr; 
+    TriMaze * mazePtr; 
 };
 
 void Render(void *incoming)
@@ -48,6 +49,7 @@ void Render(void *incoming)
     {
         datPtr->wallPtr[i].Draw();
     } 
+    datPtr->mazePtr->Draw(); 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -98,6 +100,7 @@ void Render(void *incoming)
     {
         datPtr->wallPtr[i].Draw();
     } 
+    datPtr->mazePtr->Draw(); 
 
     FsSwapBuffers();
 }
@@ -217,9 +220,24 @@ int main(void)
     walls[2].SetPos(0.,0., b); 
     for (int i = 0; i < 3; ++i)
     {
-        walls[i].pHT = &P0; 
+        walls[i].pHT = &P1; 
         walls[i].UpdateGlobalP(); 
     }
+
+    TriMaze maze; 
+    char map[]=
+    {
+    //   012345
+        "######"  //0
+        "#    #"  //1
+        "# #  #"  //2
+        "#    #"  //3
+        "#    #"  //4
+        "######"  //5
+    };
+    maze.SetMaze(5,5,map); 
+    maze.SetParentHT(&P0); 
+    maze.UpdateGlobalP(); 
 
     int terminate=0;
     // TransformMatrix PC;
@@ -264,6 +282,7 @@ int main(void)
     dat.scubesPtr = scubes; 
     dat.cameraPtr = &camera; 
     dat.wallPtr   = walls; 
+    dat.mazePtr   = &maze; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     double t, px, py, pz;
