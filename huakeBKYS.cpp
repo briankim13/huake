@@ -337,7 +337,7 @@ int main(void)
     // file[1] calls the ground figure.
     png.file[3*3+2].Decode("image/forest/wall_1.png");
     // file[2] calls the wall figure.
-//
+
     YsSoundPlayer wavDat;
     YsSoundPlayer::SoundData wav;
 
@@ -385,7 +385,6 @@ int main(void)
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
     MainData dat;
-    // dat.cameraPtr = &camera;
     dat.playerPtr = &player; 
     dat.scubesPtr = scubes;
     dat.pngPtr = &png;
@@ -406,6 +405,10 @@ int main(void)
     //     }
     // }
 
+    double t, px, py, pz;
+    Teleporter teleporter; 
+    int plane = 0; 
+
 
     double movespeed = 2.5; 
     FsRegisterOnPaintCallBack(Render,&dat);
@@ -417,12 +420,6 @@ int main(void)
         wavDat.PlayBackground(wav);
         
         int key=FsInkey();
-        switch(key)
-        {
-            case FSKEY_ESC:
-                terminate=1;
-                break;
-        }
         
         // dynamicsContext part 
         // player needs UpdateGlobalHT every step because 
@@ -431,34 +428,72 @@ int main(void)
         player.UpdateGlobalHT(); // update global pos/ori of its center
         camera.UpdateGlobalHT(); 
 
-        if(0!=FsGetKeyState(FSKEY_1))
+        if(key == FSKEY_ESC)
         {
-            // Hell Red
-            player.pHT = &P0; 
+            terminate = 1; 
+            break; 
+        }
+        if(key == FSKEY_1)
+        {
+            // red
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P0;  
             camera.ppHT = &P0;
+            
+            teleporter.Teleport(plane, 0, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
+            plane = 0; 
             png.state = 0; 
         }
-        if(0!=FsGetKeyState(FSKEY_2))
+        if(key == FSKEY_2)
         {
-            // Ice White
-            player.pHT = &P1; 
-            camera.ppHT = &P1;
+            // white
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P1;  
+            camera.ppHT = &P1; 
+            // WILL USE TELEPORTER 
+            teleporter.Teleport(plane, 1, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
+            plane = 1; 
             png.state = 1; 
         }
-        if(0!=FsGetKeyState(FSKEY_3))
+        if(key == FSKEY_3)
         {
-            // Galaxy Purple
-            player.pHT = &P2; 
-            camera.ppHT = &P2; 
-            png.state = 2;
+            // purple 
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P2;  
+            camera.ppHT = &P2;
+
+            teleporter.Teleport(plane, 2, px, py, pz); 
+            player.HT.SetPos(px, py, pz); 
+            plane = 2; 
+            png.state = 2; 
         }
-        if(0!=FsGetKeyState(FSKEY_4))
+        if(key == FSKEY_4)
         {
-            // Forest Green
-            player.pHT = &P3; 
+            // green
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+
+            player.pHT = &P3;  
             camera.ppHT = &P3;
+            
+            teleporter.Teleport(plane, 3, px, py, pz); 
+            player.HT.SetPos(px, py, pz);  
+            plane = 3; 
             png.state = 3; 
         }
+
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
             player.HT.RotateYaw(PI/180.0);
