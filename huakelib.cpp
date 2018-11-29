@@ -1004,6 +1004,103 @@ void DrawGround(void)
 	glEnd();
 }
 
+
+// Teleport from one edge to another
+Teleporter::Teleporter()
+{
+	a = 1000.; 
+}
+void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z)
+{
+	int mode; // there will be 12 
+	double px, py, pz; 
+	px = x; 
+	py = y; 
+	pz = z; 
+	if (pplane == 0)
+	{
+		if (cplane == 1) mode = 0; 
+		else if (cplane == 2) mode = 1; 
+		else if (cplane == 3) mode = 2; 
+		else printf("pplane and cplane must be int 0,1,2,3!!!\n");  
+	}
+	else if (pplane ==1)
+	{
+		if (cplane == 0) mode = 3; 
+		else if (cplane == 2) mode = 4; 
+		else if (cplane == 3) mode = 5; 
+		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
+	}
+	else if (pplane ==2)
+	{
+		if (cplane == 0) mode = 6; 
+		else if (cplane == 1) mode = 7; 
+		else if (cplane == 3) mode = 8; 
+		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
+	}
+	else if (pplane ==3)
+	{
+		if (cplane == 0) mode = 9; 
+		else if (cplane == 1) mode = 10; 
+		else if (cplane == 2) mode = 11; 
+		else printf("pplane and cplane must be int 0,1,2,3!!!\n");
+	}
+
+
+	if (mode == 0)
+	{
+
+	}
+	else if (mode == 1)
+	{
+
+	}
+	else if (mode == 2)
+	{
+
+	}
+	else if (mode == 3)
+	{
+
+	}
+	else if (mode == 4)
+	{
+
+	}
+	else if (mode == 5)
+	{
+
+	}
+	else if (mode == 6)
+	{
+
+	}
+	else if (mode == 7)
+	{
+
+	}
+	else if (mode == 8)
+	{
+
+	}
+	else if (mode == 9)
+	{
+
+	}
+	else if (mode == 10)
+	{
+
+	}
+	else if (mode == 11)
+	{
+
+	}
+	else
+	{
+		printf("NOT CORRECT!\n"); 
+	}
+}
+
 // --------- Obstacle -----------
 // Cubic shape, with y=0, x,z in the range of -500 to 500(??) and width of 20;
 Obstacle::Obstacle()

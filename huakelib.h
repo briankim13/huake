@@ -145,6 +145,14 @@ void DrawFloor(double x1, double y1, double z1,
                double x2, double y2, double z2,
                double x3, double y3, double z3);
 
+class Teleporter
+{
+public:
+    double a; 
+    Teleporter(); 
+    void Teleport(int pplane, int cplane, double &x, double &y, double &z); 
+};
+
 class DynamicsContext
 {
 public: 
