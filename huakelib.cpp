@@ -952,7 +952,6 @@ void TriMaze::UpdateGlobalP(void)
 	for (int i = 0; i < n; ++i)
 	{
 		walls[i].UpdateGlobalP(); 
-		printf("%lf, %lf, %lf\n",walls[i].p[0].x,walls[i].p[0].y,walls[i].p[0].z);
 	}
 }
 void TriMaze::Draw(void) const
@@ -1128,7 +1127,7 @@ Teleporter::Teleporter()
 {
 	a = 1000.; 
 }
-void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z)
+void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w) 
 {
 	int mode; // there will be 12 
 	double px, py, pz, t;
@@ -1179,6 +1178,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (2.-3.*t)*sqrt(6.)*a/6.;
         y = py;
         z = -t*sqrt(2.)/2.*a;
+        w += 60.*PI/180.; 
 	}
 	else if (mode == 1) // P0 to P2
 	{
@@ -1186,6 +1186,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (-1.+t)*sqrt(2.)/2.*a;
+        w +=180.*PI/180.; 
 	}
 	else if (mode == 2) // P0 to P3
 	{
@@ -1193,6 +1194,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (-1.+t)*sqrt(2.)/2*a;
+        w +=-60.*PI/180.; 
 	}
 	else if (mode == 3) // P1 to P0
 	{
@@ -1200,6 +1202,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
+        w += 300.*PI/180.; 
 	}
 	else if (mode == 4) // P1 to P2
 	{
@@ -1207,6 +1210,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (1.-t)*sqrt(2.)/2.*a;
+        w += 300.*PI/180.; 
 	}
 	else if (mode == 5) // P1 to P3
 	{
@@ -1214,6 +1218,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
+        w += 60.*PI/180.; 
 	}
 	else if (mode == 6) // P2 to P0
 	{
@@ -1221,6 +1226,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (2.-3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = -t*sqrt(2.)/2.*a;
+        w += 180.*PI/180.; 
 	}
 	else if (mode == 7) // P2 to P1
 	{
@@ -1228,6 +1234,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
+        w += 60.*PI/180.; 
 	}
 	else if (mode == 8) // P2 to P3
 	{
@@ -1235,6 +1242,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (1.-t)*sqrt(2.)/2.*a;
+        w +=-60.*PI/180.; 
 	}
 	else if (mode == 9) // P3 to P0
 	{
@@ -1242,6 +1250,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (1.-t)*sqrt(2.)/2.*a;
+        w += 60.*PI/180.; 
 	}
 	else if (mode == 10) // P3 to P1
 	{
@@ -1249,6 +1258,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = (-1.+3.*t)*sqrt(6.)/6.*a;
         y = py;
         z = (1.-t)*sqrt(2.)/2.*a;
+        w += 300.*PI/180.; 
 	}
 	else if (mode == 11) // P3 to P2
 	{
@@ -1256,6 +1266,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
         x = -sqrt(6.)*a/6.;
         y = py;
         z = (1.-2.*t)*sqrt(2.)*a/2.;
+        w += 60.*PI/180.; 
 	}
 	else if (mode == -1)
 	{

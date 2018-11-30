@@ -131,7 +131,10 @@ void Render(void *incoming)
         datPtr->scubesPtr[i].Draw();
     }
     datPtr->wallPtr->Draw(); 
-    datPtr->mazePtr->Draw(); 
+    for (int i = 0; i < 4; ++i)
+    {
+        // datPtr->mazePtr[i].Draw(); 
+    }
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -178,7 +181,10 @@ void Render(void *incoming)
     }
     datPtr->playerPtr->Draw(); 
     datPtr->wallPtr->Draw();
-    datPtr->mazePtr->Draw(); 
+    for (int i = 0; i < 4; ++i)
+    {
+        // datPtr->mazePtr[i].Draw(); 
+    }
 
     FsSwapBuffers();
 }
@@ -303,7 +309,7 @@ int main(void)
     wall.pHT = &P0; 
     wall.UpdateGlobalP(); 
 
-    TriMaze maze; 
+    TriMaze mazes[4]; 
     char map[]=
     {
     //   012345678901234567890123456789012345678
@@ -327,11 +333,91 @@ int main(void)
         "  ###################################  " //7
         " ##################################### " //8
         "#######################################" //9
-
     };
-    maze.SetMaze(39,20,map); 
-    maze.SetParentHT(&P0); 
-    maze.UpdateGlobalP(); 
+    mazes[0].SetMaze(39,20,map); 
+    mazes[0].SetParentHT(&P0); 
+    mazes[0].UpdateGlobalP(); 
+    char map1[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[1].SetMaze(39,20,map1); 
+    mazes[1].SetParentHT(&P1); 
+    mazes[1].UpdateGlobalP(); 
+    char map2[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[2].SetMaze(39,20,map2); 
+    mazes[2].SetParentHT(&P2); 
+    mazes[2].UpdateGlobalP(); 
+    char map3[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[3].SetMaze(39,20,map3); 
+    mazes[3].SetParentHT(&P3); 
+    mazes[3].UpdateGlobalP(); 
 
     int terminate=0;
     Player player; 
@@ -390,47 +476,7 @@ int main(void)
 
     YsSoundPlayer wavDat;
     YsSoundPlayer::SoundData wav;
-
-    if(png.state == 0)
-    {
-        char fName[256] = "music/hell_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 1)
-    {
-        char fName[256] = "music/ice_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 2)
-    {
-        char fName[256] = "music/galaxy_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
-    else if(png.state == 3)
-    {
-        char fName[256] = "music/forest_1.wav";
-        if(YSOK != wav.LoadWav(fName))
-        {
-            printf("Failed to read %s.\n", fName);
-
-            return 1;
-        }
-    }
+    bool firstPlayingPass = true;
 
     FsOpenWindow(16,16,800,600,1);
     // For rendering -------------
@@ -440,7 +486,7 @@ int main(void)
     dat.pngPtr = &png;
     dat.cameraPtr = &camera; 
     dat.wallPtr = &wall; 
-    dat.mazePtr = &maze; 
+    dat.mazePtr = mazes; 
 
     wavDat.Start();
 
@@ -455,7 +501,7 @@ int main(void)
     //     }
     // }
 
-    double t, px, py, pz;
+    double t, px, py, pz, yaw;
     Teleporter teleporter; 
     int plane = 0; 
 
@@ -478,6 +524,9 @@ int main(void)
         player.UpdateGlobalHT(); // update global pos/ori of its center
         camera.UpdateGlobalHT(); 
 
+        // debugging
+        yaw = player.HT.GetYaw(); 
+        printf("%lf\n",yaw*180./PI); 
         if(key == FSKEY_ESC)
         {
             terminate = 1; 
@@ -489,29 +538,35 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw(); 
 
             player.pHT = &P0;  
             camera.ppHT = &P0;
             
-            teleporter.Teleport(plane, 0, px, py, pz); 
+            teleporter.Teleport(plane, 0, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz);  
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 0; 
             png.state = 0; 
+            firstPlayingPass = true;
         }
         if(key == FSKEY_2)
         {
             // white
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
+            pz = player.HT.GetZ();
+            yaw = player.HT.GetYaw(); 
 
             player.pHT = &P1;  
             camera.ppHT = &P1; 
             // WILL USE TELEPORTER 
-            teleporter.Teleport(plane, 1, px, py, pz); 
+            teleporter.Teleport(plane, 1, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 1; 
             png.state = 1; 
+            firstPlayingPass = true;
         }
         if(key == FSKEY_3)
         {
@@ -519,14 +574,17 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw();
 
             player.pHT = &P2;  
             camera.ppHT = &P2;
 
-            teleporter.Teleport(plane, 2, px, py, pz); 
+            teleporter.Teleport(plane, 2, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 2; 
             png.state = 2; 
+            firstPlayingPass = true;
         }
         if(key == FSKEY_4)
         {
@@ -534,14 +592,17 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw();
 
             player.pHT = &P3;  
             camera.ppHT = &P3;
             
-            teleporter.Teleport(plane, 3, px, py, pz); 
-            player.HT.SetPos(px, py, pz);  
+            teleporter.Teleport(plane, 3, px, py, pz, yaw); 
+            player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw);  
             plane = 3; 
             png.state = 3; 
+            firstPlayingPass = true;
         }
 
         if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -615,6 +676,53 @@ int main(void)
             CP.RotateYaw(-1.*PI/180.); 
         }
         
+        if(png.state == 0 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/hell_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 1 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/ice_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 2 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/galaxy_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+        else if(png.state == 3 && firstPlayingPass == true)
+        {
+            firstPlayingPass = false;
+            char fName[256] = "music/forest_1.wav";
+            if(YSOK != wav.LoadWav(fName))
+            {
+                printf("Failed to read %s.\n", fName);
+
+                return 1;
+            }
+        }
+
+        wavDat.PlayBackground(wav);
+
         wavDat.KeepPlaying();
 
         FsPushOnPaintEvent();

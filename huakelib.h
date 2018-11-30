@@ -178,7 +178,7 @@ class Teleporter
 public:
     double a; 
     Teleporter(); 
-    void Teleport(int pplane, int cplane, double &x, double &y, double &z); 
+    void Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w); 
 };
 
 class DynamicsContext
