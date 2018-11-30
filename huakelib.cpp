@@ -858,6 +858,31 @@ void TriMaze::Initialize(void)
 	map = nullptr; 
 	walls = nullptr; 
 	n = 0; 
+
+	double l = L/20.; 
+	double dz = l/2.;
+	double dx = sqrt(3.)/2.*l;  
+
+	mat[0][0] = 1.; 
+	mat[0][1] = 0.;
+	mat[0][2] = 0.;
+	mat[0][3] = L/(2.*sqrt(3.)) - 1./3.*dx;
+	
+	mat[1][0] = 0.;
+	mat[1][1] = 1.;
+	mat[1][2] = 0.;
+	mat[1][3] = 0.;
+                
+	mat[2][0] = -tan(30.*PI/180.); 
+	mat[2][1] = 0.;
+	mat[2][2] = 1.;
+	mat[2][3] = L/2.- tan(30.*PI/180.)*mat[0][3] -dz;  //(L/(2.*sqrt(3.)) -dz);
+                  
+	mat[3][0] = 0.;
+	mat[3][1] = 0.;
+	mat[3][2] = 0.;
+	mat[3][3] = 1.;
+
 }
 TriMaze::~TriMaze()
 {
@@ -960,6 +985,23 @@ void TriMaze::Draw(void) const
 	{
 		walls[i].Draw(); 
 	}
+}
+void TriMaze::GetWallType(double x, double y, double z, double &hx, double &hy, double &hz) const // players local position
+{
+	double v[4];
+	double buf[4]; 
+	v[0] = x; v[1] = y; v[2] = z; v[3] = 1.; 
+	for (int j = 0; j < 4; ++j)
+	{
+		buf[j] = 0.; 
+		for (int i = 0; i < 4; ++i)
+		{
+			buf[j] += mat[j][i]*v[i]; 
+		}
+	}
+	hx = buf[0];
+	hy = buf[1]; 
+	hz = buf[2]; 
 }
 
 

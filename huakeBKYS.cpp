@@ -313,8 +313,8 @@ int main(void)
     char map[]=
     {
     //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
+        "                                       " //0
+        "                                       " //1
         "                 ## ##                 " //2
         "                ###  ##                " //3
         "               ###   ###               " //4
@@ -331,8 +331,8 @@ int main(void)
         "    #######                  ######    " //5
         "   ##############            #######   " //6
         "  ###################################  " //7
-        " ##################################### " //8
-        "#######################################" //9
+        " #   ##############################    " //8
+        "#    #############################     " //9
     };
     mazes[0].SetMaze(39,20,map); 
     mazes[0].SetParentHT(&P0); 
@@ -340,8 +340,8 @@ int main(void)
     char map1[]=
     {
     //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
+        "                                       " //0
+        "                                       " //1
         "                 ## ##                 " //2
         "                ###  ##                " //3
         "               ###   ###               " //4
@@ -358,8 +358,8 @@ int main(void)
         "    #######                  ######    " //5
         "   ##############            #######   " //6
         "  ###################################  " //7
-        " ##################################### " //8
-        "#######################################" //9
+        "   ################################    " //8
+        "   ################################    " //9
     };
     mazes[1].SetMaze(39,20,map1); 
     mazes[1].SetParentHT(&P1); 
@@ -367,8 +367,8 @@ int main(void)
     char map2[]=
     {
     //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
+        "                                       " //0
+        "                                       " //1
         "                 ## ##                 " //2
         "                ###  ##                " //3
         "               ###   ###               " //4
@@ -385,8 +385,8 @@ int main(void)
         "    #######                  ######    " //5
         "   ##############            #######   " //6
         "  ###################################  " //7
-        " ##################################### " //8
-        "#######################################" //9
+        "    ##############################     " //8
+        "    ##############################     " //9
     };
     mazes[2].SetMaze(39,20,map2); 
     mazes[2].SetParentHT(&P2); 
@@ -394,7 +394,7 @@ int main(void)
     char map3[]=
     {
     //   012345678901234567890123456789012345678
-        "                   #                   " //0
+        "                                       " //0
         "                  ###                  " //1
         "                 ## ##                 " //2
         "                ###  ##                " //3
@@ -412,8 +412,8 @@ int main(void)
         "    #######                  ######    " //5
         "   ##############            #######   " //6
         "  ###################################  " //7
-        " ##################################### " //8
-        "#######################################" //9
+        "    ##############################     " //8
+        "#   ##############################     " //9
     };
     mazes[3].SetMaze(39,20,map3); 
     mazes[3].SetParentHT(&P3); 
@@ -502,6 +502,7 @@ int main(void)
     // }
 
     double t, px, py, pz, yaw;
+    double hx, hy, hz; // skew position! 
     Teleporter teleporter; 
     int plane = 0; 
 
@@ -524,9 +525,20 @@ int main(void)
         player.UpdateGlobalHT(); // update global pos/ori of its center
         camera.UpdateGlobalHT(); 
 
+        px = player.HT.GetX(); 
+        py = player.HT.GetY(); 
+        pz = player.HT.GetZ(); 
+        yaw = player.HT.GetYaw();
+        if (key == FSKEY_0)
+        {
+            player.HT.SetPos(0.,10.,0.);
+            player.HT.SetOri(0.,0.,0.);  
+        }
+
+        mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
+        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
+
         // debugging
-        yaw = player.HT.GetYaw(); 
-        printf("%lf\n",yaw*180./PI); 
         if(key == FSKEY_ESC)
         {
             terminate = 1; 
@@ -535,11 +547,6 @@ int main(void)
         if(key == FSKEY_1)
         {
             // red
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw(); 
-
             player.pHT = &P0;  
             camera.ppHT = &P0;
             
@@ -553,11 +560,6 @@ int main(void)
         if(key == FSKEY_2)
         {
             // white
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ();
-            yaw = player.HT.GetYaw(); 
-
             player.pHT = &P1;  
             camera.ppHT = &P1; 
             // WILL USE TELEPORTER 
@@ -571,11 +573,6 @@ int main(void)
         if(key == FSKEY_3)
         {
             // purple 
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw();
-
             player.pHT = &P2;  
             camera.ppHT = &P2;
 
@@ -589,11 +586,6 @@ int main(void)
         if(key == FSKEY_4)
         {
             // green
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw();
-
             player.pHT = &P3;  
             camera.ppHT = &P3;
             

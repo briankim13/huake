@@ -155,6 +155,7 @@ public:
     const char * map; 
     TriWall * walls;
     int n; 
+    double mat[4][4]; 
 
     TriMaze();
     ~TriMaze(); 
@@ -164,6 +165,7 @@ public:
     void SetParentHT(TransformMatrix *HT); 
     void UpdateGlobalP(void); 
     void Draw(void) const; 
+    void GetWallType(double x, double y, double z, double &hx, double &hy, double &hz) const; 
 };
 
 void DrawGround(void);
