@@ -1,7 +1,10 @@
 #include "huakelib.h"
-#include "fssimplewindow.h"
-#include "yspng.h"
-#include "yssimplesound.h"
+//#include "fssimplewindow.h"
+//#include "yspng.h"
+//#include "yssimplesound.h"
+#include "/for Mac/fssimplewindow.h"
+#include "/for Mac/yspng.h"
+#include "/for Mac/yssimplesound.h"
 #include <math.h>
 #include <time.h>
 #include <stdio.h>
