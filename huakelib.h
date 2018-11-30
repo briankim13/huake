@@ -1,4 +1,6 @@
-const double PI=3.1415927;
+
+const double PI = 3.141592; 
+const double L = 1000.*1.41421356; 
 
 // ---------- Point -----------
 class Point

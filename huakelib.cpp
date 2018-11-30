@@ -7,8 +7,8 @@
 #include "huakelib.h"
 #include "yspng.h"
 #include "yssimplesound.h"
-
-const double YsPi = 3.1415927;
+ 
+const double YsPi = 3.141592; 
 
 // ---------- Transform Matrix --------
 TransformMatrix::TransformMatrix()
@@ -764,26 +764,26 @@ TriWall::TriWall()
 }
 void TriWall::Initialize(void)
 {
-	l = 1000./20.; 
+	l = L/20.; 
 	h = 60.; 
 	c[0] = 0.f;
 	c[1] = 0.f;
 	c[2] = 0.f; 
 	double a = l/2.; 
-	double b = sqrt(3)*l/4.; 
-    p[0].Set(-a, h,-b);
-	p[1].Set( a, h,-b);
-	p[2].Set(0., h, b);
-	p[3].Set(-a,0.,-b);
-	p[4].Set( a,0.,-b);
-    p[5].Set(0.,0., b);
+	double b = sqrt(3.)/2.*l; 
+    p[0].Set(-1./3.*b, h,-a);
+	p[1].Set(-1./3.*b, h, a);
+	p[2].Set( 2./3.*b, h,0.);
+	p[3].Set(-1./3.*b,0.,-a);
+	p[4].Set(-1./3.*b,0., a);
+    p[5].Set( 2./3.*b,0.,0.);
 
-    gp[0].Set(-a, h,-b);
-	gp[1].Set( a, h,-b);
-	gp[2].Set(0., h, b);
-	gp[3].Set(-a,0.,-b);
-	gp[4].Set( a,0.,-b);
-    gp[5].Set(0.,0., b);
+    gp[0].Set(-1./3.*b, h,-a);
+	gp[1].Set(-1./3.*b, h, a);
+	gp[2].Set( 2./3.*b, h,0.);
+	gp[3].Set(-1./3.*b,0.,-a);
+	gp[4].Set(-1./3.*b,0., a);
+    gp[5].Set( 2./3.*b,0.,0.);
 }
 void TriWall::Draw(void) const
 {
@@ -817,35 +817,35 @@ void TriWall::Draw(void) const
 	glEnd();
 
 	// lines 
-	glBegin(GL_LINES);
-		glColor3f(1.0f,1.0f,1.0f);
-		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
-		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	// glBegin(GL_LINES);
+	// 	glColor3f(1.0f,1.0f,1.0f);
+	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 	                                            
-		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
-		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
 	                                            
-		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
-		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 	                                            
-		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
-		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);
 	                                            
-		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
-		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
 	                                            
-		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
-		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
 	                                            
-		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
-		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
 	                                            
-		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
-		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
 	                                            
-		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
-		glVertex3d(gp[3].x, gp[3].y, gp[3].z);  
-	glEnd();	
+	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);  
+	// glEnd();	
 }
 
 // MAZE 
@@ -893,18 +893,44 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 	double px, py, pz; 
 	double th; 
 	int idx = 0; 
-	for (int x=0; x<w; ++x)
+	double l = L/20.; 
+	double dz = l/2.;
+	double dx = sqrt(3.)/2.*l;  
+	for (int x=0; x<h; ++x)
 	{
-		for (int z=0; z<h; ++z)
+		for (int z=0; z<w; ++z)
 		{
-			auto b = incoming[z*w+x];
+			auto b = incoming[x*w+z];
 			if (b == '#')
 			{
-				px = 70.*x; 
-				pz = 70.*z;
+				px =-dx*x + 1000.*sqrt(6.)/3. -2./3.*dx; 
+				pz = dz*z - L/2. + dz;
 				py = 0.; 
-				printf("Setting: %lf, %lf, %lf\n",px,py,pz); 
-				walls[idx].HT.SetPos(px,py,pz);   
+				walls[idx].HT.SetPos(px,py,pz);  
+				if (x%2==1) // odd row
+				{
+					if (z%2==0) // even col
+					{
+						walls[idx].HT.SetOri(0.,0.,0.);
+					}
+					else        // odd col
+					{
+						walls[idx].HT.MovePos(dx/3.,0.,0.); 
+						walls[idx].HT.SetOri(0.,0.,PI);
+					}
+				} 
+				else  // even row
+				{
+					if (z%2==0) // even col
+					{
+						walls[idx].HT.MovePos(dx/3.,0.,0.); 
+						walls[idx].HT.SetOri(0.,0.,PI);
+					}
+					else        // odd col
+					{
+						walls[idx].HT.SetOri(0.,0.,0.);
+					}
+				}
 				idx += 1; 
 				if (idx > n)
 				{
@@ -919,7 +945,6 @@ void TriMaze::SetParentHT(TransformMatrix *HT)
 	for (int i = 0; i < n; ++i)
 	{
 		walls[i].pHT = HT; 
-		printf("Its Pos is: %lf, %lf, %lf\n",walls[i].HT.GetX(),walls[i].HT.GetY(),walls[i].HT.GetZ()); 
 	}
 }
 void TriMaze::UpdateGlobalP(void)

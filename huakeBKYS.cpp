@@ -26,6 +26,7 @@ public:
     Player * playerPtr; 
     Pngdata * pngPtr;
     TriWall * wallPtr; 
+    TriMaze * mazePtr; 
 };
 
 void Render(void *incoming)
@@ -127,9 +128,10 @@ void Render(void *incoming)
     for (int i = 0; i<12; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw1();
+        datPtr->scubesPtr[i].Draw();
     }
     datPtr->wallPtr->Draw(); 
+    datPtr->mazePtr->Draw(); 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -172,10 +174,11 @@ void Render(void *incoming)
     for (int i = 0; i<12; ++i)
     {
         // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw1();
+        datPtr->scubesPtr[i].Draw();
     }
     datPtr->playerPtr->Draw(); 
     datPtr->wallPtr->Draw();
+    datPtr->mazePtr->Draw(); 
 
     FsSwapBuffers();
 }
@@ -300,6 +303,36 @@ int main(void)
     wall.pHT = &P0; 
     wall.UpdateGlobalP(); 
 
+    TriMaze maze; 
+    char map[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+
+    };
+    maze.SetMaze(39,20,map); 
+    maze.SetParentHT(&P0); 
+    maze.UpdateGlobalP(); 
+
     int terminate=0;
     Player player; 
     player.nearZ = 1.0f;
@@ -407,6 +440,7 @@ int main(void)
     dat.pngPtr = &png;
     dat.cameraPtr = &camera; 
     dat.wallPtr = &wall; 
+    dat.mazePtr = &maze; 
 
     wavDat.Start();
 
