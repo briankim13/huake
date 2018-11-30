@@ -362,11 +362,11 @@ int main(void)
 
     Pngdata dat;
     dat.firstRenderingPass=true; // Make texture during the first rendering pass.
-    dat.png[0].Decode("Image/Ice/background_1.png");
+    dat.png[0].Decode("Image/Galaxy/background_1.png");
     // png[0] calls the background figure.
-    dat.png[1].Decode("Image/Ice/floor_1.png");
+    dat.png[1].Decode("Image/Galaxy/floor_1.png");
     // png[1] calls the ground figure.
-    dat.png[2].Decode("Image/Ice/wall_2.png");
+    dat.png[2].Decode("Image/Galaxy/wall_1.png");
     // png[2] calls the wall figure.
     dat.angle=0.0;
 

@@ -49,7 +49,10 @@ void Render(void *incoming)
     {
         datPtr->wallPtr[i].Draw();
     } 
-    datPtr->mazePtr->Draw(); 
+    for (int i = 0; i < 4; ++i)
+    {
+        datPtr->mazePtr[i].Draw(); 
+    } 
 
     // Set up 2D drawing
     // glMatrixMode(GL_PROJECTION);
@@ -100,7 +103,10 @@ void Render(void *incoming)
     {
         datPtr->wallPtr[i].Draw();
     } 
-    datPtr->mazePtr->Draw(); 
+    for (int i = 0; i < 4; ++i)
+    {
+        datPtr->mazePtr[i].Draw(); 
+    }
 
     FsSwapBuffers();
 }
@@ -236,7 +242,7 @@ int main(void)
         walls[i].UpdateGlobalP(); 
     }
 
-    TriMaze maze; 
+    TriMaze mazes[4]; 
     char map[]=
     {
     //   012345678901234567890123456789012345678
@@ -260,11 +266,91 @@ int main(void)
         "  ###################################  " //7
         " ##################################### " //8
         "#######################################" //9
-
     };
-    maze.SetMaze(39,20,map); 
-    maze.SetParentHT(&P0); 
-    maze.UpdateGlobalP(); 
+    mazes[0].SetMaze(39,20,map); 
+    mazes[0].SetParentHT(&P0); 
+    mazes[0].UpdateGlobalP(); 
+    char map1[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[1].SetMaze(39,20,map1); 
+    mazes[1].SetParentHT(&P1); 
+    mazes[1].UpdateGlobalP(); 
+    char map2[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[2].SetMaze(39,20,map2); 
+    mazes[2].SetParentHT(&P2); 
+    mazes[2].UpdateGlobalP(); 
+    char map3[]=
+    {
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ###  ##                " //3
+        "               ###   ###               " //4
+        "              ###    ####              " //5
+        "             ####    #####             " //6
+        "            #####   #######            " //7
+        "           ###### # ########           " //8
+        "          #######      ######          " //9
+        "         ########      #######         " //0
+        "        #########      ########        " //1
+        "       ####            #########       " //2
+        "      #####                  ####      " //3
+        "     ######                  #####     " //4
+        "    #######                  ######    " //5
+        "   ##############            #######   " //6
+        "  ###################################  " //7
+        " ##################################### " //8
+        "#######################################" //9
+    };
+    mazes[3].SetMaze(39,20,map3); 
+    mazes[3].SetParentHT(&P3); 
+    mazes[3].UpdateGlobalP(); 
 
     int terminate=0;
     // TransformMatrix PC;
@@ -309,10 +395,10 @@ int main(void)
     dat.scubesPtr = scubes; 
     dat.cameraPtr = &camera; 
     dat.wallPtr   = walls; 
-    dat.mazePtr   = &maze; 
+    dat.mazePtr   = mazes; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
-    double t, px, py, pz;
+    double t, px, py, pz, yaw;
     int plane = 0; // curr plane
     Teleporter teleporter; 
 
@@ -349,11 +435,14 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw(); 
 
             player.pHT = &P0;  
             camera.ppHT = &P0;
-            teleporter.Teleport(plane, 0, px, py, pz); 
+            
+            teleporter.Teleport(plane, 0, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz);  
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 0; 
         }
         if(key == FSKEY_2)
@@ -361,12 +450,15 @@ int main(void)
             // white
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
+            pz = player.HT.GetZ();
+            yaw = player.HT.GetYaw(); 
 
             player.pHT = &P1;  
             camera.ppHT = &P1; 
-            teleporter.Teleport(plane, 1, px, py, pz); 
+            // WILL USE TELEPORTER 
+            teleporter.Teleport(plane, 1, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 1; 
         }
         if(key == FSKEY_3)
@@ -375,12 +467,14 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw();
 
             player.pHT = &P2;  
             camera.ppHT = &P2;
 
-            teleporter.Teleport(plane, 2, px, py, pz); 
+            teleporter.Teleport(plane, 2, px, py, pz, yaw); 
             player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw); 
             plane = 2; 
         }
         if(key == FSKEY_4)
@@ -389,14 +483,17 @@ int main(void)
             px = player.HT.GetX(); 
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw();
 
             player.pHT = &P3;  
             camera.ppHT = &P3;
             
-            teleporter.Teleport(plane, 3, px, py, pz); 
-            player.HT.SetPos(px, py, pz);  
+            teleporter.Teleport(plane, 3, px, py, pz, yaw); 
+            player.HT.SetPos(px, py, pz); 
+            player.HT.SetOri(0., 0.,yaw);  
             plane = 3; 
         }
+
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
             player.HT.RotateYaw(PI/180.0);

@@ -133,7 +133,7 @@ void Render(void *incoming)
     datPtr->wallPtr->Draw(); 
     for (int i = 0; i < 4; ++i)
     {
-        // datPtr->mazePtr[i].Draw(); 
+        datPtr->mazePtr[i].Draw(); 
     }
 
     // Set up 2D drawing
@@ -183,7 +183,7 @@ void Render(void *incoming)
     datPtr->wallPtr->Draw();
     for (int i = 0; i < 4; ++i)
     {
-        // datPtr->mazePtr[i].Draw(); 
+        datPtr->mazePtr[i].Draw(); 
     }
 
     FsSwapBuffers();

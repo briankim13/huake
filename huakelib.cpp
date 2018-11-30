@@ -817,35 +817,35 @@ void TriWall::Draw(void) const
 	glEnd();
 
 	// lines 
-	// glBegin(GL_LINES);
-	// 	glColor3f(1.0f,1.0f,1.0f);
-	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
-	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+	glBegin(GL_LINES);
+		glColor3f(1.0f,1.0f,1.0f);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 	                                            
-	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
-	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
 	                                            
-	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
-	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 	                                            
-	// 	glVertex3d(gp[0].x, gp[0].y, gp[0].z);
-	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
 	                                            
-	// 	glVertex3d(gp[2].x, gp[2].y, gp[2].z);
-	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
 	                                            
-	// 	glVertex3d(gp[1].x, gp[1].y, gp[1].z);
-	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
 	                                            
-	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);
-	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
 	                                            
-	// 	glVertex3d(gp[4].x, gp[4].y, gp[4].z);
-	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
 	                                            
-	// 	glVertex3d(gp[5].x, gp[5].y, gp[5].z);
-	// 	glVertex3d(gp[3].x, gp[3].y, gp[3].z);  
-	// glEnd();	
+		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
+		glVertex3d(gp[3].x, gp[3].y, gp[3].z);  
+	glEnd();	
 }
 
 // MAZE 
