@@ -62,7 +62,7 @@ public:
     void SetOri(double r, double p, double y); 
     void SetGlobalPos(double x, double y, double z);
     void SetGlobalOri(double r, double p, double y);
-    void Local2Global(Point pp, double &gx, double &gy, double &gz); 
+    void Local2Global(Point pp, double &gx, double &gy, double &gz);
     void Mygl3d(Point pp);
     void Draw(void); 
     void Draw1(void);
@@ -84,7 +84,7 @@ public:
     void GetForwardVector(double &vx,double &vy,double &vz); 
     void GetSidewardVector(double &vx,double &vy,double &vz); 
     void Draw(void);
-    void MoveAlongWall(const char WallType);
+    void Move(double vx, double vz);
 };
 
 // this class has pHT and ppHT 
@@ -169,8 +169,9 @@ public:
     void SetMaze(int w, int h, char incoming[]); 
     void SetParentHT(TransformMatrix *HT); 
     void UpdateGlobalP(void); 
-    void Draw(void) const; 
-    char GetWallType(const char map[], double x, double y, double z, double &hgx, double &hgy, double &hgz) const; 
+    void Draw(void) const;
+    void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
+    char GetWallType(const char map[], double hgx, double hgy, double hgz) const; 
 };
 
 void DrawGround(void);

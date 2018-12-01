@@ -398,9 +398,10 @@ int main(void)
     dat.mazePtr   = mazes; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
-    double px, py, pz, yaw;
-//    double hx, hy, hz; // skewed coord
-    double hgx, hgy, hgz; // coord on grid
+    double px, py, pz, yaw; // present (local) coord
+//    double hx, hy, hz; // present skew coord
+    double hgx, hgy, hgz; // present coord on skew grid
+//    double fx, fy, fz; // future coord
     
     int plane = 0; // curr plane
     Teleporter teleporter; 
@@ -429,6 +430,7 @@ int main(void)
         px = player.HT.GetX();
         py = player.HT.GetY();
         pz = player.HT.GetZ();
+        
         yaw = player.HT.GetYaw();
         if (key == FSKEY_0)
         {
@@ -438,10 +440,15 @@ int main(void)
         
 //        mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz);
 //        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);
-        printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hgx, hgy, hgz));
+//        printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hgx, hgy, hgz));
+        
+        mazes[0].Local2Grid(px, py, pz, hgx, hgy, hgz); //set coord on grid
+        
+        char type = mazes[0].GetWallType(map0, hgx, hgy, hgz);
+        printf("%lf, %lf, %lf  ->  %d, %d, %d, walltype: %c\n", px, py, pz, (int)hgx, (int)hgy, (int)hgz, type);
 
         double vx,vy,vz;
-        player.GetForwardVector(vx,vy,vz);
+//        player.Move(vx,vy,vz);
         
         
         // overview.HT.Print(); // debugging
@@ -453,10 +460,10 @@ int main(void)
         if(key == FSKEY_1)
         {
             // red
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw(); 
+//            px = player.HT.GetX();
+//            py = player.HT.GetY();
+//            pz = player.HT.GetZ();
+//            yaw = player.HT.GetYaw();
 
             player.pHT = &P0;  
             camera.ppHT = &P0;
@@ -469,10 +476,10 @@ int main(void)
         if(key == FSKEY_2)
         {
             // white
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ();
-            yaw = player.HT.GetYaw(); 
+//            px = player.HT.GetX();
+//            py = player.HT.GetY();
+//            pz = player.HT.GetZ();
+//            yaw = player.HT.GetYaw();
 
             player.pHT = &P1;  
             camera.ppHT = &P1; 
@@ -485,10 +492,10 @@ int main(void)
         if(key == FSKEY_3)
         {
             // purple 
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw();
+//            px = player.HT.GetX();
+//            py = player.HT.GetY();
+//            pz = player.HT.GetZ();
+//            yaw = player.HT.GetYaw();
 
             player.pHT = &P2;  
             camera.ppHT = &P2;
@@ -501,10 +508,10 @@ int main(void)
         if(key == FSKEY_4)
         {
             // green
-            px = player.HT.GetX(); 
-            py = player.HT.GetY(); 
-            pz = player.HT.GetZ(); 
-            yaw = player.HT.GetYaw();
+//            px = player.HT.GetX();
+//            py = player.HT.GetY();
+//            pz = player.HT.GetZ();
+//            yaw = player.HT.GetYaw();
 
             player.pHT = &P3;  
             camera.ppHT = &P3;
@@ -534,37 +541,37 @@ int main(void)
         if(0!=FsGetKeyState(FSKEY_SPACE))
         {
 //            double vx,vy,vz;
-//            player.GetForwardVector(vx,vy,vz);
+            player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_C))
         {
 //            double vx,vy,vz;
-//            player.GetForwardVector(vx,vy,vz);
+            player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_W))
         {
 //            double vx,vy,vz;
-//            player.GetForwardVector(vx,vy,vz);
+            player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_S))
         {
 //            double vx,vy,vz;
-//            player.GetForwardVector(vx,vy,vz);
+            player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_A))
         {
 //            double vx,vy,vz;
-//            player.GetSidewardVector(vx,vy,vz);
+            player.GetSidewardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
         {
 //            double vx,vy,vz;
-//            player.GetSidewardVector(vx,vy,vz);
+            player.GetSidewardVector(vx,vy,vz);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
 
