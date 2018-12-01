@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include "fssimplewindow.h"
-// #include "ysglfontdata.h"
+#include "ysglfontdata.h"
 #include "huakelib.h"
 #include "yspng.h"
 #include "yssimplesound.h"
@@ -1194,6 +1194,21 @@ void DrawGround(void)
 	glEnd();
 }
 
+void DrawScore(double time)
+{
+	glColor3ub(255, 255, 255); 
+
+	char timeStr[6] = "00.00";
+
+	timeStr[4] = (int) (time*100) % 10 + 48; //0.01  
+	timeStr[3] = (int) (time*10 ) % 10 + 48; //0.1
+	timeStr[1] = (int) (time    ) % 10 + 48; //1.
+	timeStr[0] = (int) (time*0.1) % 10 + 48;//10
+
+	glRasterPos2d(15.0,30.0);
+    YsGlDrawFontBitmap16x20(timeStr);
+
+}
 
 // Teleport from one edge to another
 Teleporter::Teleporter()
