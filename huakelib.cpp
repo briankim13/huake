@@ -698,13 +698,23 @@ void Player::GetSidewardVector(double &vx,double &vy,double &vz)
 	vy = HT.mat[1][0];
 	vz = HT.mat[2][0]; 
 }
-void Player::MoveAlongWall(const char WallType)
+void Player::Move(double vx, double vz)
 {
-    double vx, vy, vz;
-//    if(
-    HT.mat[0][2] = HT.mat[0][2];
-    HT.mat[1][2];
-    HT.mat[2][2];
+//    double d=0.2;
+//    double Futurex = Currentx+vx;
+//    double Futurez = Currentz+vz;
+//    char FutureWallType =
+//
+//    if(' ' == WallType)
+//    {
+//        vx += 0.;
+//        vz += 0.;
+//    }
+//    else if('#' == WallType)
+//    {
+//        if
+//    }
+    
 }
 
 // --------- Sprite Inherited Camera ----------
@@ -992,38 +1002,41 @@ void TriMaze::Draw(void) const
 		walls[i].Draw(); 
 	}
 }
-char TriMaze::GetWallType(const char map[], double x, double y, double z, double &hgx, double &hgy, double &hgz) const // players local position
+
+void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy, double &hgz)
 {
-	double CartCoord[4], buf[4];
-	double hx, hy, hz, hgx2, hgz2;
-    int hgx1, hgz1;
-	CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
-	for (int j = 0; j < 4; ++j)
-	{
-		buf[j] = 0.; 
-		for (int i = 0; i < 4; ++i)
-		{
-			buf[j] += mat[j][i]*CartCoord[i];
-		}
-	}
-	hx = buf[0];
-	hy = buf[1];
-	hz = buf[2];
+    double CartCoord[4], buf[4];
+    double hx, hy, hz;
+    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+    for (int j = 0; j < 4; ++j)
+    {
+        buf[j] = 0.;
+        for (int i = 0; i < 4; ++i)
+        {
+            buf[j] += mat[j][i]*CartCoord[i];
+        }
+    }
+    hx = buf[0]*2./sqrt(3.);
+    hy = buf[1];
+    hz = buf[2];
     
     hgx = hx / l;
     hgy = hy;
     hgz = hz / l;
-    
-    hgx1 = (int) hgx;
-    hgz1 = (int) hgz;
-    hgx2 = hgx - hgx1;
-    hgz2 = hgz - hgz1;
-    
-    if(1 < hgx2 + hgz2)
+}
+
+char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
+{
+    int hgx1 = (int) hgx;
+    int hgz1 = (int) hgz;
+    double hgx2 = hgx - (double)hgx1;
+    double hgz2 = hgz - (double)hgz1;
+
+    if(1. >= hgx2 + hgz2)
     {
         return map[39*(19-hgx1)+(hgx1+2*hgz1)];
     }
-    else if(1 >= hgx2 + hgz2)
+    else if(1. < hgx2 + hgz2)
     {
 //        printf("ERROR in COORDINATE on HEX GRID");
         return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
