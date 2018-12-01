@@ -698,13 +698,23 @@ void Player::GetSidewardVector(double &vx,double &vy,double &vz)
 	vy = HT.mat[1][0];
 	vz = HT.mat[2][0]; 
 }
-void Player::MoveAlongWall(const char WallType)
+void Player::Move(double vx, double vz)
 {
-    double vx, vy, vz;
-//    if(
-    HT.mat[0][2] = HT.mat[0][2];
-    HT.mat[1][2];
-    HT.mat[2][2];
+//    double d=0.2;
+//    double Futurex = Currentx+vx;
+//    double Futurez = Currentz+vz;
+//    char FutureWallType =
+//
+//    if(' ' == WallType)
+//    {
+//        vx += 0.;
+//        vz += 0.;
+//    }
+//    else if('#' == WallType)
+//    {
+//        if
+//    }
+    
 }
 
 // --------- Sprite Inherited Camera ----------
@@ -992,38 +1002,41 @@ void TriMaze::Draw(void) const
 		walls[i].Draw(); 
 	}
 }
-char TriMaze::GetWallType(const char map[], double x, double y, double z, double &hgx, double &hgy, double &hgz) const // players local position
+
+void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy, double &hgz)
 {
-	double CartCoord[4], buf[4];
-	double hx, hy, hz, hgx2, hgz2;
-    int hgx1, hgz1;
-	CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
-	for (int j = 0; j < 4; ++j)
-	{
-		buf[j] = 0.; 
-		for (int i = 0; i < 4; ++i)
-		{
-			buf[j] += mat[j][i]*CartCoord[i];
-		}
-	}
-	hx = buf[0];
-	hy = buf[1];
-	hz = buf[2];
+    double CartCoord[4], buf[4];
+    double hx, hy, hz;
+    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+    for (int j = 0; j < 4; ++j)
+    {
+        buf[j] = 0.;
+        for (int i = 0; i < 4; ++i)
+        {
+            buf[j] += mat[j][i]*CartCoord[i];
+        }
+    }
+    hx = buf[0]*2./sqrt(3.);
+    hy = buf[1];
+    hz = buf[2];
     
     hgx = hx / l;
     hgy = hy;
     hgz = hz / l;
-    
-    hgx1 = (int) hgx;
-    hgz1 = (int) hgz;
-    hgx2 = hgx - hgx1;
-    hgz2 = hgz - hgz1;
-    
-    if(1 < hgx2 + hgz2)
+}
+
+char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
+{
+    int hgx1 = (int) hgx;
+    int hgz1 = (int) hgz;
+    double hgx2 = hgx - (double)hgx1;
+    double hgz2 = hgz - (double)hgz1;
+
+    if(1. >= hgx2 + hgz2)
     {
         return map[39*(19-hgx1)+(hgx1+2*hgz1)];
     }
-    else if(1 >= hgx2 + hgz2)
+    else if(1. < hgx2 + hgz2)
     {
 //        printf("ERROR in COORDINATE on HEX GRID");
         return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
@@ -1762,4 +1775,192 @@ void DynamicsContext::SimStep(void)
 	w  += dw*dT;  
 }
 
+char *MyFgets(char str[],int maxn,FILE *fp)
+{
+    auto r=fgets(str,maxn,fp);
+    if(nullptr!=r)
+    {
+        for(int i=strlen(str)-1; 0<=i; --i)
+        {
+            if(str[i]<' ')
+            {
+                str[i]=0;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    else
+    {
+        str[0]=0;
+    }
+    return r;
+}
 
+int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
+{
+    if(0==maxlen)
+    {
+        return 0;
+    }
+
+    int state=0;
+    int wordCount=0;
+    for(int i=0; 0!=input[i]; ++i)
+    {
+        if(0==state)
+        {
+            if(' '<input[i])
+            {
+                wordTop[wordCount]=i;
+                wordLen[wordCount]=1;
+                state=1;
+                ++wordCount;
+            }
+        }
+        else if(1==state)
+        {
+            if(input[i]<=' ')
+            {
+                state=0;
+                if(maxlen<=wordCount)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                ++wordLen[wordCount-1];
+            }
+        }
+    }
+
+    return wordCount;
+}
+
+class Parser
+{
+protected:
+	int nw;
+	int *wTop,*wLen;
+	char *str;
+
+public:
+	Parser();
+	~Parser();
+	void CleanUp(void);
+
+	int Parse(char str[]);
+	void GetWord(char wd[],int maxlen,int idx);
+};
+
+Parser::Parser()
+{
+	nw=0;
+	str=nullptr;
+	wTop=nullptr;
+	wLen=nullptr;
+}
+Parser::~Parser()
+{
+	CleanUp();
+}
+void Parser::CleanUp(void)
+{
+	nw=0;
+	if(nullptr!=str)
+	{
+		delete [] str;
+		str=nullptr;
+	}
+	if(nullptr!=wTop)
+	{
+		delete [] wTop;
+		wTop=nullptr;
+	}
+	if(nullptr!=wLen)
+	{
+		delete [] wLen;
+		wLen=nullptr;
+	}
+}
+int Parser::Parse(char incoming[])
+{
+	int maxlen=(strlen(str)+1)/2;
+	CleanUp();
+
+	str=new char [strlen(incoming)+1];
+	strcpy(str,incoming);
+	wTop=new int [maxlen];
+	wLen=new int [maxlen];
+	return ParseString(wTop,wLen,maxlen,str);
+}
+
+class Score
+{
+protected:
+	int nScore;
+	char *vtx;
+public:
+	Score();
+	~Score();
+	void CleanUp(void);
+
+	void ReadFile(char fName[]);
+	void Draw(void);
+};
+
+Score::Score()
+{
+	nVtx=0;
+	vtx=nullptr;
+}
+Score::~Score()
+{
+	CleanUp();
+}
+void Score::CleanUp(void)
+{
+	nVtx=0;
+	if(nullptr!=vtx)
+	{
+		delete [] vtx;
+		vtx=nullptr;
+	}
+}
+
+void Score::ReadFile(char fName[])
+{
+	FILE *fp=fopen(fName,"r");
+	if(nullptr!=fp)
+	{
+		CleanUp();
+		char str[256];
+		if(nullptr!=fgets(str,255,fp))
+		{
+			nScore = atoi(str);
+			printf("%d scores will be shown.\n", nScore);
+
+			int n=0;
+			vtx=new Vec [nVtx];
+			for(int i=0; i<nVtx; ++i)
+			{
+				if(nullptr!=fgets(str,255,fp))
+				{
+					int nw,wTop[2],wLen[2];
+					if(2<=ParseString(wTop,wLen,2,str))
+					{
+						vtx[n].x=atoi(str+wTop[0]);
+						vtx[n].y=atoi(str+wTop[1]);
+						++n;
+					}
+				}
+			}
+			printf("%d vertices read.\n",n);
+
+			fclose(fp);
+		}
+	}
+}
