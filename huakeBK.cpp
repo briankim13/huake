@@ -438,11 +438,7 @@ int main(void)
         
 //        mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz);
 //        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);
-<<<<<<< HEAD
-        // printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz));
-=======
         printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hgx, hgy, hgz));
->>>>>>> abf942b83191750904695988a91863ab786c2483
 
         double vx,vy,vz;
         player.GetForwardVector(vx,vy,vz);
