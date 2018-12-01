@@ -27,6 +27,7 @@ public:
     Pngdata * pngPtr;
     TriWall * wallPtr; 
     TriMaze * mazePtr; 
+    int * statePtr; 
 };
 
 void Render(void *incoming)
@@ -34,159 +35,188 @@ void Render(void *incoming)
     MainData *datPtr = (MainData *) incoming;
     Pngdata *pngDat = datPtr->pngPtr;
 
-    int wid,hei;
-    FsGetWindowSize(wid,hei);
-    
-    glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-    glClearColor(0.0, 0.0f, 0.0f, 0.0f);
-    
-    // ----------- Main Drawing ---------------
-    glViewport(0,0,wid,hei);
-    // Set up 3D drawing
-    // datPtr->cameraPtr->SetUpCameraProjection();
-    // datPtr->cameraPtr->SetUpCameraTransformation();
-    datPtr->playerPtr->SetUpCameraProjection();
-    datPtr->playerPtr->SetUpCameraTransformation();
-
-    if(true==pngDat->firstRenderingPass)  // Do it only once.
+    if (*datPtr->statePtr == 1)
     {
-        pngDat->firstRenderingPass=false; // And, don't do it again.
+        int wid,hei;
+        FsGetWindowSize(wid,hei);
+        
+        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+        
+        // ----------- Main Drawing ---------------
+        glViewport(0,0,wid,hei);
+        // Set up 3D drawing
+        // datPtr->cameraPtr->SetUpCameraProjection();
+        // datPtr->cameraPtr->SetUpCameraTransformation();
+        datPtr->playerPtr->SetUpCameraProjection();
+        datPtr->playerPtr->SetUpCameraTransformation();
 
-        // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
-
-        for(int i=0; i<12; ++i)
+        if(true==pngDat->firstRenderingPass)  // Do it only once.
         {
-            glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
-            glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
+            pngDat->firstRenderingPass=false; // And, don't do it again.
 
-            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+            // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
 
-            glTexImage2D
-                (GL_TEXTURE_2D,
-                 0,    // Level of detail
-                 GL_RGBA,
-                 pngDat->file[i].wid,
-                 pngDat->file[i].hei,
-                 0,    // Border width, but not supported and needs to be 0.
-                 GL_RGBA,
-                 GL_UNSIGNED_BYTE,
-                 pngDat->file[i].rgba);
+            for(int i=0; i<12; ++i)
+            {
+                glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
+                glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
+
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+                glTexImage2D
+                    (GL_TEXTURE_2D,
+                     0,    // Level of detail
+                     GL_RGBA,
+                     pngDat->file[i].wid,
+                     pngDat->file[i].hei,
+                     0,    // Border width, but not supported and needs to be 0.
+                     GL_RGBA,
+                     GL_UNSIGNED_BYTE,
+                     pngDat->file[i].rgba);
+            }
         }
+
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_POLYGON_OFFSET_FILL);
+        glPolygonOffset(1,1);
+
+        // 3D drawing from here
+        glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
+        glColor4d(1.0,1.0,1.0,1.0);
+
+        // Drawing background
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+        // The background will not be changed based on the view.
+        // The background keeps following the camera without any change.
+
+        glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
+        glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*(pngDat->state)]);
+
+        DrawBackground();
+
+        glDisable(GL_TEXTURE_2D);  // End using texture mapping
+        glPopMatrix();
+
+        // Draw floor of each plane
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*0+1]);
+        DrawFloor(   0.0,    0.0,    0.0,
+                     0.0, 1000.0, 1000.0,
+                  1000.0, 1000.0,    0.0); 
+
+        glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*1+1]);
+        DrawFloor(   0.0,    0.0,    0.0,
+                     0.0, 1000.0, 1000.0,
+                  1000.0,    0.0, 1000.0);
+                  
+        glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*2+1]);
+        DrawFloor(   0.0,    0.0,    0.0,
+                  1000.0, 1000.0,    0.0,
+                  1000.0,    0.0, 1000.0);                    
+
+        glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*3+1]);
+        DrawFloor(   0.0, 1000.0, 1000.0,
+                  1000.0, 1000.0,    0.0,
+                  1000.0,    0.0, 1000.0);
+
+        glDisable(GL_TEXTURE_2D);
+
+
+        for (int i = 0; i<12; ++i)
+        {
+            // datPtr->scubesPtr[i].Draw();
+            datPtr->scubesPtr[i].Draw();
+        }
+        datPtr->wallPtr->Draw(); 
+        for (int i = 0; i < 4; ++i)
+        {
+            datPtr->mazePtr[i].Draw(); 
+        }
+
+        // Set up 2D drawing
+        // glMatrixMode(GL_PROJECTION);
+        // glLoadIdentity();
+        // glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
+        
+        // glMatrixMode(GL_MODELVIEW);
+        // glLoadIdentity();
+        
+        // glDisable(GL_DEPTH_TEST);
+        // 2D drawing from here
+        // glViewport(wid/2,hei/2, wid/2,hei/2);
+        // glBegin(GL_QUADS);
+        // glColor3f(0.0f,0.0f,0.0f);
+        //     glVertex2i(  0,0);
+        //     glVertex2i(800,0);
+        //     glVertex2i(800,600);
+        //     glVertex2i(  0,600); 
+        // glEnd(); 
+
+        // ------------ MiniMap Visualization ----------
+        // need to fix overlapping problem 
+        // clear only certain portion 
+        glScissor(wid*3/4,0, wid/4,hei/4); // (x0,y0, wid,hei)  
+        glEnable(GL_SCISSOR_TEST); 
+        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+        glDisable(GL_SCISSOR_TEST); 
+        glEnable(GL_DEPTH_TEST);
+
+        glViewport(wid*3/4,0, wid/4,hei/4); // (x0,y0, width,hei)
+        datPtr->cameraPtr->SetUpCameraProjection();
+        datPtr->cameraPtr->SetUpCameraTransformation();
+
+        // 3D drawing from here
+        // DrawGround();
+        DrawTetra();
+
+        for (int i = 0; i<12; ++i)
+        {
+            // datPtr->scubesPtr[i].Draw();
+            datPtr->scubesPtr[i].Draw();
+        }
+        datPtr->playerPtr->Draw(); 
+        datPtr->wallPtr->Draw();
+        for (int i = 0; i < 4; ++i)
+        {
+            datPtr->mazePtr[i].Draw(); 
+        }
+        FsSwapBuffers();
     }
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1,1);
-
-    // 3D drawing from here
-    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_MODULATE);
-    glColor4d(1.0,1.0,1.0,1.0);
-
-    // Drawing background
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-    // The background will not be changed based on the view.
-    // The background keeps following the camera without any change.
-
-    glEnable(GL_TEXTURE_2D);  // Begin using texture mapping
-    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*(pngDat->state)]);
-
-    DrawBackground();
-
-    glDisable(GL_TEXTURE_2D);  // End using texture mapping
-    glPopMatrix();
-
-    // Draw floor of each plane
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*0+1]);
-    DrawFloor(   0.0,    0.0,    0.0,
-                 0.0, 1000.0, 1000.0,
-              1000.0, 1000.0,    0.0); 
-
-    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*1+1]);
-    DrawFloor(   0.0,    0.0,    0.0,
-                 0.0, 1000.0, 1000.0,
-              1000.0,    0.0, 1000.0);
-              
-    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*2+1]);
-    DrawFloor(   0.0,    0.0,    0.0,
-              1000.0, 1000.0,    0.0,
-              1000.0,    0.0, 1000.0);                    
-
-    glBindTexture(GL_TEXTURE_2D,pngDat->texId[3*3+1]);
-    DrawFloor(   0.0, 1000.0, 1000.0,
-              1000.0, 1000.0,    0.0,
-              1000.0,    0.0, 1000.0);
-
-    glDisable(GL_TEXTURE_2D);
-
-
-    for (int i = 0; i<12; ++i)
+    else if (*datPtr->statePtr == 2) // writing high score 
     {
-        // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw();
+        int wid,hei;
+        FsGetWindowSize(wid,hei);
+        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+
+        glViewport(0,0,wid,hei); // (x0,y0, width,hei)
+        datPtr->cameraPtr->SetUpCameraProjection();
+        datPtr->cameraPtr->SetUpCameraTransformation();
+
+        // 3D drawing from here
+        // DrawGround();
+        DrawTetra();
+
+        for (int i = 0; i<12; ++i)
+        {
+            datPtr->scubesPtr[i].Draw();
+        }
+        datPtr->playerPtr->Draw(); 
+        datPtr->wallPtr->Draw();
+        for (int i = 0; i < 4; ++i)
+        {
+            datPtr->mazePtr[i].Draw(); 
+        }
+        FsSwapBuffers();
     }
-    datPtr->wallPtr->Draw(); 
-    for (int i = 0; i < 4; ++i)
-    {
-        datPtr->mazePtr[i].Draw(); 
-    }
-
-    // Set up 2D drawing
-    // glMatrixMode(GL_PROJECTION);
-    // glLoadIdentity();
-    // glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
-    
-    // glMatrixMode(GL_MODELVIEW);
-    // glLoadIdentity();
-    
-    // glDisable(GL_DEPTH_TEST);
-    // 2D drawing from here
-    // glViewport(wid/2,hei/2, wid/2,hei/2);
-    // glBegin(GL_QUADS);
-    // glColor3f(0.0f,0.0f,0.0f);
-    //     glVertex2i(  0,0);
-    //     glVertex2i(800,0);
-    //     glVertex2i(800,600);
-    //     glVertex2i(  0,600); 
-    // glEnd(); 
-
-
-    // ------------ MiniMap Visualization ----------
-    // need to fix overlapping problem 
-    // clear only certain portion 
-    glScissor(wid*3/4,0, wid/4,hei/4); // (x0,y0, wid,hei)  
-    glEnable(GL_SCISSOR_TEST); 
-    glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-    glClearColor(0.0, 0.0f, 0.0f, 0.0f);
-    glDisable(GL_SCISSOR_TEST); 
-    glEnable(GL_DEPTH_TEST);
-
-    glViewport(wid*3/4,0, wid/4,hei/4); // (x0,y0, width,hei)
-    datPtr->cameraPtr->SetUpCameraProjection();
-    datPtr->cameraPtr->SetUpCameraTransformation();
-
-    // 3D drawing from here
-    // DrawGround();
-    DrawTetra();
-
-    for (int i = 0; i<12; ++i)
-    {
-        // datPtr->scubesPtr[i].Draw();
-        datPtr->scubesPtr[i].Draw();
-    }
-    datPtr->playerPtr->Draw(); 
-    datPtr->wallPtr->Draw();
-    for (int i = 0; i < 4; ++i)
-    {
-        datPtr->mazePtr[i].Draw(); 
-    }
-
-    FsSwapBuffers();
 }
 
 
@@ -419,7 +449,7 @@ int main(void)
     mazes[3].SetParentHT(&P3); 
     mazes[3].UpdateGlobalP(); 
 
-    int terminate=0;
+    bool gameOn = true;
     Player player; 
     player.nearZ = 1.0f;
     player.farZ  = 5000.0f; 
@@ -490,17 +520,6 @@ int main(void)
 
     wavDat.Start();
 
-    // if(png.state==0)
-    // {
-    //     char fName[256] = "music/hell_1.wav";
-    //     wavDat.Start();
-    //     wavDat.PlayBackground(wav);
-    //     while(YSTRUE==wavDat.IsPlaying(wav))
-    //     {
-    //         wavDat.KeepPlaying();
-    //     }
-    // }
-
     double t, px, py, pz, yaw;
     double hx, hy, hz; // skew position! 
     Teleporter teleporter; 
@@ -510,218 +529,263 @@ int main(void)
     double movespeed = 2.5; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
-    while(0==terminate)
+    int gamestate = 1; // main game, high score typing 
+    dat.statePtr = &gamestate; 
+
+    while(gameOn)
     {
-        FsPollDevice();
-        
-        wavDat.PlayBackground(wav);
-        
-        int key=FsInkey();
-        
-        // dynamicsContext part 
-        // player needs UpdateGlobalHT every step because 
-        // he is moving every step 
-        player.UpdateGlobalP(); // update global pos/ori of points  
-        player.UpdateGlobalHT(); // update global pos/ori of its center
-        camera.UpdateGlobalHT(); 
-
-        px = player.HT.GetX(); 
-        py = player.HT.GetY(); 
-        pz = player.HT.GetZ(); 
-        yaw = player.HT.GetYaw();
-        if (key == FSKEY_0)
+        if (gamestate == 1)
         {
-            player.HT.SetPos(0.,10.,0.);
-            player.HT.SetOri(0.,0.,0.);  
-        }
-
-        mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
-        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
-
-        // debugging
-        if(key == FSKEY_ESC)
-        {
-            terminate = 1; 
-            break; 
-        }
-        if(key == FSKEY_1)
-        {
-            // red
-            player.pHT = &P0;  
-            camera.ppHT = &P0;
+            FsPollDevice();
+            wavDat.PlayBackground(wav);
             
-            teleporter.Teleport(plane, 0, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz);  
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 0; 
-            png.state = 0; 
-            firstPlayingPass = true;
-        }
-        if(key == FSKEY_2)
-        {
-            // white
-            player.pHT = &P1;  
-            camera.ppHT = &P1; 
-            // WILL USE TELEPORTER 
-            teleporter.Teleport(plane, 1, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 1; 
-            png.state = 1; 
-            firstPlayingPass = true;
-        }
-        if(key == FSKEY_3)
-        {
-            // purple 
-            player.pHT = &P2;  
-            camera.ppHT = &P2;
+            int key=FsInkey();
+            // dynamicsContext part 
+            // player needs UpdateGlobalHT every step because 
+            // he is moving every step 
+            player.UpdateGlobalP(); // update global pos/ori of points  
+            player.UpdateGlobalHT(); // update global pos/ori of its center
+            camera.UpdateGlobalHT(); 
 
-            teleporter.Teleport(plane, 2, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 2; 
-            png.state = 2; 
-            firstPlayingPass = true;
-        }
-        if(key == FSKEY_4)
-        {
-            // green
-            player.pHT = &P3;  
-            camera.ppHT = &P3;
+            px = player.HT.GetX(); 
+            py = player.HT.GetY(); 
+            pz = player.HT.GetZ(); 
+            yaw = player.HT.GetYaw();
+            // cheat key
+            if (key == FSKEY_0) 
+            {
+                player.HT.SetPos(0.,10.,0.);
+                player.HT.SetOri(0.,0.,0.);  
+            }
+            if (key == FSKEY_P)
+            {
+                gamestate = 2; 
+            }
+
+            // mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
+            printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
+
+            // debugging
+            if(key == FSKEY_ESC)
+            {
+                gameOn = false; 
+                break; 
+            }
+            if(key == FSKEY_1)
+            {
+                // red
+                player.pHT = &P0;  
+                camera.ppHT = &P0;
+                
+                teleporter.Teleport(plane, 0, px, py, pz, yaw); 
+                player.HT.SetPos(px, py, pz);  
+                player.HT.SetOri(0., 0.,yaw); 
+                plane = 0; 
+                png.state = 0; 
+                firstPlayingPass = true;
+            }
+            if(key == FSKEY_2)
+            {
+                // white
+                player.pHT = &P1;  
+                camera.ppHT = &P1; 
+                // WILL USE TELEPORTER 
+                teleporter.Teleport(plane, 1, px, py, pz, yaw); 
+                player.HT.SetPos(px, py, pz); 
+                player.HT.SetOri(0., 0.,yaw); 
+                plane = 1; 
+                png.state = 1; 
+                firstPlayingPass = true;
+            }
+            if(key == FSKEY_3)
+            {
+                // purple 
+                player.pHT = &P2;  
+                camera.ppHT = &P2;
+
+                teleporter.Teleport(plane, 2, px, py, pz, yaw); 
+                player.HT.SetPos(px, py, pz); 
+                player.HT.SetOri(0., 0.,yaw); 
+                plane = 2; 
+                png.state = 2; 
+                firstPlayingPass = true;
+            }
+            if(key == FSKEY_4)
+            {
+                // green
+                player.pHT = &P3;  
+                camera.ppHT = &P3;
+                
+                teleporter.Teleport(plane, 3, px, py, pz, yaw); 
+                player.HT.SetPos(px, py, pz); 
+                player.HT.SetOri(0., 0.,yaw);  
+                plane = 3; 
+                png.state = 3; 
+                firstPlayingPass = true;
+            }
+
+            if(0!=FsGetKeyState(FSKEY_LEFT))
+            {
+                player.HT.RotateYaw(3.*PI/180.0);
+            }
+            if(0!=FsGetKeyState(FSKEY_RIGHT))
+            {
+                player.HT.RotateYaw(-3.*PI/180.0);
+            }
+            if(0!=FsGetKeyState(FSKEY_UP))
+            {
+                player.HT.RotatePitch(3.*PI/180.);
+            }
+            if(0!=FsGetKeyState(FSKEY_DOWN))
+            {
+                player.HT.RotatePitch(-3.*PI/180.);
+            }
+            if(0!=FsGetKeyState(FSKEY_SPACE))
+            {
+                double vx,vy,vz;
+                player.GetForwardVector(vx,vy,vz);
+                player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
+            }
+            if(0!=FsGetKeyState(FSKEY_C))
+            {
+                double vx,vy,vz;
+                player.GetForwardVector(vx,vy,vz);
+                player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
+            }
+            if(0!=FsGetKeyState(FSKEY_W))
+            {
+                double vx,vy,vz;
+                player.GetForwardVector(vx,vy,vz);
+                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+            }
+            if(0!=FsGetKeyState(FSKEY_S))
+            {
+                double vx,vy,vz;
+                player.GetForwardVector(vx,vy,vz);
+                player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
+            }
+            if(0!=FsGetKeyState(FSKEY_A))
+            {
+                double vx,vy,vz;
+                player.GetSidewardVector(vx,vy,vz);
+                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+            }
+            if(0!=FsGetKeyState(FSKEY_D))
+            {
+                double vx,vy,vz;
+                player.GetSidewardVector(vx,vy,vz);
+                player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
+            }
+
+            // minimap moving 
+            if(0!=FsGetKeyState(FSKEY_I))
+            {
+                CP.RotatePitch(-1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_J))
+            {
+                CP.RotateYaw( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_K))
+            {
+                CP.RotatePitch( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_L))
+            {
+                CP.RotateYaw(-1.*PI/180.); 
+            }
             
-            teleporter.Teleport(plane, 3, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw);  
-            plane = 3; 
-            png.state = 3; 
-            firstPlayingPass = true;
-        }
+            if(png.state == 0 && firstPlayingPass == true)
+            {
+                firstPlayingPass = false;
+                char fName[256] = "music/hell_1.wav";
+                if(YSOK != wav.LoadWav(fName))
+                {
+                    printf("Failed to read %s.\n", fName);
 
-        if(0!=FsGetKeyState(FSKEY_LEFT))
-        {
-            player.HT.RotateYaw(PI/180.0);
-        }
-        if(0!=FsGetKeyState(FSKEY_RIGHT))
-        {
-            player.HT.RotateYaw(-PI/180.0);
-        }
-        if(0!=FsGetKeyState(FSKEY_UP))
-        {
-            player.HT.RotatePitch(PI/180.);
-        }
-        if(0!=FsGetKeyState(FSKEY_DOWN))
-        {
-            player.HT.RotatePitch(-PI/180.);
-        }
-        if(0!=FsGetKeyState(FSKEY_SPACE))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
-        }
-        if(0!=FsGetKeyState(FSKEY_C))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
-        }
-        if(0!=FsGetKeyState(FSKEY_W))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_S))
-        {
-            double vx,vy,vz;
-            player.GetForwardVector(vx,vy,vz);
-            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_A))
-        {
-            double vx,vy,vz;
-            player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
-        }
-        if(0!=FsGetKeyState(FSKEY_D))
-        {
-            double vx,vy,vz;
-            player.GetSidewardVector(vx,vy,vz);
-            player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
-        }
+                    return 1;
+                }
+            }
+            else if(png.state == 1 && firstPlayingPass == true)
+            {
+                firstPlayingPass = false;
+                char fName[256] = "music/ice_1.wav";
+                if(YSOK != wav.LoadWav(fName))
+                {
+                    printf("Failed to read %s.\n", fName);
 
-        // minimap moving 
-        if(0!=FsGetKeyState(FSKEY_I))
-        {
-            CP.RotatePitch(-1.*PI/180.); 
-        }
-        if(0!=FsGetKeyState(FSKEY_J))
-        {
-            CP.RotateYaw( 1.*PI/180.); 
-        }
-        if(0!=FsGetKeyState(FSKEY_K))
-        {
-            CP.RotatePitch( 1.*PI/180.); 
-        }
-        if(0!=FsGetKeyState(FSKEY_L))
-        {
-            CP.RotateYaw(-1.*PI/180.); 
-        }
+                    return 1;
+                }
+            }
+            else if(png.state == 2 && firstPlayingPass == true)
+            {
+                firstPlayingPass = false;
+                char fName[256] = "music/galaxy_1.wav";
+                if(YSOK != wav.LoadWav(fName))
+                {
+                    printf("Failed to read %s.\n", fName);
+
+                    return 1;
+                }
+            }
+            else if(png.state == 3 && firstPlayingPass == true)
+            {
+                firstPlayingPass = false;
+                char fName[256] = "music/forest_1.wav";
+                if(YSOK != wav.LoadWav(fName))
+                {
+                    printf("Failed to read %s.\n", fName);
+
+                    return 1;
+                }
+            }
+            wavDat.PlayBackground(wav);
+            wavDat.KeepPlaying();
+
+            FsPushOnPaintEvent();
+            FsSleep(10);
+        } // end of gamestate == 1
         
-        if(png.state == 0 && firstPlayingPass == true)
+        else if (gamestate == 2)
         {
-            firstPlayingPass = false;
-            char fName[256] = "music/hell_1.wav";
-            if(YSOK != wav.LoadWav(fName))
-            {
-                printf("Failed to read %s.\n", fName);
+            FsPollDevice();
+            wavDat.PlayBackground(wav);
+            camera.UpdateGlobalHT(); 
 
-                return 1;
-            }
-        }
-        else if(png.state == 1 && firstPlayingPass == true)
-        {
-            firstPlayingPass = false;
-            char fName[256] = "music/ice_1.wav";
-            if(YSOK != wav.LoadWav(fName))
+            int key=FsInkey(); 
+            if (key == FSKEY_P)
             {
-                printf("Failed to read %s.\n", fName);
-
-                return 1;
+                gamestate = 1; 
             }
-        }
-        else if(png.state == 2 && firstPlayingPass == true)
-        {
-            firstPlayingPass = false;
-            char fName[256] = "music/galaxy_1.wav";
-            if(YSOK != wav.LoadWav(fName))
+            if (key == FSKEY_ESC)
             {
-                printf("Failed to read %s.\n", fName);
-
-                return 1;
+                gameOn = false; 
             }
-        }
-        else if(png.state == 3 && firstPlayingPass == true)
-        {
-            firstPlayingPass = false;
-            char fName[256] = "music/forest_1.wav";
-            if(YSOK != wav.LoadWav(fName))
+            // minimap moving 
+            if(0!=FsGetKeyState(FSKEY_I))
             {
-                printf("Failed to read %s.\n", fName);
-
-                return 1;
+                CP.RotatePitch(-1.*PI/180.); 
             }
+            if(0!=FsGetKeyState(FSKEY_J))
+            {
+                CP.RotateYaw( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_K))
+            {
+                CP.RotatePitch( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_L))
+            {
+                CP.RotateYaw(-1.*PI/180.); 
+            }
+
+            wavDat.PlayBackground(wav);
+            wavDat.KeepPlaying();
+            FsPushOnPaintEvent();
+            FsSleep(10);   
         }
 
-        wavDat.PlayBackground(wav);
-
-        wavDat.KeepPlaying();
-
-        FsPushOnPaintEvent();
-        FsSleep(10);
-    }
-    
-    wavDat.End();
-
+    } // end of while loop (end of everything)
+    wavDat.End(); // should we turn it off at high score writing?
     return 0;
 }

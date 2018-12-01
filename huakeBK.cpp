@@ -436,7 +436,7 @@ int main(void)
         
 //        mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz);
 //        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);
-        printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz));
+        // printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hx, hy, hz));
 
         // overview.HT.Print(); // debugging
         if(key == FSKEY_ESC)
