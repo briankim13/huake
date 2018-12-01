@@ -181,6 +181,12 @@ void DrawBackground(void);
 void DrawFloor(double x1, double y1, double z1,
                double x2, double y2, double z2,
                double x3, double y3, double z3);
+<<<<<<< HEAD
+void DrawScore(double time); 
+=======
+char *MyFgets(char str[],int maxn,FILE *fp);
+int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
+>>>>>>> 6996ce13a570788d367e173a40fdca8685db3c95
 
 class Teleporter
 {
@@ -226,4 +232,39 @@ public:
     void MovePos(TriMaze *map, double dx, double dy, double dz);
     // simulate step (dT) from input, 
     // how should we get input? as a separate class?
+};
+
+class Parser
+{
+protected:
+    int nw;
+    int *wTop,*wLen;
+    char *str;
+
+public:
+    Parser();
+    ~Parser();
+    void CleanUp(void);
+
+    int Parse(char str[]);
+    void GetWord(char wd[],int maxlen,int idx);
+};
+
+class Vec
+{
+public:
+    int x,y;
+};
+
+class Score
+{
+protected:
+    int nVtx;
+    Vec *vtx;
+public:
+    Score();
+    ~Score();
+    void CleanUp(void);
+
+    void ReadFile(char fName[]);
 };
