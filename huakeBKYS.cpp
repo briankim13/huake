@@ -35,7 +35,35 @@ void Render(void *incoming)
     MainData *datPtr = (MainData *) incoming;
     Pngdata *pngDat = datPtr->pngPtr;
 
-    if (*datPtr->statePtr == 1)
+    if (*datPtr->statePtr == 0) // title screen 
+    {
+        int wid,hei;
+        FsGetWindowSize(wid,hei);
+        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+
+        glViewport(0,0,wid,hei); // (x0,y0, width,hei)
+        datPtr->cameraPtr->SetUpCameraProjection();
+        datPtr->cameraPtr->SetUpCameraTransformation();
+
+        // 3D drawing from here
+        // DrawGround();
+        DrawTetra();
+
+        for (int i = 0; i<12; ++i)
+        {
+            datPtr->scubesPtr[i].Draw();
+        }
+        datPtr->playerPtr->Draw(); 
+        datPtr->wallPtr->Draw();
+        // for (int i = 0; i < 4; ++i)
+        // {
+        //     datPtr->mazePtr[i].Draw(); 
+        // }
+        FsSwapBuffers();
+    }
+
+    else if (*datPtr->statePtr == 1)
     {
         int wid,hei;
         FsGetWindowSize(wid,hei);
@@ -460,7 +488,7 @@ int main(void)
 
     // camera's parent HT 
     CP.SetPos(0.,0.,0.);
-    CP.SetOri(0.,0.,0.);
+    CP.SetOri(0.,30.*PI/180.,0.);
     OverviewCamera camera; 
     camera.nearZ = 1.0f; 
     camera.farZ  = 5000.f; 
@@ -531,9 +559,54 @@ int main(void)
     
     int gamestate = 1; // main game, high score typing 
     dat.statePtr = &gamestate; 
+    bool justChanged = true;
 
     while(gameOn)
     {
+        // Title screen
+        if (gamestate == 0) 
+        {
+            FsPollDevice();
+            wavDat.PlayBackground(wav);
+            camera.UpdateGlobalHT(); 
+
+            int key=FsInkey(); 
+            if (key == FSKEY_P)
+            {
+                gamestate += 1;
+                gamestate = gamestate % 3;  
+            }
+            if (key == FSKEY_ESC)
+            {
+                gameOn = false; 
+            }
+            // minimap moving 
+            if(0!=FsGetKeyState(FSKEY_I))
+            {
+                CP.RotatePitch(-1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_J))
+            {
+                CP.RotateYaw( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_K))
+            {
+                CP.RotatePitch( 1.*PI/180.); 
+            }
+            if(0!=FsGetKeyState(FSKEY_L))
+            {
+                CP.RotateYaw(-1.*PI/180.); 
+            }
+            CP.RotateYaw(0.2*PI/180.); 
+            // angle += PI/180.; 
+
+
+            wavDat.PlayBackground(wav);
+            wavDat.KeepPlaying();
+            FsPushOnPaintEvent();
+            FsSleep(10);
+        }
+
         if (gamestate == 1)
         {
             FsPollDevice();
@@ -551,6 +624,7 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
             yaw = player.HT.GetYaw();
+
             // cheat key
             if (key == FSKEY_0) 
             {
@@ -559,11 +633,12 @@ int main(void)
             }
             if (key == FSKEY_P)
             {
-                gamestate = 2; 
+                gamestate += 1; 
+                gamestate = gamestate % 3; 
             }
 
             // mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
-            printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
+            // printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
 
             // debugging
             if(key == FSKEY_ESC)
@@ -748,6 +823,11 @@ int main(void)
         
         else if (gamestate == 2)
         {
+            if (justChanged)
+            {
+                justChanged = false;
+                CP.SetOri(0.,30.*PI/180.,0.);  
+            }
             FsPollDevice();
             wavDat.PlayBackground(wav);
             camera.UpdateGlobalHT(); 
@@ -755,7 +835,8 @@ int main(void)
             int key=FsInkey(); 
             if (key == FSKEY_P)
             {
-                gamestate = 1; 
+                gamestate += 1; 
+                gamestate = gamestate % 3;
             }
             if (key == FSKEY_ESC)
             {
@@ -778,6 +859,9 @@ int main(void)
             {
                 CP.RotateYaw(-1.*PI/180.); 
             }
+            CP.RotateYaw(0.2*PI/180.); 
+            // angle += PI/180.; 
+
 
             wavDat.PlayBackground(wav);
             wavDat.KeepPlaying();
