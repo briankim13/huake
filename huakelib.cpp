@@ -1883,17 +1883,11 @@ int Parser::Parse(char incoming[])
 	return ParseString(wTop,wLen,maxlen,str);
 }
 
-class Vec
-{
-public:
-	int x,y;
-};
-
 class Score
 {
 protected:
-	int nVtx;
-	Vec *vtx;
+	int nScore;
+	char *vtx;
 public:
 	Score();
 	~Score();
