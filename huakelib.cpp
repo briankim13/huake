@@ -698,7 +698,14 @@ void Player::GetSidewardVector(double &vx,double &vy,double &vz)
 	vy = HT.mat[1][0];
 	vz = HT.mat[2][0]; 
 }
-
+void Player::MoveAlongWall(const char WallType)
+{
+    double vx, vy, vz;
+//    if(
+    HT.mat[0][2] = HT.mat[0][2];
+    HT.mat[1][2];
+    HT.mat[2][2];
+}
 
 // --------- Sprite Inherited Camera ----------
 // NOTE: the Camera origin moves and rotates!
@@ -985,10 +992,10 @@ void TriMaze::Draw(void) const
 		walls[i].Draw(); 
 	}
 }
-char TriMaze::GetWallType(const char map[], double x, double y, double z, double &hx, double &hy, double &hz) const // players local position
+char TriMaze::GetWallType(const char map[], double x, double y, double z, double &hgx, double &hgy, double &hgz) const // players local position
 {
 	double CartCoord[4], buf[4];
-	double hgx, hgy, hgz, hgx2, hgz2;
+	double hx, hy, hz, hgx2, hgz2;
     int hgx1, hgz1;
 	CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
 	for (int j = 0; j < 4; ++j)
@@ -1018,6 +1025,7 @@ char TriMaze::GetWallType(const char map[], double x, double y, double z, double
     }
     else if(1 >= hgx2 + hgz2)
     {
+//        printf("ERROR in COORDINATE on HEX GRID");
         return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
     }
     else

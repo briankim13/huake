@@ -83,7 +83,8 @@ public:
     void SetUpCameraTransformation(void);
     void GetForwardVector(double &vx,double &vy,double &vz); 
     void GetSidewardVector(double &vx,double &vy,double &vz); 
-    void Draw(void); 
+    void Draw(void);
+    void MoveAlongWall(const char WallType);
 };
 
 // this class has pHT and ppHT 
@@ -169,7 +170,7 @@ public:
     void SetParentHT(TransformMatrix *HT); 
     void UpdateGlobalP(void); 
     void Draw(void) const; 
-    char GetWallType(const char map[], double x, double y, double z, double &hx, double &hy, double &hz) const; 
+    char GetWallType(const char map[], double x, double y, double z, double &hgx, double &hgy, double &hgz) const; 
 };
 
 void DrawGround(void);
