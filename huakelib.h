@@ -1,6 +1,10 @@
 
 const double PI = 3.141592; 
-const double L = 1000.*1.41421356; 
+const double L = 1000.*1.41421356; // an edge of a plane
+const double l = 1000.*1.41421356/20.; // an edge od a cell on grid
+const double h = 60.; // a height of a wall
+
+
 
 // ---------- Point -----------
 class Point
@@ -165,7 +169,7 @@ public:
     void SetParentHT(TransformMatrix *HT); 
     void UpdateGlobalP(void); 
     void Draw(void) const; 
-    void GetWallType(double x, double y, double z, double &hx, double &hy, double &hz) const; 
+    char GetWallType(const char map[], double x, double y, double z, double &hx, double &hy, double &hz) const; 
 };
 
 void DrawGround(void);

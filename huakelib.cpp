@@ -764,8 +764,8 @@ TriWall::TriWall()
 }
 void TriWall::Initialize(void)
 {
-	l = L/20.; 
-	h = 60.; 
+    l = L/20.;
+    h = 60.;
 	c[0] = 0.f;
 	c[1] = 0.f;
 	c[2] = 0.f; 
@@ -859,14 +859,14 @@ void TriMaze::Initialize(void)
 	walls = nullptr; 
 	n = 0; 
 
-	double l = L/20.; 
-	double dz = l/2.;
-	double dx = sqrt(3.)/2.*l;  
+//    double l = L/20.;
+//    double dz = l/2.;
+//    double dx = sqrt(3.)/2.*l;
 
 	mat[0][0] = 1.; 
 	mat[0][1] = 0.;
 	mat[0][2] = 0.;
-	mat[0][3] = L/(2.*sqrt(3.)) - 1./3.*dx;
+    mat[0][3] = L/(2.*sqrt(3.)); // - 1./3.*dx;
 	
 	mat[1][0] = 0.;
 	mat[1][1] = 1.;
@@ -876,7 +876,7 @@ void TriMaze::Initialize(void)
 	mat[2][0] = -tan(30.*PI/180.); 
 	mat[2][1] = 0.;
 	mat[2][2] = 1.;
-	mat[2][3] = L/2.- tan(30.*PI/180.)*mat[0][3] -dz;  //(L/(2.*sqrt(3.)) -dz);
+    mat[2][3] = L/2.- tan(30.*PI/180.)*mat[0][3]; // -dz;
                   
 	mat[3][0] = 0.;
 	mat[3][1] = 0.;
@@ -916,9 +916,8 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 	walls = new TriWall[n]; 
 	// set up position and orientation of the walls
 	double px, py, pz; 
-	double th; 
-	int idx = 0; 
-	double l = L/20.; 
+	double th;
+	int idx = 0;
 	double dz = l/2.;
 	double dx = sqrt(3.)/2.*l;  
 	for (int x=0; x<h; ++x)
@@ -986,22 +985,46 @@ void TriMaze::Draw(void) const
 		walls[i].Draw(); 
 	}
 }
-void TriMaze::GetWallType(double x, double y, double z, double &hx, double &hy, double &hz) const // players local position
+char TriMaze::GetWallType(const char map[], double x, double y, double z, double &hx, double &hy, double &hz) const // players local position
 {
-	double v[4];
-	double buf[4]; 
-	v[0] = x; v[1] = y; v[2] = z; v[3] = 1.; 
+	double CartCoord[4], buf[4];
+	double hgx, hgy, hgz, hgx2, hgz2;
+    int hgx1, hgz1;
+	CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
 	for (int j = 0; j < 4; ++j)
 	{
 		buf[j] = 0.; 
 		for (int i = 0; i < 4; ++i)
 		{
-			buf[j] += mat[j][i]*v[i]; 
+			buf[j] += mat[j][i]*CartCoord[i];
 		}
 	}
 	hx = buf[0];
-	hy = buf[1]; 
-	hz = buf[2]; 
+	hy = buf[1];
+	hz = buf[2];
+    
+    hgx = hx / l;
+    hgy = hy;
+    hgz = hz / l;
+    
+    hgx1 = (int) hgx;
+    hgz1 = (int) hgz;
+    hgx2 = hgx - hgx1;
+    hgz2 = hgz - hgz1;
+    
+    if(1 < hgx2 + hgz2)
+    {
+        return map[39*(19-hgx1)+(hgx1+2*hgz1)];
+    }
+    else if(1 >= hgx2 + hgz2)
+    {
+        return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
+    }
+    else
+    {
+        printf("ERROR in COORDINATE on HEX GRID");
+        return 0;
+    }
 }
 
 
