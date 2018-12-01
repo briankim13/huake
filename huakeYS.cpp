@@ -2,10 +2,13 @@
 #include "fssimplewindow.h"
 #include "yspng.h"
 #include "yssimplesound.h"
+#include "ysglfontdata.h"
+
 #include <math.h>
 #include <time.h>
 #include <stdio.h> 
 #include <stdlib.h>
+#include <string.h>
 
 class Pngdata
 {
@@ -215,6 +218,7 @@ void Render(void *incoming)
         {
             datPtr->mazePtr[i].Draw(); 
         }
+
         FsSwapBuffers();
     }
 
@@ -243,6 +247,37 @@ void Render(void *incoming)
         {
             datPtr->mazePtr[i].Draw(); 
         }
+        FsSwapBuffers();
+    }
+
+    else if (*datPtr->statePtr == 3) // writing high score 
+    {
+        int wid,hei;
+        FsGetWindowSize(wid,hei);
+        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
+
+        glViewport(0,0,wid,hei); // (x0,y0, width,hei)
+        datPtr->cameraPtr->SetUpCameraProjection();
+        datPtr->cameraPtr->SetUpCameraTransformation();
+
+        // 3D drawing from here
+        // DrawGround();
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glDisable(GL_DEPTH_TEST);
+        
+        // 2D drawing from here
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glRasterPos2d(10.0, 20.0);
+        char str[25]="babo Woosigi";
+        YsGlDrawFontBitmap16x20(str);
+
         FsSwapBuffers();
     }
 }
@@ -574,7 +609,7 @@ int main(void)
             if (key == FSKEY_P)
             {
                 gamestate += 1;
-                gamestate = gamestate % 3;  
+                gamestate = gamestate % 4;  
             }
             if (key == FSKEY_ESC)
             {
@@ -634,7 +669,7 @@ int main(void)
             if (key == FSKEY_P)
             {
                 gamestate += 1; 
-                gamestate = gamestate % 3; 
+                gamestate = gamestate % 4; 
             }
 
             // mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
@@ -836,7 +871,7 @@ int main(void)
             if (key == FSKEY_P)
             {
                 gamestate += 1; 
-                gamestate = gamestate % 3;
+                gamestate = gamestate % 4;
             }
             if (key == FSKEY_ESC)
             {
@@ -862,6 +897,33 @@ int main(void)
             CP.RotateYaw(0.2*PI/180.); 
             // angle += PI/180.; 
 
+
+            wavDat.PlayBackground(wav);
+            wavDat.KeepPlaying();
+            FsPushOnPaintEvent();
+            FsSleep(10);   
+        }
+
+        else if (gamestate == 3)
+        {
+            if (justChanged)
+            {
+                justChanged = false;
+                CP.SetOri(0.,30.*PI/180.,0.);  
+            }
+            FsPollDevice();
+            wavDat.PlayBackground(wav);
+
+            int key=FsInkey(); 
+            if (key == FSKEY_P)
+            {
+                gamestate += 1; 
+                gamestate = gamestate % 4;
+            }
+            if (key == FSKEY_ESC)
+            {
+                gameOn = false; 
+            }
 
             wavDat.PlayBackground(wav);
             wavDat.KeepPlaying();
