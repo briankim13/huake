@@ -932,8 +932,7 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 	n = buf; // number of walls 
 	walls = new TriWall[n]; 
 	// set up position and orientation of the walls
-	double px, py, pz; 
-	double th;
+	double px, py, pz;
 	int idx = 0;
 	double dz = l/2.;
 	double dx = sqrt(3.)/2.*l;  
@@ -1038,7 +1037,6 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
     }
     else if(1. < hgx2 + hgz2)
     {
-//        printf("ERROR in COORDINATE on HEX GRID");
         return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
     }
     else
@@ -1047,6 +1045,25 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
         return 0;
     }
 }
+
+void TriMaze::CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz)
+{
+    if(FutureWallType == '#') // will collide in future
+    {
+        vx = 0.;
+//        vy = 0.;
+        vz = 0.;
+    }
+    else if(FutureWallType == ' ') // collision-free
+    {
+//        vx = 0.;
+//        vy = 0.;
+//        vz = 0.;
+    }
+    else{}
+}
+
+
 
 
 // Independent function
@@ -1161,7 +1178,6 @@ void DrawFloor(double x1, double y1, double z1,
 	}
 }
 
-// From Jaejun
 void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
