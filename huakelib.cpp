@@ -213,7 +213,9 @@ void Sprite::Initialize(void)
 	p[5].Set( 10.,0.,-10.);
 	p[6].Set( 10.,0., 10.);
 	p[7].Set(-10.,0., 10.);  
-
+	// when drawing we use global position
+	// so this needs update anytime Sprite moves 
+	// update with UpdateGlobalP() 
 	gp[0].Set(-10., 20.,-10.);
 	gp[1].Set( 10., 20.,-10.);
 	gp[2].Set( 10., 20., 10.);
@@ -244,19 +246,59 @@ void Sprite::SetGlobalOri(double r, double p, double y)
 {
 	gHT.SetOri(r,p,y); 
 }
+double Sprite::GetX(void) const
+{
+	return HT.GetX(); 
+}
+double Sprite::GetY(void) const
+{
+	return HT.GetY(); 
+}
+double Sprite::GetZ(void) const
+{
+	return HT.GetZ(); 
+}
+double Sprite::GetRoll(void) const 
+{
+	return HT.GetRoll(); 
+}
+double Sprite::GetPitch(void) const
+{
+	return HT.GetPitch(); 
+}
+double Sprite::GetYaw(void) const
+{
+	return HT.GetYaw(); 
+}
+double Sprite::GetGlobalX(void) const
+{
+	return HT.GetX(); 
+}
+double Sprite::GetGlobalY(void) const
+{
+	return HT.GetY(); 
+}
+double Sprite::GetGlobalZ(void) const
+{
+	return HT.GetZ(); 
+}
 void Sprite::Print(void)
 {
-
+	double x = GetX();
+	double y = GetY(); 
+	double z = GetZ();
+	double r = GetRoll();
+	double p = GetPitch();
+	double w = GetYaw(); 
+	printf("Sprite object at x: %.3lf y: %.3lf z: %.3lf | r: %.1lf p: %.1lf w: %.1lf\n",x,y,z,r,p,w);
 }
-
 void Sprite::SetColor(float r, float g, float b)
 {
     c[0] = r;
     c[1] = g;
     c[2] = b;
 }
-// transform point pp local coordinate to
-// gx, gy, gz global coordinate 
+// NO LONGER USED DO NOT USE THIS 
 void Sprite::Local2Global(Point pp, double &gx, double &gy, double &gz)
 {
 	if (pHT == nullptr)
@@ -302,16 +344,13 @@ void Sprite::Local2Global(Point pp, double &gx, double &gy, double &gz)
 	gy = buf[1]; 
 	gz = buf[2]; 
 }
-
-// do the transform and put the coordinate 
-// in glVertex3d 
+// NO LONGER USED DO NOT USE THIS
 void Sprite::Mygl3d(Point pp)
 {
 	double gx, gy, gz; 
 	Local2Global(pp, gx, gy, gz); 
 	glVertex3d(gx, gy, gz);
 }
-
 // find pos/orientation in global coord
 // and save results in gHT 
 void Sprite::UpdateGlobalHT(void)
@@ -344,7 +383,6 @@ void Sprite::UpdateGlobalHT(void)
 		}
 	}
 }
-
 void Sprite::Draw(void)
 {
 	// cube faces
@@ -1399,11 +1437,11 @@ void DrawGround(void)
 void DrawScore(double time)
 {
 	glRasterPos2d(20.0,30.0);
-	char timeChar[6];
-	double m = 0.1; 
-	for (int i = 0; i < 5; ++i)
+	char timeChar[7];
+	double m = 0.01; 
+	for (int i = 0; i < 6; ++i)
 	{
-		if (i == 2)
+		if (i == 3)
 		{
 			timeChar[i] = '.'; 
 			continue; // skip this loop 
@@ -1468,7 +1506,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = -t*sqrt(2.)/2.*a;
         hgx = 7.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 0.7; 
         w += 60.*PI/180.; 
 	}
@@ -1480,7 +1518,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // z = (-1.+t)*sqrt(2.)/2.*a;
 
         hgx = 10.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 0.7; 
         w +=180.*PI/180.; 
 	}
@@ -1491,7 +1529,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (-1.+t)*sqrt(2.)/2*a;
         hgx = 14.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 0.7; 
         w +=-60.*PI/180.; 
 	}
@@ -1502,7 +1540,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-2.*t)*sqrt(2.)*a/2.;
         hgx = 0.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 7.7; 
         w += 300.*PI/180.; 
 	}
@@ -1513,7 +1551,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-t)*sqrt(2.)/2.*a;
         hgx = 1.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 17.7; 
         w += 300.*PI/180.; 
 	}
@@ -1524,7 +1562,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-2.*t)*sqrt(2.)*a/2.;
         hgx = 0.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 4.7; 
         w += 60.*PI/180.; 
 	}
@@ -1535,7 +1573,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = -t*sqrt(2.)/2.*a;
         hgx = 8.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 0.7; 
         w += 180.*PI/180.; 
 	}
@@ -1546,7 +1584,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-2.*t)*sqrt(2.)*a/2.;
         hgx = 0.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 17.7; 
         w += 60.*PI/180.; 
 	}
@@ -1557,7 +1595,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-t)*sqrt(2.)/2.*a;
         hgx = 14.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 4.7; 
         w +=-60.*PI/180.; 
 	}
@@ -1568,7 +1606,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-t)*sqrt(2.)/2.*a;
         hgx = 14.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 4.7; 
         w += 60.*PI/180.; 
 	}
@@ -1579,7 +1617,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-t)*sqrt(2.)/2.*a;
         hgx = 14.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 4.7; 
         w += 300.*PI/180.; 
 	}
@@ -1590,7 +1628,7 @@ void Teleporter::Teleport(int pplane, int cplane, double &hgx, double &hgy, doub
         // y = py;
         // z = (1.-2.*t)*sqrt(2.)*a/2.;
         hgx = 0.7;
-        hgy = 10.;
+        hgy = hgy;
         hgz = 4.7; 
         w += 60.*PI/180.; 
 	}
