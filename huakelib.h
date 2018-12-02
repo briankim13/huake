@@ -171,6 +171,7 @@ public:
     void UpdateGlobalP(void); 
     void Draw(void) const;
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
+    void Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz);
     char GetWallType(const char map[], double hgx, double hgy, double hgz) const;
     void CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz);
 };
@@ -181,12 +182,12 @@ void DrawBackground(void);
 void DrawFloor(double x1, double y1, double z1,
                double x2, double y2, double z2,
                double x3, double y3, double z3);
-<<<<<<< HEAD
+
 void DrawScore(double time); 
-=======
+
 char *MyFgets(char str[],int maxn,FILE *fp);
 int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
->>>>>>> 6996ce13a570788d367e173a40fdca8685db3c95
+
 
 class Teleporter
 {

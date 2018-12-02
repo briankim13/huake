@@ -1024,6 +1024,59 @@ void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,
     hgz = hz / l;
 }
 
+void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz)
+{
+    double CartCoord[4], buf[4];
+    double hx, hy, hz;
+    double invmat[4][4];
+    
+    invmat[0][0] = 1.;
+    invmat[0][1] = 0.;
+    invmat[0][2] = 0.;
+    invmat[0][3] = -L/(2.*sqrt(3.));
+    
+    invmat[1][0] = 0.;
+    invmat[1][1] = 1.;
+    invmat[1][2] = 0.;
+    invmat[1][3] = 0.;
+    
+    invmat[2][0] = -tan(30.*PI/180.);
+    invmat[2][1] = 0.;
+    invmat[2][2] = 1.;
+    invmat[2][3] = -(L/2.- tan(30.*PI/180.)*mat[0][3]) - (L/(2.*sqrt(3.))*tan(30.*PI/180.)); // -dz;
+    
+    invmat[3][0] = 0.;
+    invmat[3][1] = 0.;
+    invmat[3][2] = 0.;
+    invmat[3][3] = 1.;
+
+    hx = hgx * l;
+    hy = hgy;
+    hz = hgz * l;
+    buf[0] = hx/2.*sqrt(3.);
+    buf[1] = hy;
+    buf[2] = hz;
+    buf[3] = 0.;
+    
+    for (int j = 0; j < 4; ++j)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            CartCoord[j] = invmat[j][i]*buf[i];
+        }
+    }
+    
+    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+    
+    hx = buf[0]*2./sqrt(3.);
+    hy = buf[1];
+    hz = buf[2];
+    
+    hgx = hx / l;
+    hgy = hy;
+    hgz = hz / l;
+}
+
 char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
 {
     int hgx1 = (int) hgx;
@@ -1956,7 +2009,7 @@ void Score::ReadFile(char fName[])
 		char str[256];
 		if(nullptr!=fgets(str,255,fp))
 		{
-			nScore = atoi(str);
+			int nScore = atoi(str);
 			printf("%d scores will be shown.\n", nScore);
 
 			int n=0;
