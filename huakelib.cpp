@@ -1124,6 +1124,7 @@ void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy
 
 int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
 {
+	// 9 nothing 8 wall 7 goal  0 1 2 3 planes 
     int hgx1 = (int) hgx;
     int hgz1 = (int) hgz;
     double hgx2 = hgx - (double)hgx1;
@@ -1139,6 +1140,10 @@ int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players lo
         {
         	return 9; 
         }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1)] == 'G') // if nothing
+        {
+        	return 7; // goal 
+        }
         else
         {
         	return map[39*(19-hgx1)+(hgx1+2*hgz1)]-48; 
@@ -1153,6 +1158,10 @@ int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players lo
         else if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == ' ') // if nothing
         {
         	return 9; 
+        }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == 'G')
+        {
+        	return 7; // goal!
         }
         else // if transition 
         {
@@ -1367,7 +1376,19 @@ void DrawGround(void)
 void DrawScore(double time)
 {
 	glRasterPos2d(20.0,30.0);
-	YsGlDrawFontBitmap16x20("Text-Rendering Sample");
+	char timeChar[6];
+	double m = 0.1; 
+	for (int i = 0; i < 5; ++i)
+	{
+		if (i == 2)
+		{
+			timeChar[i] = '.'; 
+			continue; // skip this loop 
+		}
+		timeChar[i] = (int) (m*time) % 10 + 48;
+		m *= 10.;  
+	}
+	YsGlDrawFontBitmap16x20(timeChar);
 }
 
 
