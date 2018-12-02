@@ -1024,7 +1024,62 @@ void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,
     hgz = hz / l;
 }
 
+
 int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
+void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz)
+{
+    double CartCoord[4], buf[4];
+    double hx, hy, hz;
+    double invmat[4][4];
+    
+    invmat[0][0] = 1.;
+    invmat[0][1] = 0.;
+    invmat[0][2] = 0.;
+    invmat[0][3] = -L/(2.*sqrt(3.));
+    
+    invmat[1][0] = 0.;
+    invmat[1][1] = 1.;
+    invmat[1][2] = 0.;
+    invmat[1][3] = 0.;
+    
+    invmat[2][0] = -tan(30.*PI/180.);
+    invmat[2][1] = 0.;
+    invmat[2][2] = 1.;
+    invmat[2][3] = -(L/2.- tan(30.*PI/180.)*mat[0][3]) - (L/(2.*sqrt(3.))*tan(30.*PI/180.)); // -dz;
+    
+    invmat[3][0] = 0.;
+    invmat[3][1] = 0.;
+    invmat[3][2] = 0.;
+    invmat[3][3] = 1.;
+
+    hx = hgx * l;
+    hy = hgy;
+    hz = hgz * l;
+    buf[0] = hx/2.*sqrt(3.);
+    buf[1] = hy;
+    buf[2] = hz;
+    buf[3] = 0.;
+    
+    for (int j = 0; j < 4; ++j)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            CartCoord[j] = invmat[j][i]*buf[i];
+        }
+    }
+    
+    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+    
+    hx = buf[0]*2./sqrt(3.);
+    hy = buf[1];
+    hz = buf[2];
+    
+    hgx = hx / l;
+    hgy = hy;
+    hgz = hz / l;
+}
+
+char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
 {
     int hgx1 = (int) hgx;
     int hgz1 = (int) hgz;
@@ -1951,6 +2006,131 @@ int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
     return wordCount;
 }
 
+
+// class Parser
+// {
+// protected:
+// 	int nw;
+// 	int *wTop,*wLen;
+// 	char *str;
+
+// public:
+// 	Parser();
+// 	~Parser();
+// 	void CleanUp(void);
+
+// 	int Parse(char str[]);
+// 	void GetWord(char wd[],int maxlen,int idx);
+// };
+
+// Parser::Parser()
+// {
+// 	nw=0;
+// 	str=nullptr;
+// 	wTop=nullptr;
+// 	wLen=nullptr;
+// }
+// Parser::~Parser()
+// {
+// 	CleanUp();
+// }
+// void Parser::CleanUp(void)
+// {
+// 	nw=0;
+// 	if(nullptr!=str)
+// 	{
+// 		delete [] str;
+// 		str=nullptr;
+// 	}
+// 	if(nullptr!=wTop)
+// 	{
+// 		delete [] wTop;
+// 		wTop=nullptr;
+// 	}
+// 	if(nullptr!=wLen)
+// 	{
+// 		delete [] wLen;
+// 		wLen=nullptr;
+// 	}
+// }
+// int Parser::Parse(char incoming[])
+// {
+// 	int maxlen=(strlen(str)+1)/2;
+// 	CleanUp();
+
+// 	str=new char [strlen(incoming)+1];
+// 	strcpy(str,incoming);
+// 	wTop=new int [maxlen];
+// 	wLen=new int [maxlen];
+// 	return ParseString(wTop,wLen,maxlen,str);
+// }
+
+// class Score
+// {
+// protected:
+// 	int nScore;
+// 	char *vtx;
+// public:
+// 	Score();
+// 	~Score();
+// 	void CleanUp(void);
+
+// 	void ReadFile(char fName[]);
+// 	void Draw(void);
+// };
+
+// Score::Score()
+// {
+// 	nVtx=0;
+// 	vtx=nullptr;
+// }
+// Score::~Score()
+// {
+// 	CleanUp();
+// }
+// void Score::CleanUp(void)
+// {
+// 	nVtx=0;
+// 	if(nullptr!=vtx)
+// 	{
+// 		delete [] vtx;
+// 		vtx=nullptr;
+// 	}
+// }
+
+// void Score::ReadFile(char fName[])
+// {
+// 	FILE *fp=fopen(fName,"r");
+// 	if(nullptr!=fp)
+// 	{
+// 		CleanUp();
+// 		char str[256];
+// 		if(nullptr!=fgets(str,255,fp))
+// 		{
+// 			int nScore = atoi(str);
+// 			printf("%d scores will be shown.\n", nScore);
+
+// 			int n=0;
+// 			vtx=new Vec [nVtx];
+// 			for(int i=0; i<nVtx; ++i)
+// 			{
+// 				if(nullptr!=fgets(str,255,fp))
+// 				{
+// 					int nw,wTop[2],wLen[2];
+// 					if(2<=ParseString(wTop,wLen,2,str))
+// 					{
+// 						vtx[n].x=atoi(str+wTop[0]);
+// 						vtx[n].y=atoi(str+wTop[1]);
+// 						++n;
+// 					}
+// 				}
+// 			}
+// 			printf("%d vertices read.\n",n);
+
+// 			fclose(fp);
+// 		}
+// 	}
+// }
 // class Parser
 // {
 // protected:
