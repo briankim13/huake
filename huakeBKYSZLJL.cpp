@@ -369,27 +369,27 @@ int main(void)
     TriMaze mazes[4]; 
     char map0[] =
     {
-        //   012345678901234567890123456789012345678
-            "                   #                   " //0
-            "                  ###                  " //1
-            "                 ## ##                 " //2
-            "                ##   ##                " //3
-            "               ##  #  #3               " //4
-            "              ## ##     #              " //5
-            "             ##  #   #  ##             " //6
-            "            ##   ##   #  ##            " //7
-            "           ##   #  #  #   ##           " //8
-            "          ##  #   #   # #  ##          " //9
-            "         2#  #       ##   ####         " //0
-            "        #   #   ##       ##  ##        " //1
-            "       ##  #    ### # # ## ## ##       " //2
-            "      ##  #         #  #       ##      " //3
-            "     ##       ####  #    #  ##  ##     " //4
-            "    ##  ##   ####  #  ## ##      ##    " //5
-            "   ##  #   #   #   #        # #   ##   " //6
-            "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
-            " ##      ##                         ## " //8
-            "############### 1######################" //9
+    //   012345678901234567890123456789012345678
+        "                   #                   " //0
+        "                  ###                  " //1
+        "                 ## ##                 " //2
+        "                ##   ##                " //3
+        "               ##  #  #3               " //4
+        "              ## ##     #              " //5
+        "             ##  #   #  ##             " //6
+        "            ##   ##   #  ##            " //7
+        "           ##   #  #  #   ##           " //8
+        "          ##  #   #   # #  ##          " //9
+        "         2#  #       ##   ####         " //0
+        "        #   #   ##       ##  ##        " //1
+        "       ##  #    ### # # ## ## ##       " //2
+        "      ##  #         #  #       ##      " //3
+        "     ##       ####  #    #  ##  ##     " //4
+        "    ##  ##   ####  #  ## ##      ##    " //5
+        "   ##  #   #   #   #        # #   ##   " //6
+        "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
+        " ##      ##                         ## " //8
+        "############### 1######################" //9
     };
     mazes[0].SetMaze(39,20,map0);
     mazes[0].SetParentHT(&P0); 
@@ -454,8 +454,8 @@ int main(void)
     "                   #                   " //9
     "                  ###                  " //8
     "                 ## ##                 " //7
-    "                ##   ##                " //6
-    "               0#  #  #2               " //5
+    "                ##  ###                " //6
+    "               0#  ## #2               " //5
     "              #   ##    #              " //4
     "             ##  ##  #####             " //3
     "            ##  ##   #   ##            " //2
@@ -481,7 +481,7 @@ int main(void)
     player.nearZ = 1.0f;
     player.farZ  = 5000.0f; 
     player.pHT   = &P0; 
-    player.HT.SetPos(0.,10.,0.); 
+    player.HT.SetPos(0.,20.,0.); 
     player.UpdateGlobalHT();  // update global pos/ori of center
     player.UpdateGlobalP(); // update global pos/ori of points
 
@@ -578,6 +578,7 @@ int main(void)
 
     while(gameOn)
     {
+player.Print(); 
         // Title screen
         if (gamestate == 0) 
         {
@@ -597,7 +598,7 @@ int main(void)
                 player.pHT = &P0;  
                 camera.ppHT = &P0;
                 FutureWallType = 9; 
-                player.HT.SetPos(0.,10.,0.); 
+                player.HT.SetPos(0.,20.,0.); 
                 player.HT.SetOri(0.,0.,0.); 
                 player.UpdateGlobalP(); // update global pos/ori of points  
                 player.UpdateGlobalHT(); // update global pos/ori of its center
@@ -644,6 +645,7 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
             yaw = player.HT.GetYaw();
+            hgy = py; 
 
             // cheat key
             if (key == FSKEY_0) 
