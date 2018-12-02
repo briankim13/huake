@@ -3,12 +3,11 @@
 #include "yspng.h"
 #include "yssimplesound.h"
 #include "ysglfontdata.h"
-
 #include <math.h>
 #include <time.h>
+#include <chrono>
 #include <stdio.h> 
 #include <stdlib.h>
-#include <string.h>
 
 class Pngdata
 {
@@ -28,9 +27,16 @@ public:
     Sprite * scubesPtr;
     Player * playerPtr; 
     Pngdata * pngPtr;
-    TriWall * wallPtr; 
     TriMaze * mazePtr; 
     int * statePtr; 
+    double * timePtr; 
+    TextInput * txtPtr; 
+    // For high score reading
+    char strName[128][128]; 
+    char strScore[128][128];
+    int wNum = 1; 
+    char fName[256] = "score.txt"; 
+    FILE *fp3; 
 };
 
 void Render(void *incoming)
@@ -38,14 +44,75 @@ void Render(void *incoming)
     MainData *datPtr = (MainData *) incoming;
     Pngdata *pngDat = datPtr->pngPtr;
 
+    if(true==pngDat->firstRenderingPass)  // Do it only once.
+    {
+        pngDat->firstRenderingPass=false; // And, don't do it again.
+
+        // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
+
+        for(int i=0; i<12; ++i)
+        {
+            glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
+            glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+            glTexImage2D
+                (GL_TEXTURE_2D,
+                 0,    // Level of detail
+                 GL_RGBA,
+                 pngDat->file[i].wid,
+                 pngDat->file[i].hei,
+                 0,    // Border width, but not supported and needs to be 0.
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 pngDat->file[i].rgba);
+        }
+        // Read text file
+        datPtr->fp3 = fopen(datPtr->fName, "r");
+        // glColor3f(1.0f, 1.0f, 1.0f);
+        
+        char strLine[256];
+        while(nullptr != MyFgets(strLine, 255, datPtr->fp3))
+        {
+            int nWord;
+            int wordTop[80], wordLen[80];
+            nWord = ParseString(wordTop, wordLen, 80, strLine);
+
+            for(int i = 0; i < nWord; ++i)
+            {
+                char word[256];
+                ExtractWord(word, 256, strLine, wordTop[i], wordLen[i]);
+
+                if((datPtr->wNum % 2) == 1)
+                {
+                    strcpy(datPtr->strName[((datPtr->wNum - 1) / 2)], word);
+                    // printf("%s\t", word);
+                    // printf("%s\n", datPtr->strName[((datPtr->wNum - 1) / 2)]);
+                }
+                else if((datPtr->wNum % 2) == 0)
+                {
+                    strcpy(datPtr->strScore[((datPtr->wNum - 1) / 2)], word);
+                    // printf("%s\t", word);
+                    // printf("%s\n", datPtr->strScore[((datPtr->wNum - 1) / 2)]);
+                }
+                ++datPtr->wNum;
+            }
+        }
+        fclose(datPtr->fp3); 
+    }
+
     if (*datPtr->statePtr == 0) // title screen 
     {
-        int wid,hei;
-        FsGetWindowSize(wid,hei);
-        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
+        int wid, hei;
+        FsGetWindowSize(wid, hei);
+        glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
         glClearColor(0.0, 0.0f, 0.0f, 0.0f);
 
-        glViewport(0,0,wid,hei); // (x0,y0, width,hei)
+        glViewport(0, 0, wid, hei); // (x0,y0, width,hei)
         datPtr->cameraPtr->SetUpCameraProjection();
         datPtr->cameraPtr->SetUpCameraTransformation();
 
@@ -53,16 +120,28 @@ void Render(void *incoming)
         // DrawGround();
         DrawTetra();
 
-        for (int i = 0; i<12; ++i)
+        for (int i = 0; i < 12; ++i)
         {
             datPtr->scubesPtr[i].Draw();
         }
-        datPtr->playerPtr->Draw(); 
-        datPtr->wallPtr->Draw();
-        // for (int i = 0; i < 4; ++i)
-        // {
-        //     datPtr->mazePtr[i].Draw(); 
-        // }
+        datPtr->playerPtr->Draw();
+        for (int i = 0; i < 4; ++i)
+        {
+            datPtr->mazePtr[i].Draw();
+        }
+
+
+        // Set up 2D drawing
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, (float)wid - 1, (float)hei - 1, 0, -1, 1);
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glDisable(GL_DEPTH_TEST);
+        DrawIntro();
+        glEnable(GL_DEPTH_TEST);
+
         FsSwapBuffers();
     }
 
@@ -81,35 +160,6 @@ void Render(void *incoming)
         // datPtr->cameraPtr->SetUpCameraTransformation();
         datPtr->playerPtr->SetUpCameraProjection();
         datPtr->playerPtr->SetUpCameraTransformation();
-
-        if(true==pngDat->firstRenderingPass)  // Do it only once.
-        {
-            pngDat->firstRenderingPass=false; // And, don't do it again.
-
-            // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
-
-            for(int i=0; i<12; ++i)
-            {
-                glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
-                glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
-
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-
-                glTexImage2D
-                    (GL_TEXTURE_2D,
-                     0,    // Level of detail
-                     GL_RGBA,
-                     pngDat->file[i].wid,
-                     pngDat->file[i].hei,
-                     0,    // Border width, but not supported and needs to be 0.
-                     GL_RGBA,
-                     GL_UNSIGNED_BYTE,
-                     pngDat->file[i].rgba);
-            }
-        }
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -163,31 +213,23 @@ void Render(void *incoming)
         {
             // datPtr->scubesPtr[i].Draw();
             datPtr->scubesPtr[i].Draw();
-        }
-        datPtr->wallPtr->Draw(); 
+        } 
         for (int i = 0; i < 4; ++i)
         {
             datPtr->mazePtr[i].Draw(); 
         }
 
         // Set up 2D drawing
-        // glMatrixMode(GL_PROJECTION);
-        // glLoadIdentity();
-        // glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
         
-        // glMatrixMode(GL_MODELVIEW);
-        // glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
         
-        // glDisable(GL_DEPTH_TEST);
-        // 2D drawing from here
-        // glViewport(wid/2,hei/2, wid/2,hei/2);
-        // glBegin(GL_QUADS);
-        // glColor3f(0.0f,0.0f,0.0f);
-        //     glVertex2i(  0,0);
-        //     glVertex2i(800,0);
-        //     glVertex2i(800,600);
-        //     glVertex2i(  0,600); 
-        // glEnd(); 
+        glDisable(GL_DEPTH_TEST);
+        DrawScore(* datPtr->timePtr); 
+        glEnable(GL_DEPTH_TEST);
 
         // ------------ MiniMap Visualization ----------
         // need to fix overlapping problem 
@@ -213,12 +255,10 @@ void Render(void *incoming)
             datPtr->scubesPtr[i].Draw();
         }
         datPtr->playerPtr->Draw(); 
-        datPtr->wallPtr->Draw();
         for (int i = 0; i < 4; ++i)
         {
             datPtr->mazePtr[i].Draw(); 
         }
-
         FsSwapBuffers();
     }
 
@@ -242,42 +282,36 @@ void Render(void *incoming)
             datPtr->scubesPtr[i].Draw();
         }
         datPtr->playerPtr->Draw(); 
-        datPtr->wallPtr->Draw();
         for (int i = 0; i < 4; ++i)
         {
             datPtr->mazePtr[i].Draw(); 
         }
-        FsSwapBuffers();
-    }
 
-    else if (*datPtr->statePtr == 3) // writing high score 
-    {
-        int wid,hei;
-        FsGetWindowSize(wid,hei);
-        glClear(GL_DEPTH_BUFFER_BIT|GL_COLOR_BUFFER_BIT);
-        glClearColor(0.0, 0.0f, 0.0f, 0.0f);
-
-        glViewport(0,0,wid,hei); // (x0,y0, width,hei)
-        datPtr->cameraPtr->SetUpCameraProjection();
-        datPtr->cameraPtr->SetUpCameraTransformation();
-
-        // 3D drawing from here
-        // DrawGround();
+        // Set up 2D drawing
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0,(float)wid-1,(float)hei-1,0,-1,1);
+        glOrtho(0, (float)wid - 1, (float)hei - 1, 0, -1, 1);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-
         glDisable(GL_DEPTH_TEST);
-        
-        // 2D drawing from here
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glRasterPos2d(10.0, 20.0);
-        char str[25]="babo Woosigi";
-        YsGlDrawFontBitmap16x20(str);
 
+        glColor3f(1.0f, 1.0f, 1.0f);
+
+        // draw what I am writing
+        datPtr->txtPtr->Draw(); 
+        // draw from score.txt 
+        for(int i = 0; i < ((datPtr->wNum-1) / 2); ++i)
+        {
+            glRasterPos2d(128, 32 + 16 * i);
+            YsGlDrawFontBitmap12x16(datPtr->strName[i]);
+
+            glRasterPos2d(128 + 160, 32 + 16 * i);
+            YsGlDrawFontBitmap12x16(datPtr->strScore[i]);
+        }
+        fclose(datPtr->fp3);
+
+        glEnable(GL_DEPTH_TEST);
         FsSwapBuffers();
     }
 }
@@ -396,128 +430,123 @@ int main(void)
         scubes[i].UpdateGlobalP(); 
     }
 
-    // make tri wall!
-    TriWall wall; 
-    wall.SetPos(0.,0.,0.); 
-    wall.pHT = &P0; 
-    wall.UpdateGlobalP(); 
-
+    // Make mazes
     TriMaze mazes[4]; 
-    char map[]=
+    char map0[] =
     {
     //   012345678901234567890123456789012345678
-        "                                       " //0
-        "                                       " //1
+        "                   #                   " //0
+        "                  ###                  " //1
         "                 ## ##                 " //2
-        "                ###  ##                " //3
-        "               ###   ###               " //4
-        "              ###    ####              " //5
-        "             ####    #####             " //6
-        "            #####   #######            " //7
-        "           ###### # ########           " //8
-        "          #######      ######          " //9
-        "         ########      #######         " //0
-        "        #########      ########        " //1
-        "       ####            #########       " //2
-        "      #####                  ####      " //3
-        "     ######                  #####     " //4
-        "    #######                  ######    " //5
-        "   ##############            #######   " //6
-        "  ###################################  " //7
-        " #   ##############################    " //8
-        "#    #############################     " //9
+        "                ##   ##                " //3
+        "               ##  #  #3               " //4
+        "              ## ##     #              " //5
+        "             ##  #   #  ##             " //6
+        "            ##   ##   #  ##            " //7
+        "           ##   #  #  #   ##           " //8
+        "          ##  #   #   # #  ##          " //9
+        "         2#  #       ##   ####         " //0
+        "        #   #   ##       ##  ##        " //1
+        "       ##  #    ### # # ## ## ##       " //2
+        "      ##  #         #  #       ##      " //3
+        "     ##       ####  #    #  ##  ##     " //4
+        "    ##  ##   ####  #  ## ##      ##    " //5
+        "   ##  #   #   #   #        # #   ##   " //6
+        "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
+        " ##      ##                         ## " //8
+        "############### 1######################" //9
     };
-    mazes[0].SetMaze(39,20,map); 
+    mazes[0].SetMaze(39,20,map0);
     mazes[0].SetParentHT(&P0); 
     mazes[0].UpdateGlobalP(); 
-    char map1[]=
+    char map1[] =
     {
-    //   012345678901234567890123456789012345678
-        "                                       " //0
-        "                                       " //1
-        "                 ## ##                 " //2
-        "                ###  ##                " //3
-        "               ###   ###               " //4
-        "              ###    ####              " //5
-        "             ####    #####             " //6
-        "            #####   #######            " //7
-        "           ###### # ########           " //8
-        "          #######      ######          " //9
-        "         ########      #######         " //0
-        "        #########      ########        " //1
-        "       ####            #########       " //2
-        "      #####                  ####      " //3
-        "     ######                  #####     " //4
-        "    #######                  ######    " //5
-        "   ##############            #######   " //6
-        "  ###################################  " //7
-        "   ################################    " //8
-        "   ################################    " //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               ##  #  ##               " //5
+    "              ##  ###   3              " //4
+    "             ##  ## ##  ##             " //3
+    "            ##  ##  ###  ##            " //2
+    "           ##  ##  ## ##  ##           " //1
+    "          ##  ##  ##   ##  ##          " //0
+    "         ##  ##  ##  #  ##  ##         " //9
+    "        0#  ##  ##   ##  ##  ##        " //8
+    "       #   ##  ##  #  ##      ##       " //7
+    "      ##  ##  ##   G#  ##  ##  ##      " //6
+    "     ##  ##  ##         ##  ##  ##     " //5
+    "    ##  ##  ###################  ##    " //4
+    "   ##  ##                     ##  ##   " //3
+    "  ##  ##########  ###############  ##  " //2
+    " ##                                 ## " //1
+    "##################################2 ###" //0
     };
     mazes[1].SetMaze(39,20,map1); 
     mazes[1].SetParentHT(&P1); 
     mazes[1].UpdateGlobalP(); 
-    char map2[]=
+    char map2[] =
     {
-    //   012345678901234567890123456789012345678
-        "                                       " //0
-        "                                       " //1
-        "                 ## ##                 " //2
-        "                ###  ##                " //3
-        "               ###   ###               " //4
-        "              ###    ####              " //5
-        "             ####    #####             " //6
-        "            #####   #######            " //7
-        "           ###### # ########           " //8
-        "          #######      ######          " //9
-        "         ########      #######         " //0
-        "        #########      ########        " //1
-        "       ####            #########       " //2
-        "      #####                  ####      " //3
-        "     ######                  #####     " //4
-        "    #######                  ######    " //5
-        "   ##############            #######   " //6
-        "  ###################################  " //7
-        "    ##############################     " //8
-        "    ##############################     " //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               ##  #  ##               " //5
+    "              ##   ## ###              " //4
+    "             ##  #  ### ##             " //3
+    "            ##  ##   ##  ##            " //2
+    "           ##  ##  ## ##  ##           " //1
+    "          0   ##      #    ##          " //0
+    "         ##  ###  ##### ##  ##         " //9
+    "        ### ####  ##     ##  ##        " //8
+    "       ## ###  #  #  ###  ##  ##       " //7
+    "      ##   #   ##           #  ##      " //6
+    "     ##  #   #  ###    ##  #    ##     " //5
+    "    ##  ## # ##  #   #  #  # ##  ##    " //4
+    "   ##  ##      #   ##    #    ##  ##   " //3
+    "  ##  ####  # ### ##  #####  ####  #1  " //2
+    " ##                    ##            # " //1
+    "########3 #############################" //0
     };
     mazes[2].SetMaze(39,20,map2); 
     mazes[2].SetParentHT(&P2); 
     mazes[2].UpdateGlobalP(); 
-    char map3[]=
+    char map3[] =
     {
-    //   012345678901234567890123456789012345678
-        "                                       " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ###  ##                " //3
-        "               ###   ###               " //4
-        "              ###    ####              " //5
-        "             ####    #####             " //6
-        "            #####   #######            " //7
-        "           ###### # ########           " //8
-        "          #######      ######          " //9
-        "         ########      #######         " //0
-        "        #########      ########        " //1
-        "       ####            #########       " //2
-        "      #####                  ####      " //3
-        "     ######                  #####     " //4
-        "    #######                  ######    " //5
-        "   ##############            #######   " //6
-        "  ###################################  " //7
-        "    ##############################     " //8
-        "#   ##############################     " //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##  ###                " //6
+    "               0#  ## #2               " //5
+    "              #   ##    #              " //4
+    "             ##  ##  #####             " //3
+    "            ##  ##   #   ##            " //2
+    "           ##  ##  #   #  ##           " //1
+    "          ##  ##  ### ###  ##          " //0
+    "         ##  ##     ###     ##         " //9
+    "        ##  ##  ###    ####  ##        " //8
+    "       ##  ##      ###        ##       " //7
+    "      ##      ##  #  ##  ####  ##      " //6
+    "     ##  ##  ##  ##   ##  #     ##     " //5
+    "    ######  ##  ##  #  ##  ####  ##    " //4
+    "   ##  ##      ##  ###            ##   " //3
+    "  ##  ##########  #####  ########  ##  " //2
+    " ##                               #### " //1
+    "######### 1############################" //0
     };
     mazes[3].SetMaze(39,20,map3); 
     mazes[3].SetParentHT(&P3); 
-    mazes[3].UpdateGlobalP(); 
+    mazes[3].UpdateGlobalP();  
 
     bool gameOn = true;
     Player player; 
     player.nearZ = 1.0f;
     player.farZ  = 5000.0f; 
     player.pHT   = &P0; 
-    player.HT.SetPos(0.,10.,0.); 
+    player.HT.SetPos(0.,20.,0.); 
     player.UpdateGlobalHT();  // update global pos/ori of center
     player.UpdateGlobalP(); // update global pos/ori of points
 
@@ -577,64 +606,87 @@ int main(void)
     dat.playerPtr = &player; 
     dat.scubesPtr = scubes;
     dat.pngPtr = &png;
-    dat.cameraPtr = &camera; 
-    dat.wallPtr = &wall; 
+    dat.cameraPtr = &camera;
     dat.mazePtr = mazes; 
 
     wavDat.Start();
 
-    double t, px, py, pz, yaw;
-    double hx, hy, hz; // skew position! 
+    double t, px, py, pz, yaw; 
     Teleporter teleporter; 
     int plane = 0; 
-
-
-    double movespeed = 2.5; 
-    FsRegisterOnPaintCallBack(Render,&dat);
     
-    int gamestate = 1; // main game, high score typing 
+    int gamestate = 0; // main game, high score typing 
     dat.statePtr = &gamestate; 
     bool justChanged = true;
+    bool willChange = false; 
+
+    auto start = std::chrono::system_clock::now();
+    auto end = std::chrono::system_clock::now();
+    int passed = std::chrono::duration_cast <std::chrono::milliseconds> (end-start).count();
+    printf("%d sec\n",passed);
+    double time;
+    time = (double) passed / 1000.; 
+    dat.timePtr = &time; 
+
+    int nextplane = plane; 
+    int prevplane = plane; 
+    int FutureWallType = 9; 
+
+    double hgx, hgy, hgz; // present coord on skew grid
+    hgx = 0.;
+    hgy = 0.;
+    hgz = 0.; 
+    double vx = 0., vy = 0., vz = 0.;
+    double movespeed = 3.; // increase movement speed
+
+    // TEXT YUNSIK OHM
+    char fName[16] = "TESTING";
+    TextInput txt;
+    bool hello = txt.Run1(fName); 
+    dat.txtPtr = &txt; 
+
+    FsRegisterOnPaintCallBack(Render,&dat);
 
     while(gameOn)
     {
+// player.Print(); 
         // Title screen
         if (gamestate == 0) 
         {
             FsPollDevice();
             wavDat.PlayBackground(wav);
-            camera.UpdateGlobalHT(); 
+            camera.UpdateGlobalHT();
 
-            int key=FsInkey(); 
+            int key = FsInkey();
             if (key == FSKEY_P)
             {
                 gamestate += 1;
-                gamestate = gamestate % 4;  
+                gamestate = gamestate % 3;
+
+                plane = 0; 
+                prevplane = 0;
+                nextplane = 0;  
+                player.pHT = &P0;  
+                camera.ppHT = &P0;
+                FutureWallType = 9; 
+                player.HT.SetPos(0.,20.,0.); 
+                player.HT.SetOri(0.,0.,0.); 
+                player.UpdateGlobalP(); // update global pos/ori of points  
+                player.UpdateGlobalHT(); // update global pos/ori of its center
+                camera.UpdateGlobalHT(); 
+                CP.SetOri(0.,30.*PI/180.,0.);
+                png.state = 0;
+                firstPlayingPass = true;    
+                start = std::chrono::system_clock::now();
             }
             if (key == FSKEY_ESC)
             {
-                gameOn = false; 
+                gameOn = false;
             }
-            // minimap moving 
-            if(0!=FsGetKeyState(FSKEY_I))
-            {
-                CP.RotatePitch(-1.*PI/180.); 
-            }
-            if(0!=FsGetKeyState(FSKEY_J))
-            {
-                CP.RotateYaw( 1.*PI/180.); 
-            }
-            if(0!=FsGetKeyState(FSKEY_K))
-            {
-                CP.RotatePitch( 1.*PI/180.); 
-            }
-            if(0!=FsGetKeyState(FSKEY_L))
-            {
-                CP.RotateYaw(-1.*PI/180.); 
-            }
-            CP.RotateYaw(0.2*PI/180.); 
-            // angle += PI/180.; 
 
+            CP.RotateRoll(0.3*PI / 180.);
+            CP.RotateYaw(1.*PI / 180.);
+            CP.RotatePitch1(0.3*PI / 180.);
 
             wavDat.PlayBackground(wav);
             wavDat.KeepPlaying();
@@ -647,6 +699,11 @@ int main(void)
             FsPollDevice();
             wavDat.PlayBackground(wav);
             
+            end = std::chrono::system_clock::now();
+            passed = std::chrono::duration_cast <std::chrono::milliseconds> (end-start).count();
+            time = (double) passed / 1000.;
+            DrawScore(time); 
+
             int key=FsInkey();
             // dynamicsContext part 
             // player needs UpdateGlobalHT every step because 
@@ -659,6 +716,7 @@ int main(void)
             py = player.HT.GetY(); 
             pz = player.HT.GetZ(); 
             yaw = player.HT.GetYaw();
+            hgy = py; 
 
             // cheat key
             if (key == FSKEY_0) 
@@ -669,69 +727,81 @@ int main(void)
             if (key == FSKEY_P)
             {
                 gamestate += 1; 
-                gamestate = gamestate % 4; 
+                gamestate = gamestate % 3; 
             }
 
-            // mazes[0].GetWallType(px, py, pz, hx, hy, hz); 
-            // printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);         
-
-            // debugging
             if(key == FSKEY_ESC)
             {
                 gameOn = false; 
                 break; 
             }
-            if(key == FSKEY_1)
+ 
+            if (nextplane != prevplane)
             {
-                // red
-                player.pHT = &P0;  
-                camera.ppHT = &P0;
-                
-                teleporter.Teleport(plane, 0, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz);  
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 0; 
-                png.state = 0; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_2)
-            {
-                // white
-                player.pHT = &P1;  
-                camera.ppHT = &P1; 
-                // WILL USE TELEPORTER 
-                teleporter.Teleport(plane, 1, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 1; 
-                png.state = 1; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_3)
-            {
-                // purple 
-                player.pHT = &P2;  
-                camera.ppHT = &P2;
+                if(nextplane == 0)
+                {
+                    prevplane = nextplane; 
+                    // red
+                    player.pHT = &P0;  
+                    camera.ppHT = &P0;
+                    
+                    teleporter.Teleport(plane, 0, hgx, hgy, hgz, yaw);
+                    mazes[0].Grid2Local(px, py, pz, hgx, hgy, hgz);
 
-                teleporter.Teleport(plane, 2, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 2; 
-                png.state = 2; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_4)
-            {
-                // green
-                player.pHT = &P3;  
-                camera.ppHT = &P3;
-                
-                teleporter.Teleport(plane, 3, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw);  
-                plane = 3; 
-                png.state = 3; 
-                firstPlayingPass = true;
+                    player.HT.SetPos(px, py, pz);  
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 0; 
+                    png.state = 0;
+                    firstPlayingPass = true; 
+                }
+                if(nextplane == 1)
+                {
+                    prevplane = nextplane; 
+                    // white
+                    player.pHT = &P1;  
+                    camera.ppHT = &P1; 
+
+                    teleporter.Teleport(plane, 1, hgx, hgy, hgz, yaw);
+                    mazes[1].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 1; 
+                    png.state = 1;
+                    firstPlayingPass = true; 
+                }
+                if(nextplane == 2)
+                {
+                    prevplane = nextplane; 
+                    // purple 
+                    player.pHT = &P2;  
+                    camera.ppHT = &P2;
+
+                    teleporter.Teleport(plane, 2, hgx, hgy, hgz, yaw);
+                    mazes[2].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 2; 
+                    png.state = 2;
+                    firstPlayingPass = true; 
+                }
+                if(nextplane == 3)
+                {
+                    prevplane = nextplane; 
+                    // green
+                    player.pHT = &P3;  
+                    camera.ppHT = &P3;
+                    
+                    teleporter.Teleport(plane, 3, hgx, hgy, hgz, yaw);
+                    mazes[3].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw);  
+                    plane = 3; 
+                    png.state = 3;
+                    firstPlayingPass = true; 
+                } 
             }
 
             if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -762,29 +832,68 @@ int main(void)
                 player.GetForwardVector(vx,vy,vz);
                 player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
             }
+
             if(0!=FsGetKeyState(FSKEY_W))
             {
-                double vx,vy,vz;
                 player.GetForwardVector(vx,vy,vz);
-                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+                fx = px - movespeed*vx;
+                fy = py;
+                fz = pz - movespeed*vz;
+                
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
+
+                player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_S))
             {
-                double vx,vy,vz;
                 player.GetForwardVector(vx,vy,vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+
+                fx = px + movespeed*vx;
+                fy = py;
+                fz = pz + movespeed*vz;
+
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
+
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_A))
             {
-                double vx,vy,vz;
                 player.GetSidewardVector(vx,vy,vz);
-                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+
+                fx = px - movespeed*vx;
+                fy = py;
+                fz = pz - movespeed*vz;
+             
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
+                player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_D))
             {
-                double vx,vy,vz;
                 player.GetSidewardVector(vx,vy,vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+                fx = px + movespeed*vx;
+                fy = py;
+                fz = pz + movespeed*vz;
+                
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
+            }
+            // REACHED GOAL!
+            if (FutureWallType == 7) 
+            {
+                gamestate += 1; 
+                gamestate = gamestate % 3;
             }
 
             // minimap moving 
@@ -861,74 +970,112 @@ int main(void)
             if (justChanged)
             {
                 justChanged = false;
-                CP.SetOri(0.,30.*PI/180.,0.);  
+                CP.SetOri(0.,30.*PI/180.,0.);
+                char timeChar[7];
+                double m = 0.01; 
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    timeChar[i] = 0;   
+                }  
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    if (i == 3)
+                    {
+                        timeChar[i] = '.'; 
+                        continue; // skip this loop 
+                    }
+                    timeChar[i] = (int) (m*time) % 10 + 48;
+                    m *= 10.;  
+                }   
+                hello = txt.Run1(timeChar); 
             }
             FsPollDevice();
             wavDat.PlayBackground(wav);
             camera.UpdateGlobalHT(); 
+            int key=FsInkey();
 
-            int key=FsInkey(); 
-            if (key == FSKEY_P)
+            if (key == FSKEY_ENTER)
             {
                 gamestate += 1; 
-                gamestate = gamestate % 4;
+                gamestate = gamestate % 3;
+                willChange = true; 
             }
             if (key == FSKEY_ESC)
             {
                 gameOn = false; 
+                txt.str.CleanUp();
             }
-            // minimap moving 
-            if(0!=FsGetKeyState(FSKEY_I))
+            if(FSKEY_BS==key)
             {
-                CP.RotatePitch(-1.*PI/180.); 
+                txt.str.BackSpace();
             }
-            if(0!=FsGetKeyState(FSKEY_J))
+            auto c=FsInkeyChar();
+            if(' '<=c && c<128)
             {
-                CP.RotateYaw( 1.*PI/180.); 
+                txt.str.Add(c);
             }
-            if(0!=FsGetKeyState(FSKEY_K))
-            {
-                CP.RotatePitch( 1.*PI/180.); 
-            }
-            if(0!=FsGetKeyState(FSKEY_L))
-            {
-                CP.RotateYaw(-1.*PI/180.); 
-            }
+
             CP.RotateYaw(0.2*PI/180.); 
             // angle += PI/180.; 
-
-
             wavDat.PlayBackground(wav);
             wavDat.KeepPlaying();
             FsPushOnPaintEvent();
             FsSleep(10);   
-        }
 
-        else if (gamestate == 3)
-        {
-            if (justChanged)
+            if (willChange)
             {
-                justChanged = false;
-                CP.SetOri(0.,30.*PI/180.,0.);  
-            }
-            FsPollDevice();
-            wavDat.PlayBackground(wav);
+                willChange = false; 
+                FILE *fp1 = fopen("score.txt", "a+");
+                fprintf(fp1, txt.GetString().GetPointer());
+                fprintf(fp1, "\t");
+                fprintf(fp1, "%.2lf\n",time);
+                fclose(fp1);
+                txt.str.CleanUp(); 
 
-            int key=FsInkey(); 
-            if (key == FSKEY_P)
-            {
-                gamestate += 1; 
-                gamestate = gamestate % 4;
-            }
-            if (key == FSKEY_ESC)
-            {
-                gameOn = false; 
-            }
+                for (int i = 0; i < 128; ++i)
+                {
+                    for (int j = 0; j < 128; ++j)
+                    {
+                        dat.strName[i][j] = 0; 
+                        dat.strScore[i][j] = 0; 
+                    }
+                }
+                dat.wNum = 1; 
+                // Read text file
+                dat.fp3 = fopen(dat.fName, "r");
+                // glColor3f(1.0f, 1.0f, 1.0f);
+                
+                char strLine[256];
+                while(nullptr != MyFgets(strLine, 255, dat.fp3))
+                {
+                    int nWord;
+                    int wordTop[80], wordLen[80];
+                    nWord = ParseString(wordTop, wordLen, 80, strLine);
 
-            wavDat.PlayBackground(wav);
-            wavDat.KeepPlaying();
-            FsPushOnPaintEvent();
-            FsSleep(10);   
+                    for(int i = 0; i < nWord; ++i)
+                    {
+                        char word[256];
+                        ExtractWord(word, 256, strLine, wordTop[i], wordLen[i]);
+
+                        if((dat.wNum % 2) == 1)
+                        {
+                            strcpy(dat.strName[((dat.wNum - 1) / 2)], word);
+                            // printf("%s\t", word);
+                            // printf("%s\n", dat.strName[((dat.wNum - 1) / 2)]);
+                        }
+                        else if((dat.wNum % 2) == 0)
+                        {
+                            strcpy(dat.strScore[((dat.wNum - 1) / 2)], word);
+                            // printf("%s\t", word);
+                            // printf("%s\n", dat.strScore[((dat.wNum - 1) / 2)]);
+                        }
+                        ++dat.wNum;
+                    }
+                }
+                fclose(dat.fp3); 
+            }
         }
 
     } // end of while loop (end of everything)
