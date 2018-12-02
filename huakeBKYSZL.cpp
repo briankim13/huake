@@ -354,110 +354,110 @@ int main(void)
 
     // Make mazes
     TriMaze mazes[4]; 
-    char map0[]=
+    char map0[] =
     {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  #                " //4
-        "              ## ##     #              " //5
-        "             ##  #   #  ##             " //6
-        "            ##   ##   #  ##            " //7
-        "           ##   #  #  #   ##           " //8
-        "          ##  #   #   # #  ##          " //9
-        "          #  #       ##   ####         " //0
-        "        #   #   ##       ##  ##        " //1
-        "       ##  #    ### # # ## ## ##       " //2
-        "      ##  #         #  #       ##      " //3
-        "     ##       ####  #    #  ##  ##     " //4
-        "    ##  ##   ####  #  ## ##      ##    " //5
-        "   ##  #   #   #   #        # #   ##   " //6
-        "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
-        "         ##                         ## " //8
-        "#  ############  ######################" //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               ##  #  #3               " //5
+    "              ## ##     #              " //4
+    "             ##  #   #  ##             " //3
+    "            ##   ##   #  ##            " //2
+    "           ##   #  #  #   ##           " //1
+    "          ##  #   #   # #  ##          " //0
+    "         2#  #       ##   ####         " //9
+    "        #   #   ##       ##  ##        " //8
+    "       ##  #          # ## ## ##       " //7
+    "      ##  #            #       ##      " //6
+    "     ##       ####    G  #  ##  ##     " //5
+    "    ##  ##   ####     ## ##      ##    " //4
+    "   ##  #   #   #            # #   ##   " //3
+    "  ##  #  ### ##   ## ##  # ##  ##  ##  " //2
+    " ##      ##                         ## " //1
+    "############### 1######################" //0
     };
     mazes[0].SetMaze(39,20,map0);
     mazes[0].SetParentHT(&P0); 
     mazes[0].UpdateGlobalP(); 
-    char map1[]=
+    char map1[] =
     {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  ##               " //4
-        "              ##  ###                  " //5
-        "             ##  ## ##  ##             " //6
-        "            ##  ##  ###  ##            " //7
-        "           ##  ##  ## ##  ##           " //8
-        "          ##  ##  ##   ##  ##          " //9
-        "         ##  ##  ##  #  ##  ##         " //0
-        "        0#  ##  ##   ##  ##  ##        " //1
-        "       #0  ##  ##  #  ##      ##       " //2
-        "      ##  ##  ##    #  ##  ##  ##      " //3
-        "     ##  ##  ##         ##  ##  ##     " //4
-        "    ##  ##  ###################  ##    " //5
-        "   ##  ##                     ##  ##   " //6
-        "  ##  ##########  ###############  ##  " //7
-        " ##                                 ## " //8
-        "##################################  ###" //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               ##  #  ##               " //5
+    "              ##  ###   3              " //4
+    "             ##  ## ##  ##             " //3
+    "            ##  ##  ###  ##            " //2
+    "           ##  ##  ## ##  ##           " //1
+    "          ##  ##  ##   ##  ##          " //0
+    "         ##  ##  ##  #  ##  ##         " //9
+    "        0#  ##  ##   ##  ##  ##        " //8
+    "       #   ##  ##  #  ##      ##       " //7
+    "      ##  ##  ##   G#  ##  ##  ##      " //6
+    "     ##  ##  ##         ##  ##  ##     " //5
+    "    ##  ##  ###################  ##    " //4
+    "   ##  ##                     ##  ##   " //3
+    "  ##  ##########  ###############  ##  " //2
+    " ##                                 ## " //1
+    "##################################2 ###" //0
     };
     mazes[1].SetMaze(39,20,map1); 
     mazes[1].SetParentHT(&P1); 
     mazes[1].UpdateGlobalP(); 
-    char map2[]=
+    char map2[] =
     {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  ##               " //4
-        "              ##   ## ###              " //5
-        "             ##  #  ### ##             " //6
-        "            ##  ##   ##  ##            " //7
-        "           ##  ##  ## ##  ##           " //8
-        "          00  ##      #    ##          " //9
-        "         ##  ###  ##### ##  ##         " //0
-        "        ### ####  ##     ##  ##        " //1
-        "       ## ###  #  #  ###  ##  ##       " //2
-        "      ##   #   ##           #  ##      " //3
-        "     ##  #   #  ###    ##  #    ##     " //4
-        "    ##  ## # ##  #   #  #  # ##  ##    " //5
-        "   ##  ##      #   ##    #    ##  ##   " //6
-        "  ##  ####  # ### ##  #####  ####  #   " //7
-        " ##                    ##            # " //8
-        "########  #############################" //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               ##  #  ##               " //5
+    "              ##   ## ###              " //4
+    "             ##  #  ### ##             " //3
+    "            ##  ##   ##  ##            " //2
+    "           ##  ##  ## ##  ##           " //1
+    "          0   ##      #    ##          " //0
+    "         ##  ###  ##### ##  ##         " //9
+    "        ### ####  ##     ##  ##        " //8
+    "       ## ###  #  #  ###  ##  ##       " //7
+    "      ##   #   ##           #  ##      " //6
+    "     ##  #   #  ###   G##  #    ##     " //5
+    "    ##  ## # ##  #   #  #  # ##  ##    " //4
+    "   ##  ##      #   ##    #    ##  ##   " //3
+    "  ##  ####  # ### ##  #####  ####  #1  " //2
+    " ##                    ##            # " //1
+    "########3 #############################" //0
     };
     mazes[2].SetMaze(39,20,map2); 
     mazes[2].SetParentHT(&P2); 
     mazes[2].UpdateGlobalP(); 
-    char map3[]=
+    char map3[] =
     {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "                #  #  #                " //4
-        "              #   ##    #              " //5
-        "             ##  ##  #####             " //6
-        "            ##  ##   #   ##            " //7
-        "           ##  ##  #   #  ##           " //8
-        "          ##  ##  ### ###  ##          " //9
-        "         ##  ##     ###     ##         " //0
-        "        ##  ##  ###    ####  ##        " //1
-        "       ##  ##      ###        ##       " //2
-        "      ##      ##  #  ##  ####  ##      " //3
-        "     ##  ##  ##  ##   ##  #     ##     " //4
-        "    ######  ##  ##  #  ##  ####  ##    " //5
-        "   ##  ##      ##  ###            ##   " //6
-        "  ##  ##########  #####  ########  ##  " //7
-        " ##                               #### " //8
-        "#########  ############################" //9
+    //                   012345678901234567890123456789012345678
+    "                   #                   " //9
+    "                  ###                  " //8
+    "                 ## ##                 " //7
+    "                ##   ##                " //6
+    "               0#  #  #2               " //5
+    "              #   ##    #              " //4
+    "             ##  ##  #####             " //3
+    "            ##  ##   #   ##            " //2
+    "           ##  ##  #   #  ##           " //1
+    "          ##  ##  ### ###  ##          " //0
+    "         ##  ##     ###     ##         " //9
+    "        ##  ##  ###G   ####  ##        " //8
+    "       ##  ##      ###        ##       " //7
+    "      ##      ##  #  ##  ####  ##      " //6
+    "     ##  ##  ##  ##   ##  #     ##     " //5
+    "    ######  ##  ##  #  ##  ####  ##    " //4
+    "   ##  ##      ##  ###            ##   " //3
+    "  ##  ##########  #####  ########  ##  " //2
+    " ##                               #### " //1
+    "######### 1############################" //0
     };
     mazes[3].SetMaze(39,20,map3); 
     mazes[3].SetParentHT(&P3); 
@@ -555,11 +555,12 @@ int main(void)
     int prevplane = plane; 
 
     double hgx, hgy, hgz; // present coord on skew grid
+    hgx = 0.;
+    hgy = 0.;
+    hgz = 0.; 
     double vx = 0., vy = 0., vz = 0.;
-    double movespeed = 1.; // increase movement speed
+    double movespeed = 3.; // increase movement speed
 
-    double hx = 0.;
-    double hz = 0.; 
 
     while(gameOn)
     {
@@ -629,6 +630,8 @@ int main(void)
             pz = player.HT.GetZ(); 
             yaw = player.HT.GetYaw();
 
+            mazes[plane].Local2Grid(px, py, pz, hgx, hgy, hgz);
+            printf("%lf, %lf, %lf\n",hgx, hgy, hgz);
             // cheat key
             if (key == FSKEY_0) 
             {
@@ -711,10 +714,14 @@ int main(void)
                     player.pHT = &P0;  
                     camera.ppHT = &P0;
                     
-                    teleporter.Teleport(plane, 0, px, py, pz, yaw, hx, hz); 
+                    teleporter.Teleport(plane, 0, hgx, hgy, hgz, yaw);
+                    mazes[0].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
                     player.HT.SetPos(px, py, pz);  
                     player.HT.SetOri(0., 0.,yaw); 
                     plane = 0; 
+                    png.state = 0;
+                    firstPlayingPass = true; 
                 }
                 if(nextplane == 1)
                 {
@@ -723,10 +730,14 @@ int main(void)
                     player.pHT = &P1;  
                     camera.ppHT = &P1; 
 
-                    teleporter.Teleport(plane, 1, px, py, pz, yaw, hx, hz); 
+                    teleporter.Teleport(plane, 1, hgx, hgy, hgz, yaw);
+                    mazes[1].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
                     player.HT.SetPos(px, py, pz); 
                     player.HT.SetOri(0., 0.,yaw); 
                     plane = 1; 
+                    png.state = 1;
+                    firstPlayingPass = true; 
                 }
                 if(nextplane == 2)
                 {
@@ -735,10 +746,14 @@ int main(void)
                     player.pHT = &P2;  
                     camera.ppHT = &P2;
 
-                    teleporter.Teleport(plane, 2, px, py, pz, yaw, hx, hz); 
+                    teleporter.Teleport(plane, 2, hgx, hgy, hgz, yaw);
+                    mazes[2].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
                     player.HT.SetPos(px, py, pz); 
                     player.HT.SetOri(0., 0.,yaw); 
                     plane = 2; 
+                    png.state = 2;
+                    firstPlayingPass = true; 
                 }
                 if(nextplane == 3)
                 {
@@ -747,11 +762,15 @@ int main(void)
                     player.pHT = &P3;  
                     camera.ppHT = &P3;
                     
-                    teleporter.Teleport(plane, 3, px, py, pz, yaw, hx, hz); 
+                    teleporter.Teleport(plane, 3, hgx, hgy, hgz, yaw);
+                    mazes[3].Grid2Local(px, py, pz, hgx, hgy, hgz);
+
                     player.HT.SetPos(px, py, pz); 
                     player.HT.SetOri(0., 0.,yaw);  
                     plane = 3; 
-                }
+                    png.state = 3;
+                    firstPlayingPass = true; 
+                } 
             }
 
             if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -792,11 +811,9 @@ int main(void)
                 fz = pz - movespeed*vz;
                 
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-
                 int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                // printf("type: %d plane: %d ",FutureWallType, plane); 
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
-                // printf("%lf, %lf, %lf \n", vx, vy, vz); 
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+
                 player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
 
             }
@@ -809,10 +826,10 @@ int main(void)
                 fy = py;
                 fz = pz + movespeed*vz;
 
-                
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
                 int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_A))
@@ -826,7 +843,7 @@ int main(void)
              
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
                 int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
                 player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_D))
@@ -839,7 +856,7 @@ int main(void)
                 
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
                 int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
 

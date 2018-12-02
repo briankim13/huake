@@ -173,7 +173,7 @@ public:
     void Draw(void) const; 
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
     int GetWallType(double hgx, double hgy, double hgz) const;
-    int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz);
+    int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane);
     void Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz);
 };
 
@@ -196,7 +196,7 @@ class Teleporter
 public:
     double a; 
     Teleporter(); 
-    void Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w, double hx, double hz); 
+    void Teleport(int pplane, int cplane, double &hgx, double &hgy, double &hgz, double &w); 
 };
 
 class DynamicsContext
