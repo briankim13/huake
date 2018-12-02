@@ -533,13 +533,10 @@ int main(void)
 
     wavDat.Start();
 
-    double t, px, py, pz, yaw;
-    double hx, hy, hz; // skew position! 
+    double t, px, py, pz, yaw; 
     Teleporter teleporter; 
     int plane = 0; 
 
-
-    double movespeed = 2.5; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
     int gamestate = 1; // main game, high score typing 
@@ -553,6 +550,16 @@ int main(void)
     double time;
     time = (double) passed / 1000.; 
     dat.timePtr = &time; 
+
+    int nextplane = plane; 
+    int prevplane = plane; 
+
+    double hgx, hgy, hgz; // present coord on skew grid
+    double vx = 0., vy = 0., vz = 0.;
+    double movespeed = 1.; // increase movement speed
+
+    double hx = 0.;
+    double hz = 0.; 
 
     while(gameOn)
     {
@@ -643,57 +650,108 @@ int main(void)
                 gameOn = false; 
                 break; 
             }
-            if(key == FSKEY_1)
-            {
-                // red
-                player.pHT = &P0;  
-                camera.ppHT = &P0;
+            // if(key == FSKEY_1)
+            // {
+            //     // red
+            //     player.pHT = &P0;  
+            //     camera.ppHT = &P0;
                 
-                teleporter.Teleport(plane, 0, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz);  
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 0; 
-                png.state = 0; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_2)
-            {
-                // white
-                player.pHT = &P1;  
-                camera.ppHT = &P1; 
-                // WILL USE TELEPORTER 
-                teleporter.Teleport(plane, 1, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 1; 
-                png.state = 1; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_3)
-            {
-                // purple 
-                player.pHT = &P2;  
-                camera.ppHT = &P2;
+            //     teleporter.Teleport(plane, 0, px, py, pz, yaw); 
+            //     player.HT.SetPos(px, py, pz);  
+            //     player.HT.SetOri(0., 0.,yaw); 
+            //     plane = 0; 
+            //     png.state = 0; 
+            //     firstPlayingPass = true;
+            // }
+            // if(key == FSKEY_2)
+            // {
+            //     // white
+            //     player.pHT = &P1;  
+            //     camera.ppHT = &P1; 
+            //     // WILL USE TELEPORTER 
+            //     teleporter.Teleport(plane, 1, px, py, pz, yaw); 
+            //     player.HT.SetPos(px, py, pz); 
+            //     player.HT.SetOri(0., 0.,yaw); 
+            //     plane = 1; 
+            //     png.state = 1; 
+            //     firstPlayingPass = true;
+            // }
+            // if(key == FSKEY_3)
+            // {
+            //     // purple 
+            //     player.pHT = &P2;  
+            //     camera.ppHT = &P2;
 
-                teleporter.Teleport(plane, 2, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw); 
-                plane = 2; 
-                png.state = 2; 
-                firstPlayingPass = true;
-            }
-            if(key == FSKEY_4)
-            {
-                // green
-                player.pHT = &P3;  
-                camera.ppHT = &P3;
+            //     teleporter.Teleport(plane, 2, px, py, pz, yaw); 
+            //     player.HT.SetPos(px, py, pz); 
+            //     player.HT.SetOri(0., 0.,yaw); 
+            //     plane = 2; 
+            //     png.state = 2; 
+            //     firstPlayingPass = true;
+            // }
+            // if(key == FSKEY_4)
+            // {
+            //     // green
+            //     player.pHT = &P3;  
+            //     camera.ppHT = &P3;
                 
-                teleporter.Teleport(plane, 3, px, py, pz, yaw); 
-                player.HT.SetPos(px, py, pz); 
-                player.HT.SetOri(0., 0.,yaw);  
-                plane = 3; 
-                png.state = 3; 
-                firstPlayingPass = true;
+            //     teleporter.Teleport(plane, 3, px, py, pz, yaw); 
+            //     player.HT.SetPos(px, py, pz); 
+            //     player.HT.SetOri(0., 0.,yaw);  
+            //     plane = 3; 
+            //     png.state = 3; 
+            //     firstPlayingPass = true;
+            // }
+            if (nextplane != prevplane)
+            {
+                if(nextplane == 0)
+                {
+                    prevplane = nextplane; 
+                    // red
+                    player.pHT = &P0;  
+                    camera.ppHT = &P0;
+                    
+                    teleporter.Teleport(plane, 0, px, py, pz, yaw, hx, hz); 
+                    player.HT.SetPos(px, py, pz);  
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 0; 
+                }
+                if(nextplane == 1)
+                {
+                    prevplane = nextplane; 
+                    // white
+                    player.pHT = &P1;  
+                    camera.ppHT = &P1; 
+
+                    teleporter.Teleport(plane, 1, px, py, pz, yaw, hx, hz); 
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 1; 
+                }
+                if(nextplane == 2)
+                {
+                    prevplane = nextplane; 
+                    // purple 
+                    player.pHT = &P2;  
+                    camera.ppHT = &P2;
+
+                    teleporter.Teleport(plane, 2, px, py, pz, yaw, hx, hz); 
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw); 
+                    plane = 2; 
+                }
+                if(nextplane == 3)
+                {
+                    prevplane = nextplane; 
+                    // green
+                    player.pHT = &P3;  
+                    camera.ppHT = &P3;
+                    
+                    teleporter.Teleport(plane, 3, px, py, pz, yaw, hx, hz); 
+                    player.HT.SetPos(px, py, pz); 
+                    player.HT.SetOri(0., 0.,yaw);  
+                    plane = 3; 
+                }
             }
 
             if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -724,28 +782,64 @@ int main(void)
                 player.GetForwardVector(vx,vy,vz);
                 player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
             }
+
             if(0!=FsGetKeyState(FSKEY_W))
             {
-                double vx,vy,vz;
                 player.GetForwardVector(vx,vy,vz);
-                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+                fx = px - movespeed*vx;
+                fy = py;
+                fz = pz - movespeed*vz;
+                
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+
+                int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                // printf("type: %d plane: %d ",FutureWallType, plane); 
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+                // printf("%lf, %lf, %lf \n", vx, vy, vz); 
+                player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
+
             }
             if(0!=FsGetKeyState(FSKEY_S))
             {
-                double vx,vy,vz;
                 player.GetForwardVector(vx,vy,vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+
+                fx = px + movespeed*vx;
+                fy = py;
+                fz = pz + movespeed*vz;
+
+                
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_A))
             {
-                double vx,vy,vz;
                 player.GetSidewardVector(vx,vy,vz);
-                player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+
+                fx = px - movespeed*vx;
+                fy = py;
+                fz = pz - movespeed*vz;
+             
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+                player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_D))
             {
-                double vx,vy,vz;
                 player.GetSidewardVector(vx,vy,vz);
+                double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+                fx = px + movespeed*vx;
+                fy = py;
+                fz = pz + movespeed*vz;
+                
+                mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+                int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
 

@@ -1377,6 +1377,12 @@ void DrawGround(void)
 	glEnd();
 }
 
+void DrawScore(double time)
+{
+	glRasterPos2d(20.0,30.0);
+	YsGlDrawFontBitmap16x20("Text-Rendering Sample");
+}
+
 
 // Teleport from one edge to another
 Teleporter::Teleporter()
