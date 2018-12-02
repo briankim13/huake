@@ -1909,6 +1909,7 @@ int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
     return wordCount;
 }
 
+<<<<<<< HEAD
 class Parser
 {
 protected:
@@ -2033,3 +2034,129 @@ void Score::ReadFile(char fName[])
 		}
 	}
 }
+=======
+// class Parser
+// {
+// protected:
+// 	int nw;
+// 	int *wTop,*wLen;
+// 	char *str;
+
+// public:
+// 	Parser();
+// 	~Parser();
+// 	void CleanUp(void);
+
+// 	int Parse(char str[]);
+// 	void GetWord(char wd[],int maxlen,int idx);
+// };
+
+// Parser::Parser()
+// {
+// 	nw=0;
+// 	str=nullptr;
+// 	wTop=nullptr;
+// 	wLen=nullptr;
+// }
+// Parser::~Parser()
+// {
+// 	CleanUp();
+// }
+// void Parser::CleanUp(void)
+// {
+// 	nw=0;
+// 	if(nullptr!=str)
+// 	{
+// 		delete [] str;
+// 		str=nullptr;
+// 	}
+// 	if(nullptr!=wTop)
+// 	{
+// 		delete [] wTop;
+// 		wTop=nullptr;
+// 	}
+// 	if(nullptr!=wLen)
+// 	{
+// 		delete [] wLen;
+// 		wLen=nullptr;
+// 	}
+// }
+// int Parser::Parse(char incoming[])
+// {
+// 	int maxlen=(strlen(str)+1)/2;
+// 	CleanUp();
+
+// 	str=new char [strlen(incoming)+1];
+// 	strcpy(str,incoming);
+// 	wTop=new int [maxlen];
+// 	wLen=new int [maxlen];
+// 	return ParseString(wTop,wLen,maxlen,str);
+// }
+
+// class Score
+// {
+// protected:
+// 	int nScore;
+// 	char *vtx;
+// public:
+// 	Score();
+// 	~Score();
+// 	void CleanUp(void);
+
+// 	void ReadFile(char fName[]);
+// 	void Draw(void);
+// };
+
+// Score::Score()
+// {
+// 	nVtx=0;
+// 	vtx=nullptr;
+// }
+// Score::~Score()
+// {
+// 	CleanUp();
+// }
+// void Score::CleanUp(void)
+// {
+// 	nVtx=0;
+// 	if(nullptr!=vtx)
+// 	{
+// 		delete [] vtx;
+// 		vtx=nullptr;
+// 	}
+// }
+
+// void Score::ReadFile(char fName[])
+// {
+// 	FILE *fp=fopen(fName,"r");
+// 	if(nullptr!=fp)
+// 	{
+// 		CleanUp();
+// 		char str[256];
+// 		if(nullptr!=fgets(str,255,fp))
+// 		{
+// 			nScore = atoi(str);
+// 			printf("%d scores will be shown.\n", nScore);
+
+// 			int n=0;
+// 			vtx=new Vec [nVtx];
+// 			for(int i=0; i<nVtx; ++i)
+// 			{
+// 				if(nullptr!=fgets(str,255,fp))
+// 				{
+// 					int nw,wTop[2],wLen[2];
+// 					if(2<=ParseString(wTop,wLen,2,str))
+// 					{
+// 						vtx[n].x=atoi(str+wTop[0]);
+// 						vtx[n].y=atoi(str+wTop[1]);
+// 						++n;
+// 					}
+// 				}
+// 			}
+// 			printf("%d vertices read.\n",n);
+
+// 			fclose(fp);
+// 		}
+// 	}
+// }
+>>>>>>> 5b6a2d89d77178acf11b3fb09c703eeb9b73ed27
