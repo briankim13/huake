@@ -44,6 +44,67 @@ void Render(void *incoming)
     MainData *datPtr = (MainData *) incoming;
     Pngdata *pngDat = datPtr->pngPtr;
 
+    if(true==pngDat->firstRenderingPass)  // Do it only once.
+    {
+        pngDat->firstRenderingPass=false; // And, don't do it again.
+
+        // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
+
+        for(int i=0; i<12; ++i)
+        {
+            glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
+            glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+            glTexImage2D
+                (GL_TEXTURE_2D,
+                 0,    // Level of detail
+                 GL_RGBA,
+                 pngDat->file[i].wid,
+                 pngDat->file[i].hei,
+                 0,    // Border width, but not supported and needs to be 0.
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 pngDat->file[i].rgba);
+        }
+        // Read text file
+        datPtr->fp3 = fopen(datPtr->fName, "r");
+        // glColor3f(1.0f, 1.0f, 1.0f);
+        
+        char strLine[256];
+        while(nullptr != MyFgets(strLine, 255, datPtr->fp3))
+        {
+            int nWord;
+            int wordTop[80], wordLen[80];
+            nWord = ParseString(wordTop, wordLen, 80, strLine);
+
+            for(int i = 0; i < nWord; ++i)
+            {
+                char word[256];
+                ExtractWord(word, 256, strLine, wordTop[i], wordLen[i]);
+
+                if((datPtr->wNum % 2) == 1)
+                {
+                    strcpy(datPtr->strName[((datPtr->wNum - 1) / 2)], word);
+                    // printf("%s\t", word);
+                    // printf("%s\n", datPtr->strName[((datPtr->wNum - 1) / 2)]);
+                }
+                else if((datPtr->wNum % 2) == 0)
+                {
+                    strcpy(datPtr->strScore[((datPtr->wNum - 1) / 2)], word);
+                    // printf("%s\t", word);
+                    // printf("%s\n", datPtr->strScore[((datPtr->wNum - 1) / 2)]);
+                }
+                ++datPtr->wNum;
+            }
+        }
+        fclose(datPtr->fp3); 
+    }
+
     if (*datPtr->statePtr == 0) // title screen 
     {
         int wid, hei;
@@ -99,73 +160,6 @@ void Render(void *incoming)
         // datPtr->cameraPtr->SetUpCameraTransformation();
         datPtr->playerPtr->SetUpCameraProjection();
         datPtr->playerPtr->SetUpCameraTransformation();
-
-        if(true==pngDat->firstRenderingPass)  // Do it only once.
-        {
-            pngDat->firstRenderingPass=false; // And, don't do it again.
-
-            // glGenTextures(2,datPtr->texId);  // You can also reserve two texture identifies with one call this way.
-
-            for(int i=0; i<12; ++i)
-            {
-                glGenTextures(1,&pngDat->texId[i]);  // Reserve one texture identifier
-                glBindTexture(GL_TEXTURE_2D,pngDat->texId[i]);  // Making the texture identifier current (or bring it to the deck)
-
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-                glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-
-                glTexImage2D
-                    (GL_TEXTURE_2D,
-                     0,    // Level of detail
-                     GL_RGBA,
-                     pngDat->file[i].wid,
-                     pngDat->file[i].hei,
-                     0,    // Border width, but not supported and needs to be 0.
-                     GL_RGBA,
-                     GL_UNSIGNED_BYTE,
-                     pngDat->file[i].rgba);
-            }
-
-            // Read text file
-            datPtr->fp3 = fopen(datPtr->fName, "r");
-            // glColor3f(1.0f, 1.0f, 1.0f);
-            
-            char strLine[256];
-            while(nullptr != MyFgets(strLine, 255, datPtr->fp3))
-            {
-                int nWord;
-                int wordTop[80], wordLen[80];
-                nWord = ParseString(wordTop, wordLen, 80, strLine);
-
-                for(int i = 0; i < nWord; ++i)
-                {
-                    char word[256];
-                    ExtractWord(word, 256, strLine, wordTop[i], wordLen[i]);
-
-                    if((datPtr->wNum % 2) == 1)
-                    {
-                        strcpy(datPtr->strName[((datPtr->wNum - 1) / 2)], word);
-                        printf("%s\t", word);
-                        printf("%s\n", datPtr->strName[((datPtr->wNum - 1) / 2)]);
-                        // glRasterPos2d(32, 32 + 16 * ((datPtr->wNum - 1) / 2));
-                        // YsGlDrawFontBitmap12x16(strName[((datPtr->wNum - 1) / 2)]);
-                        // printf("%s\t", strName[i]);
-                    }
-                    else if((datPtr->wNum % 2) == 0)
-                    {
-                        strcpy(datPtr->strScore[((datPtr->wNum - 1) / 2)], word);
-                        printf("%s\t", word);
-                        printf("%s\n", datPtr->strScore[((datPtr->wNum - 1) / 2)]);
-                        // glRasterPos2d(32 + 160, 32 + 16 * ((datPtr->wNum - 1) / 2));
-                        // YsGlDrawFontBitmap12x16(strScore[((datPtr->wNum - 1) / 2)]);
-                        // printf("%s\t", strScore[i]);
-                    }
-                    ++datPtr->wNum;
-                }
-            }
-        }
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_POLYGON_OFFSET_FILL);
@@ -304,16 +298,18 @@ void Render(void *incoming)
 
         glColor3f(1.0f, 1.0f, 1.0f);
 
+        // draw what I am writing
+        datPtr->txtPtr->Draw(); 
+        // draw from score.txt 
         for(int i = 0; i < ((datPtr->wNum-1) / 2); ++i)
         {
-            glRasterPos2d(32, 32 + 16 * i);
+            glRasterPos2d(128, 32 + 16 * i);
             YsGlDrawFontBitmap12x16(datPtr->strName[i]);
 
-            glRasterPos2d(32 + 160, 32 + 16 * i);
+            glRasterPos2d(128 + 160, 32 + 16 * i);
             YsGlDrawFontBitmap12x16(datPtr->strScore[i]);
         }
         fclose(datPtr->fp3);
-
 
         glEnable(GL_DEPTH_TEST);
         FsSwapBuffers();
@@ -622,6 +618,7 @@ int main(void)
     int gamestate = 0; // main game, high score typing 
     dat.statePtr = &gamestate; 
     bool justChanged = true;
+    bool willChange = false; 
 
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
@@ -973,8 +970,26 @@ int main(void)
             if (justChanged)
             {
                 justChanged = false;
-                CP.SetOri(0.,30.*PI/180.,0.);  
-                txt.str.CleanUp(); 
+                CP.SetOri(0.,30.*PI/180.,0.);
+                char timeChar[7];
+                double m = 0.01; 
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    timeChar[i] = 0;   
+                }  
+
+                for (int i = 0; i < 6; ++i)
+                {
+                    if (i == 3)
+                    {
+                        timeChar[i] = '.'; 
+                        continue; // skip this loop 
+                    }
+                    timeChar[i] = (int) (m*time) % 10 + 48;
+                    m *= 10.;  
+                }   
+                hello = txt.Run1(timeChar); 
             }
             FsPollDevice();
             wavDat.PlayBackground(wav);
@@ -985,7 +1000,7 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3;
-                txt.str.CleanUp();
+                willChange = true; 
             }
             if (key == FSKEY_ESC)
             {
@@ -1008,6 +1023,59 @@ int main(void)
             wavDat.KeepPlaying();
             FsPushOnPaintEvent();
             FsSleep(10);   
+
+            if (willChange)
+            {
+                willChange = false; 
+                FILE *fp1 = fopen("score.txt", "a+");
+                fprintf(fp1, txt.GetString().GetPointer());
+                fprintf(fp1, "\t");
+                fprintf(fp1, "%.2lf\n",time);
+                fclose(fp1);
+                txt.str.CleanUp(); 
+
+                for (int i = 0; i < 128; ++i)
+                {
+                    for (int j = 0; j < 128; ++j)
+                    {
+                        dat.strName[i][j] = 0; 
+                        dat.strScore[i][j] = 0; 
+                    }
+                }
+                dat.wNum = 1; 
+                // Read text file
+                dat.fp3 = fopen(dat.fName, "r");
+                // glColor3f(1.0f, 1.0f, 1.0f);
+                
+                char strLine[256];
+                while(nullptr != MyFgets(strLine, 255, dat.fp3))
+                {
+                    int nWord;
+                    int wordTop[80], wordLen[80];
+                    nWord = ParseString(wordTop, wordLen, 80, strLine);
+
+                    for(int i = 0; i < nWord; ++i)
+                    {
+                        char word[256];
+                        ExtractWord(word, 256, strLine, wordTop[i], wordLen[i]);
+
+                        if((dat.wNum % 2) == 1)
+                        {
+                            strcpy(dat.strName[((dat.wNum - 1) / 2)], word);
+                            // printf("%s\t", word);
+                            // printf("%s\n", dat.strName[((dat.wNum - 1) / 2)]);
+                        }
+                        else if((dat.wNum % 2) == 0)
+                        {
+                            strcpy(dat.strScore[((dat.wNum - 1) / 2)], word);
+                            // printf("%s\t", word);
+                            // printf("%s\n", dat.strScore[((dat.wNum - 1) / 2)]);
+                        }
+                        ++dat.wNum;
+                    }
+                }
+                fclose(dat.fp3); 
+            }
         }
 
     } // end of while loop (end of everything)

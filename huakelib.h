@@ -1,10 +1,10 @@
+#include <string.h>
+#include <iostream>
 
 const double PI = 3.141592; 
 const double L = 1000.*1.41421356; // an edge of a plane
 const double l = 1000.*1.41421356/20.; // an edge od a cell on grid
 const double h = 60.; // a height of a wall
-
-
 
 // ---------- Point -----------
 class Point
@@ -242,4 +242,82 @@ public:
     void SimStep(void); 
     // simulate step (dT) from input, 
     // how should we get input? as a separate class?
+};
+
+// YUNSIK OHM
+char *MyFgets(char str[],int maxn,FILE *fp); 
+int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
+void ExtractWord(char word[],int maxlen,char input[],int top,int len);
+
+class Data
+{
+public:
+    char * txtName;
+    char * txtScore;
+    int * statePtr;
+};
+
+template <class T>
+class GenericArray
+{
+private:
+    int len;
+    T *dat;
+public:
+    GenericArray();
+    ~GenericArray();
+    void CleanUp(void);
+
+    void Resize(int newLen);
+
+    int GetLength(void) const;
+    T *GetPointer(void);
+    const T *GetPointer(void) const;
+};
+
+class TextString : public GenericArray <char>
+{
+public:
+    TextString();
+    TextString(const char from[]);
+    TextString(const TextString &str);
+    ~TextString();
+    void Set(const char from[]);
+    void Add(const char from[]);
+    void Add(const char c);
+    void BackSpace(void);
+    const char *Fgets(FILE *fp);
+    void DeleteLastControlCode(void);
+    const char *GetPointer(void) const;
+    const int Strlen(void) const;
+    void Print(void) const;
+    TextString &operator=(const TextString &from);
+};
+
+class TextInput
+{
+// protected:
+//     TextString title;
+//     TextString str;
+
+public:
+    TextString title;
+    TextString str;
+    TextInput();
+    ~TextInput();
+    void CleanUp(void);
+
+    bool Run(const char title[]);
+    bool Run1(const char title[]);
+    void Draw(void) const;
+    const TextString &GetString(void) const;
+};
+
+class RowEle
+{
+public:
+    int idx;
+    int scoreInt;
+    char scoreStr[256];
+    char name[256];
 };
