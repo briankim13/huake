@@ -528,8 +528,9 @@ int main(void)
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
 
             int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            printf("%d  ",FutureWallType); 
             nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
-            
+            printf("%lf, %lf, %lf \n", vx, vy, vz); 
             player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
 
         }

@@ -40,7 +40,8 @@ public:
     void MovePos(double dx, double dy, double dz); 
     void RotateRoll(double dr);
     void RotatePitch(double dp);
-    void RotateYaw(double dy); 
+    void RotateYaw(double dy);
+	void RotatePitch1(double dp);
 
     void Print(void) const; 
     void DoPostMult(const TransformMatrix R);
@@ -62,7 +63,7 @@ public:
     void SetOri(double r, double p, double y); 
     void SetGlobalPos(double x, double y, double z);
     void SetGlobalOri(double r, double p, double y);
-    void Local2Global(Point pp, double &gx, double &gy, double &gz);
+    void Local2Global(Point pp, double &gx, double &gy, double &gz); 
     void Mygl3d(Point pp);
     void Draw(void); 
     void Draw1(void);
@@ -84,7 +85,7 @@ public:
     void GetForwardVector(double &vx,double &vy,double &vz); 
     void GetSidewardVector(double &vx,double &vy,double &vz); 
     void Draw(void);
-    void Move(double vx, double vz);
+    void MoveAlongWall(const char WallType);
 };
 
 // this class has pHT and ppHT 
@@ -169,7 +170,7 @@ public:
     void SetMaze(int w, int h, char incoming[]); 
     void SetParentHT(TransformMatrix *HT); 
     void UpdateGlobalP(void); 
-    void Draw(void) const;
+    void Draw(void) const; 
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
     int GetWallType(double hgx, double hgy, double hgz) const;
     int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz);
@@ -182,8 +183,13 @@ void DrawBackground(void);
 void DrawFloor(double x1, double y1, double z1,
                double x2, double y2, double z2,
                double x3, double y3, double z3);
+void DrawIntro(void);
 
 void DrawScore(double time); 
+
+// char *MyFgets(char str[],int maxn,FILE *fp);
+// int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
+
 
 class Teleporter
 {
@@ -225,43 +231,7 @@ public:
     void SetZeroVel(void); 
     void SetPos(double x, double y, double z); 
     void SetPos(double x, double y, double z, double r, double p, double w); 
-    void SimStep(void);
-    void MovePos(TriMaze *map, double dx, double dy, double dz);
+    void SimStep(void); 
     // simulate step (dT) from input, 
     // how should we get input? as a separate class?
-};
-
-class Parser
-{
-protected:
-    int nw;
-    int *wTop,*wLen;
-    char *str;
-
-public:
-    Parser();
-    ~Parser();
-    void CleanUp(void);
-
-    int Parse(char str[]);
-    void GetWord(char wd[],int maxlen,int idx);
-};
-
-class Vec
-{
-public:
-    int x,y;
-};
-
-class Score
-{
-protected:
-    int nVtx;
-    Vec *vtx;
-public:
-    Score();
-    ~Score();
-    void CleanUp(void);
-
-    void ReadFile(char fName[]);
 };
