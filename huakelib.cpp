@@ -110,6 +110,20 @@ void TransformMatrix::RotateYaw(double dy)
 	SetOri(r,p,y); 
 }
 
+
+void TransformMatrix::RotatePitch1(double dp)
+{
+	double r = GetRoll();
+	double p = GetPitch();
+	double y = GetYaw();
+	p = p + dp;
+	//SetOri(r,p,y); 
+
+	TransformMatrix R;
+	R.SetOri(0., dp, 0.);
+	DoPostMult(R);
+}
+
 void TransformMatrix::Print(void) const 
 {
 	printf("%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n%lf %lf %lf %lf\n\n",
@@ -698,23 +712,13 @@ void Player::GetSidewardVector(double &vx,double &vy,double &vz)
 	vy = HT.mat[1][0];
 	vz = HT.mat[2][0]; 
 }
-void Player::Move(double vx, double vz)
+void Player::MoveAlongWall(const char WallType)
 {
-//    double d=0.2;
-//    double Futurex = Currentx+vx;
-//    double Futurez = Currentz+vz;
-//    char FutureWallType =
-//
-//    if(' ' == WallType)
-//    {
-//        vx += 0.;
-//        vz += 0.;
-//    }
-//    else if('#' == WallType)
-//    {
-//        if
-//    }
-    
+    double vx, vy, vz;
+//    if(
+    HT.mat[0][2] = HT.mat[0][2];
+    HT.mat[1][2];
+    HT.mat[2][2];
 }
 
 // --------- Sprite Inherited Camera ----------
@@ -916,7 +920,7 @@ void TriMaze::CleanUp()
 }
 void TriMaze::SetMaze(int w, int h, char incoming[])
 {
-	map = incoming;
+	map = incoming; // this is the map
 	int buf = 0;  
 	for (int x=0; x<w; ++x)
 	{
@@ -932,7 +936,8 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 	n = buf; // number of walls 
 	walls = new TriWall[n]; 
 	// set up position and orientation of the walls
-	double px, py, pz;
+	double px, py, pz; 
+	double th;
 	int idx = 0;
 	double dz = l/2.;
 	double dx = sqrt(3.)/2.*l;  
@@ -1001,23 +1006,23 @@ void TriMaze::Draw(void) const
 		walls[i].Draw(); 
 	}
 }
-
-void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy, double &hgz)
+void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz) // players local position
 {
-    double CartCoord[4], buf[4];
-    double hx, hy, hz;
-    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
-    for (int j = 0; j < 4; ++j)
-    {
-        buf[j] = 0.;
-        for (int i = 0; i < 4; ++i)
-        {
-            buf[j] += mat[j][i]*CartCoord[i];
-        }
-    }
-    hx = buf[0]*2./sqrt(3.);
-    hy = buf[1];
-    hz = buf[2];
+	double CartCoord[4], buf[4];
+	double hx, hy, hz, hgx2, hgz2;
+    int hgx1, hgz1;
+	CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+	for (int j = 0; j < 4; ++j)
+	{
+		buf[j] = 0.; 
+		for (int i = 0; i < 4; ++i)
+		{
+			buf[j] += mat[j][i]*CartCoord[i];
+		}
+	}
+	hx = buf[0];
+	hy = buf[1];
+	hz = buf[2];
     
     hgx = hx / l;
     hgy = hy;
@@ -1067,17 +1072,19 @@ void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy
     }
     
     CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+
     
-    hx = buf[0]*2./sqrt(3.);
-    hy = buf[1];
-    hz = buf[2];
+    // hgx1 = (int) hgx;
+    // hgz1 = (int) hgz;
+    // hgx2 = hgx - hgx1;
+    // hgz2 = hgz - hgz1;
     
-    hgx = hx / l;
-    hgy = hy;
-    hgz = hz / l;
+    // hgx = hx / l;
+    // hgy = hy;
+    // hgz = hz / l;
 }
 
-char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
+int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
 {
     int hgx1 = (int) hgx;
     int hgz1 = (int) hgz;
@@ -1086,34 +1093,127 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
 
     if(1. >= hgx2 + hgz2)
     {
-        return map[39*(19-hgx1)+(hgx1+2*hgz1)];
+        if (map[39*(19-hgx1)+(hgx1+2*hgz1)] == '#') // if wall 
+        {
+        	return 8;
+        }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1)] == ' ') // if nothing
+        {
+        	return 9; 
+        }
+        else
+        {
+        	return map[39*(19-hgx1)+(hgx1+2*hgz1)]-48; 
+        }
     }
     else if(1. < hgx2 + hgz2)
     {
-        return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
+    	if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == '#') // if wall
+        {
+        	return 8;
+        }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == ' ') // if nothing
+        {
+        	return 9; 
+        }
+        else // if transition 
+        {
+        	return map[39*(19-hgx1)+(hgx1+2*hgz1+1)]-48; 
+        }
     }
     else
     {
         printf("ERROR in COORDINATE on HEX GRID");
-        return 0;
+        return -1;
     }
 }
 
-void TriMaze::CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz)
+
+int TriMaze::CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz)
 {
-    if(FutureWallType == '#') // will collide in future
+    if(FutureWallType == 8) // will collide in future
     {
         vx = 0.;
-//        vy = 0.;
+        vy = 0.;
         vz = 0.;
+        return currplane; 
     }
-    else if(FutureWallType == ' ') // collision-free
+    else if(FutureWallType == 9) // collision-free
     {
-//        vx = 0.;
-//        vy = 0.;
-//        vz = 0.;
+    	return currplane; 
     }
-    else{}
+
+    else if(FutureWallType == 0)
+    {
+    	if (currplane == 1) // from 1 to 0
+    	{
+    		// ix = 
+    		// iy = 
+    	}
+    	else if (currplane == 2) // from 2 to 0
+    	{
+
+    	}
+    	else if (currplane == 3) // from 3 to 0
+    	{
+
+    	}
+    	return 0; // this is the next plane
+    }
+    else if(FutureWallType == 1)
+    {
+    	if (currplane == 0) // from 0 to 1
+    	{
+    		hx = 7.7;
+    		hz = 0.7;
+    	}
+    	else if (currplane == 2) // from 2 to 1
+    	{
+
+    	}
+    	else if (currplane == 3) // from 3 to 1
+    	{
+
+    	}
+    	return 1; 
+    }
+    else if(FutureWallType == 2)
+    {
+    	if (currplane == 0) 
+    	{
+
+    	}
+    	else if (currplane == 1) 
+    	{
+    		
+    	}
+    	else if (currplane == 3) 
+    	{
+
+    	}
+    	return 2; 
+    }
+    else if(FutureWallType == 3)
+    {
+    	if (currplane == 0) 
+    	{
+    		
+    	}
+    	else if (currplane == 1) 
+    	{
+    		
+    	}
+    	else if (currplane == 2) 
+    	{
+
+    	}
+    	return 3; 
+    }
+
+    else
+    {
+    	return currplane; 
+    }
 }
 
 
@@ -1231,6 +1331,7 @@ void DrawFloor(double x1, double y1, double z1,
 	}
 }
 
+// From Jaejun
 void DrawTetra(void)
 {
     glBegin(GL_TRIANGLES);
@@ -1276,28 +1377,13 @@ void DrawGround(void)
 	glEnd();
 }
 
-void DrawScore(double time)
-{
-	glColor3ub(255, 255, 255); 
-
-	char timeStr[6] = "00.00";
-
-	timeStr[4] = (int) (time*100) % 10 + 48; //0.01  
-	timeStr[3] = (int) (time*10 ) % 10 + 48; //0.1
-	timeStr[1] = (int) (time    ) % 10 + 48; //1.
-	timeStr[0] = (int) (time*0.1) % 10 + 48;//10
-
-	glRasterPos2d(15.0,30.0);
-    YsGlDrawFontBitmap16x20(timeStr);
-
-}
 
 // Teleport from one edge to another
 Teleporter::Teleporter()
 {
 	a = 1000.; 
 }
-void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w) 
+void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w, double hx, double hz) 
 {
 	int mode; // there will be 12 
 	double px, py, pz, t;
@@ -1344,98 +1430,101 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 
 	if (mode == 0) // P0 to P1
 	{
-        t = (2./sqrt(2.)/a*pz-1)/(-2.);
-        x = (2.-3.*t)*sqrt(6.)*a/6.;
-        y = py;
-        z = -t*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1)/(-2.);
+        // x = (2.-3.*t)*sqrt(6.)*a/6.;
+        // y = py;
+        // z = -t*sqrt(2.)/2.*a;
+        x = 0.;
+        y = 20.; 
+        z = 0.; 
         w += 60.*PI/180.; 
 	}
 	else if (mode == 1) // P0 to P2
 	{
-        t = -2./sqrt(2.)/a*pz;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (-1.+t)*sqrt(2.)/2.*a;
+        // t = -2./sqrt(2.)/a*pz;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (-1.+t)*sqrt(2.)/2.*a;
         w +=180.*PI/180.; 
 	}
 	else if (mode == 2) // P0 to P3
 	{
-        t = -2./sqrt(2.)/a*pz+1;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (-1.+t)*sqrt(2.)/2*a;
+        // t = -2./sqrt(2.)/a*pz+1;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (-1.+t)*sqrt(2.)/2*a;
         w +=-60.*PI/180.; 
 	}
 	else if (mode == 3) // P1 to P0
 	{
-        t = -2./sqrt(2.)/a*pz;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 4) // P1 to P2
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 5) // P1 to P3
 	{
-        t = -2./sqrt(2.)/a*pz+1;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 6) // P2 to P0
 	{
-        t = 2.*pz/sqrt(2.)/a+1;
-        x = (2.-3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = -t*sqrt(2.)/2.*a;
+        // t = 2.*pz/sqrt(2.)/a+1;
+        // x = (2.-3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = -t*sqrt(2.)/2.*a;
         w += 180.*PI/180.; 
 	}
 	else if (mode == 7) // P2 to P1
 	{
-        t = -2./sqrt(2.)/a*pz+1.;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1.;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 8) // P2 to P3
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w +=-60.*PI/180.; 
 	}
 	else if (mode == 9) // P3 to P0
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = 2./sqrt(2.)/a*pz+1.;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 10) // P3 to P1
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 11) // P3 to P2
 	{
-        t = -2./sqrt(2.)/a*pz+1.;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1.;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == -1)
@@ -1844,197 +1933,173 @@ void DynamicsContext::SimStep(void)
 	w  += dw*dT;  
 }
 
-char *MyFgets(char str[],int maxn,FILE *fp)
+
+void DrawQuads(int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4)
 {
-    auto r=fgets(str,maxn,fp);
-    if(nullptr!=r)
-    {
-        for(int i=strlen(str)-1; 0<=i; --i)
-        {
-            if(str[i]<' ')
-            {
-                str[i]=0;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        str[0]=0;
-    }
-    return r;
+	glBegin(GL_QUADS);
+	glVertex2i(x1, y1);
+	glVertex2i(x2, y2);
+	glVertex2i(x3, y3);
+	glVertex2i(x4, y4);
+	glEnd();
 }
 
-int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
+void DrawTriangles(int x1, int y1, int x2, int y2, int x3, int y3)
 {
-    if(0==maxlen)
-    {
-        return 0;
-    }
-
-    int state=0;
-    int wordCount=0;
-    for(int i=0; 0!=input[i]; ++i)
-    {
-        if(0==state)
-        {
-            if(' '<input[i])
-            {
-                wordTop[wordCount]=i;
-                wordLen[wordCount]=1;
-                state=1;
-                ++wordCount;
-            }
-        }
-        else if(1==state)
-        {
-            if(input[i]<=' ')
-            {
-                state=0;
-                if(maxlen<=wordCount)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                ++wordLen[wordCount-1];
-            }
-        }
-    }
-
-    return wordCount;
+	glBegin(GL_TRIANGLES);
+	glVertex2i(x1, y1);
+	glVertex2i(x2, y2);
+	glVertex2i(x3, y3);
+	glEnd();
 }
 
-<<<<<<< HEAD
-class Parser
+void DrawIntro(void)
 {
-protected:
-	int nw;
-	int *wTop,*wLen;
-	char *str;
+	glColor3f(1.0f, 0, 1.0f);
+	glRasterPos2d(300, 100);
+	YsGlDrawFontBitmap32x48("Huake!");
+	glColor3f(0, 1.0f, 0);
+	glRasterPos2d(550, 350);
+	YsGlDrawFontBitmap20x28("Designed By:");
+	glRasterPos2d(550, 400);
+	YsGlDrawFontBitmap20x28("Wooshik Kim");
+	glRasterPos2d(550, 450);
+	YsGlDrawFontBitmap20x28("Yunsik Ohm");
+	glRasterPos2d(550, 500);
+	YsGlDrawFontBitmap20x28("Jaejun Lee");
+	glRasterPos2d(550, 550);
+	YsGlDrawFontBitmap20x28("Zhao Lu");
 
-public:
-	Parser();
-	~Parser();
-	void CleanUp(void);
+	glColor3f(1.0f, 1.0f, 0);
+	glRasterPos2d(50, 150);
+	YsGlDrawFontBitmap20x28("Movement Control");
+	DrawQuads(80, 220, 120, 220, 120, 260, 80, 260);
+	DrawQuads(140, 220, 180, 220, 180, 260, 140, 260);
+	DrawQuads(200, 220, 240, 220, 240, 260, 200, 260);
+	DrawQuads(140, 160, 180, 160, 180, 200, 140, 200);
+	glColor3f(0, 0, 0);
+	glRasterPos2d(150, 196);
+	YsGlDrawFontBitmap20x28("W");
+	glRasterPos2d(90, 256);
+	YsGlDrawFontBitmap20x28("A");
+	glRasterPos2d(150, 256);
+	YsGlDrawFontBitmap20x28("S");
+	glRasterPos2d(210, 256);
+	YsGlDrawFontBitmap20x28("D");
 
-	int Parse(char str[]);
-	void GetWord(char wd[],int maxlen,int idx);
-};
+	glColor3f(0, 1.0f, 1.0f);
+	glRasterPos2d(50, 300);
+	YsGlDrawFontBitmap20x28("Camera Control");
+	DrawQuads(140, 370, 180, 370, 180, 410, 140, 410);
+	DrawQuads(200, 370, 240, 370, 240, 410, 200, 410);
+	DrawQuads(140, 310, 180, 310, 180, 350, 140, 350);
+	DrawQuads(80, 370, 120, 370, 120, 410, 80, 410);
 
-Parser::Parser()
-{
-	nw=0;
-	str=nullptr;
-	wTop=nullptr;
-	wLen=nullptr;
-}
-Parser::~Parser()
-{
-	CleanUp();
-}
-void Parser::CleanUp(void)
-{
-	nw=0;
-	if(nullptr!=str)
-	{
-		delete [] str;
-		str=nullptr;
-	}
-	if(nullptr!=wTop)
-	{
-		delete [] wTop;
-		wTop=nullptr;
-	}
-	if(nullptr!=wLen)
-	{
-		delete [] wLen;
-		wLen=nullptr;
-	}
-}
-int Parser::Parse(char incoming[])
-{
-	int maxlen=(strlen(str)+1)/2;
-	CleanUp();
+	//Up
+	glColor3f(0, 0, 0);
+	DrawQuads(155, 325, 165, 325, 165, 340, 155, 340);
+	DrawTriangles(150, 325, 160, 315, 170, 325);
+	//Left
+	DrawQuads(95, 385, 110, 385, 110, 395, 95, 395);
+	DrawTriangles(95, 400, 85, 390, 95, 380);
+	//Down
+	DrawQuads(155, 395, 155, 380, 165, 380, 165, 395);
+	DrawTriangles(150, 395, 170, 395, 160, 405);
+	//Right
+	DrawQuads(210, 385, 225, 385, 225, 395, 210, 395);
+	DrawTriangles(225, 380, 235, 390, 225, 400);
 
-	str=new char [strlen(incoming)+1];
-	strcpy(str,incoming);
-	wTop=new int [maxlen];
-	wLen=new int [maxlen];
-	return ParseString(wTop,wLen,maxlen,str);
-}
+	glColor3f(0, 0, 1.0f);
+	glRasterPos2d(50, 450);
+	YsGlDrawFontBitmap20x28("Mini Map Control");
+	DrawQuads(80, 520, 120, 520, 120, 560, 80, 560);
+	DrawQuads(140, 520, 180, 520, 180, 560, 140, 560);
+	DrawQuads(200, 520, 240, 520, 240, 560, 200, 560);
+	DrawQuads(140, 460, 180, 460, 180, 500, 140, 500);
+	glColor3f(0, 0, 0);
+	glRasterPos2d(150, 496);
+	YsGlDrawFontBitmap20x28("I");
+	glRasterPos2d(90, 556);
+	YsGlDrawFontBitmap20x28("J");
+	glRasterPos2d(150, 556);
+	YsGlDrawFontBitmap20x28("K");
+	glRasterPos2d(210, 556);
+	YsGlDrawFontBitmap20x28("L");
 
-class Score
-{
-protected:
-	int nScore;
-	char *vtx;
-public:
-	Score();
-	~Score();
-	void CleanUp(void);
-
-	void ReadFile(char fName[]);
-	void Draw(void);
-};
-
-Score::Score()
-{
-	nVtx=0;
-	vtx=nullptr;
-}
-Score::~Score()
-{
-	CleanUp();
-}
-void Score::CleanUp(void)
-{
-	nVtx=0;
-	if(nullptr!=vtx)
-	{
-		delete [] vtx;
-		vtx=nullptr;
-	}
+	glColor3f(1.0f, 0, 0);
+	glRasterPos2d(500, 150);
+	YsGlDrawFontBitmap20x28("Play Game!");
+	DrawQuads(600, 180, 680, 180, 680, 260, 600, 260);
+	glColor3f(0, 0, 0);
+	glRasterPos2d(624, 244);
+	YsGlDrawFontBitmap32x48("P");
 }
 
-void Score::ReadFile(char fName[])
-{
-	FILE *fp=fopen(fName,"r");
-	if(nullptr!=fp)
-	{
-		CleanUp();
-		char str[256];
-		if(nullptr!=fgets(str,255,fp))
-		{
-			int nScore = atoi(str);
-			printf("%d scores will be shown.\n", nScore);
+// char *MyFgets(char str[],int maxn,FILE *fp)
+// {
+//     auto r=fgets(str,maxn,fp);
+//     if(nullptr!=r)
+//     {
+//         for(int i=strlen(str)-1; 0<=i; --i)
+//         {
+//             if(str[i]<' ')
+//             {
+//                 str[i]=0;
+//             }
+//             else
+//             {
+//                 break;
+//             }
+//         }
+//     }
+//     else
+//     {
+//         str[0]=0;
+//     }
+//     return r;
+// }
 
-			int n=0;
-			vtx=new Vec [nVtx];
-			for(int i=0; i<nVtx; ++i)
-			{
-				if(nullptr!=fgets(str,255,fp))
-				{
-					int nw,wTop[2],wLen[2];
-					if(2<=ParseString(wTop,wLen,2,str))
-					{
-						vtx[n].x=atoi(str+wTop[0]);
-						vtx[n].y=atoi(str+wTop[1]);
-						++n;
-					}
-				}
-			}
-			printf("%d vertices read.\n",n);
+// int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
+// {
+//     if(0==maxlen)
+//     {
+//         return 0;
+//     }
 
-			fclose(fp);
-		}
-	}
-}
-=======
+//     int state=0;
+//     int wordCount=0;
+//     for(int i=0; 0!=input[i]; ++i)
+//     {
+//         if(0==state)
+//         {
+//             if(' '<input[i])
+//             {
+//                 wordTop[wordCount]=i;
+//                 wordLen[wordCount]=1;
+//                 state=1;
+//                 ++wordCount;
+//             }
+//         }
+//         else if(1==state)
+//         {
+//             if(input[i]<=' ')
+//             {
+//                 state=0;
+//                 if(maxlen<=wordCount)
+//                 {
+//                     break;
+//                 }
+//             }
+//             else
+//             {
+//                 ++wordLen[wordCount-1];
+//             }
+//         }
+//     }
+
+//     return wordCount;
+// }
+
 // class Parser
 // {
 // protected:
@@ -2135,7 +2200,7 @@ void Score::ReadFile(char fName[])
 // 		char str[256];
 // 		if(nullptr!=fgets(str,255,fp))
 // 		{
-// 			nScore = atoi(str);
+// 			int nScore = atoi(str);
 // 			printf("%d scores will be shown.\n", nScore);
 
 // 			int n=0;
@@ -2159,4 +2224,7 @@ void Score::ReadFile(char fName[])
 // 		}
 // 	}
 // }
->>>>>>> 5b6a2d89d77178acf11b3fb09c703eeb9b73ed27
+
+// }
+
+

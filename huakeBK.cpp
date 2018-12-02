@@ -12,7 +12,6 @@ public:
     Sprite * scubesPtr;
     Player * playerPtr; 
     // Target * targetPtr; 
-    TriWall * wallPtr; 
     TriMaze * mazePtr; 
 };
 
@@ -45,10 +44,6 @@ void Render(void *incoming)
         // datPtr->scubesPtr[i].Draw();
         datPtr->scubesPtr[i].Draw();
     }
-    for (int i = 0; i < 3; ++i)
-    {
-        datPtr->wallPtr[i].Draw();
-    } 
     for (int i = 0; i < 4; ++i)
     {
         datPtr->mazePtr[i].Draw(); 
@@ -99,10 +94,6 @@ void Render(void *incoming)
         datPtr->scubesPtr[i].Draw();
     }
     datPtr->playerPtr->Draw(); 
-    for (int i = 0; i < 3; ++i)
-    {
-        datPtr->wallPtr[i].Draw();
-    } 
     for (int i = 0; i < 4; ++i)
     {
         datPtr->mazePtr[i].Draw(); 
@@ -229,128 +220,116 @@ int main(void)
         scubes[i].UpdateGlobalP(); 
     }
 
-    TriWall walls[3];
-    double a, b; 
-    a = 100.*sqrt(3.)/4.; 
-    b = 100./2.;  
-    walls[0].SetPos(-a,0.,-b); 
-    walls[1].SetPos( a,0.,-b);
-    walls[2].SetPos(0.,0., b); 
-    for (int i = 0; i < 3; ++i)
-    {
-        walls[i].pHT = &P1; 
-        walls[i].UpdateGlobalP(); 
-    }
+	TriMaze mazes[4];
+	char map0[] =
+	{
+	//                   012345678901234567890123456789012345678
+	"                   #                   " //9
+	"                  ###                  " //8
+	"                 ## ##                 " //7
+	"                ##   ##                " //6
+	"               ##  #  #3               " //5
+	"              ## ##     #              " //4
+	"             ##  #   #  ##             " //3
+	"            ##   ##   #  ##            " //2
+	"           ##   #  #  #   ##           " //1
+	"          ##  #   #   # #  ##          " //0
+	"         2#  #       ##   ####         " //9
+	"        #   #   ##       ##  ##        " //8
+	"       ##  #          # ## ## ##       " //7
+	"      ##  #            #       ##      " //6
+	"     ##       ####    G  #  ##  ##     " //5
+	"    ##  ##   ####     ## ##      ##    " //4
+	"   ##  #   #   #            # #   ##   " //3
+	"  ##  #  ### ##   ## ##  # ##  ##  ##  " //2
+	" ##      ##                         ## " //1
+	"###############1 ######################" //0
+	};
 
-    TriMaze mazes[4]; 
-    char map0[]=
-    {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  #                " //4
-        "              ## ##     #              " //5
-        "             ##  #   #  ##             " //6
-        "            ##   ##   #  ##            " //7
-        "           ##   #  #  #   ##           " //8
-        "          ##  #   #   # #  ##          " //9
-        "          #  #       ##   ####         " //0
-        "        #   #   ##       ##  ##        " //1
-        "       ##  #    ### # # ## ## ##       " //2
-        "      ##  #         #  #       ##      " //3
-        "     ##       ####  #    #  ##  ##     " //4
-        "    ##  ##   ####  #  ## ##      ##    " //5
-        "   ##  #   #   #   #        # #   ##   " //6
-        "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
-        "         ##                         ## " //8
-        "###############  ######################" //9
-    };
-    mazes[0].SetMaze(39,20,map0);
-    mazes[0].SetParentHT(&P0); 
-    mazes[0].UpdateGlobalP(); 
-    char map1[]=
-    {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  ##               " //4
-        "              ##  ###                  " //5
-        "             ##  ## ##  ##             " //6
-        "            ##  ##  ###  ##            " //7
-        "           ##  ##  ## ##  ##           " //8
-        "          ##  ##  ##   ##  ##          " //9
-        "         ##  ##  ##  #  ##  ##         " //0
-        "        0#  ##  ##   ##  ##  ##        " //1
-        "       #0  ##  ##  #  ##      ##       " //2
-        "      ##  ##  ##    #  ##  ##  ##      " //3
-        "     ##  ##  ##         ##  ##  ##     " //4
-        "    ##  ##  ###################  ##    " //5
-        "   ##  ##                     ##  ##   " //6
-        "  ##  ##########  ###############  ##  " //7
-        " ##                                 ## " //8
-        "##################################  ###" //9
-    };
-    mazes[1].SetMaze(39,20,map1); 
-    mazes[1].SetParentHT(&P1); 
-    mazes[1].UpdateGlobalP(); 
-    char map2[]=
-    {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  ##               " //4
-        "              ##   ## ###              " //5
-        "             ##  #  ### ##             " //6
-        "            ##  ##   ##  ##            " //7
-        "           ##  ##  ## ##  ##           " //8
-        "          00  ##      #    ##          " //9
-        "         ##  ###  ##### ##  ##         " //0
-        "        ### ####  ##     ##  ##        " //1
-        "       ## ###  #  #  ###  ##  ##       " //2
-        "      ##   #   ##           #  ##      " //3
-        "     ##  #   #  ###    ##  #    ##     " //4
-        "    ##  ## # ##  #   #  #  # ##  ##    " //5
-        "   ##  ##      #   ##    #    ##  ##   " //6
-        "  ##  ####  # ### ##  #####  ####  #   " //7
-        " ##                    ##            # " //8
-        "########  #############################" //9
-    };
-    mazes[2].SetMaze(39,20,map2); 
-    mazes[2].SetParentHT(&P2); 
-    mazes[2].UpdateGlobalP(); 
-    char map3[]=
-    {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "                #  #  #                " //4
-        "              #   ##    #              " //5
-        "             ##  ##  #####             " //6
-        "            ##  ##   #   ##            " //7
-        "           ##  ##  #   #  ##           " //8
-        "          ##  ##  ### ###  ##          " //9
-        "         ##  ##     ###     ##         " //0
-        "        ##  ##  ###    ####  ##        " //1
-        "       ##  ##      ###        ##       " //2
-        "      ##      ##  #  ##  ####  ##      " //3
-        "     ##  ##  ##  ##   ##  #     ##     " //4
-        "    ######  ##  ##  #  ##  ####  ##    " //5
-        "   ##  ##      ##  ###            ##   " //6
-        "  ##  ##########  #####  ########  ##  " //7
-        " ##                               #### " //8
-        "#########  ############################" //9
-    };
-    mazes[3].SetMaze(39,20,map3); 
-    mazes[3].SetParentHT(&P3); 
-    mazes[3].UpdateGlobalP(); 
+	mazes[0].SetMaze(39, 20, map0);
+	mazes[0].SetParentHT(&P0);
+	mazes[0].UpdateGlobalP();
+	char map1[] =
+	{
+	//                   012345678901234567890123456789012345678
+	"                   #                   " //9
+	"                  ###                  " //8
+	"                 ## ##                 " //7
+	"                ##   ##                " //6
+	"               ##  #  ##               " //5
+	"              ##  ###  33              " //4
+	"             ##  ## ##  ##             " //3
+	"            ##  ##  ###  ##            " //2
+	"           ##  ##  ## ##  ##           " //1
+	"          ##  ##  ##   ##  ##          " //0
+	"         ##  ##  ##  #  ##  ##         " //9
+	"        0#  ##  ##   ##  ##  ##        " //8
+	"       #   ##  ##  #  ##      ##       " //7
+	"      ##  ##  ##   G#  ##  ##  ##      " //6
+	"     ##  ##  ##         ##  ##  ##     " //5
+	"    ##  ##  ###################  ##    " //4
+	"   ##  ##                     ##  ##   " //3
+	"  ##  ##########  ###############  ##  " //2
+	" ##                                 ## " //1
+	"##################################22###" //0
+	};
+	mazes[1].SetMaze(39, 20, map1);
+	mazes[1].SetParentHT(&P1);
+	mazes[1].UpdateGlobalP();
+	char map2[] =
+	{
+	//                   012345678901234567890123456789012345678
+	"                   #                   " //9
+	"                  ###                  " //8
+	"                 ## ##                 " //7
+	"                ##   ##                " //6
+	"               ##  #  ##               " //5
+	"              ##   ## ###              " //4
+	"             ##  #  ### ##             " //3
+	"            ##  ##   ##  ##            " //2
+	"           ##  ##  ## ##  ##           " //1
+	"          0   ##      #    ##          " //0
+	"         ##  ###  ##### ##  ##         " //9
+	"        ### ####  ##     ##  ##        " //8
+	"       ## ###  #  #  ###  ##  ##       " //7
+	"      ##   #   ##           #  ##      " //6
+	"     ##  #   #  ###   G##  #    ##     " //5
+	"    ##  ## # ##  #   #  #  # ##  ##    " //4
+	"   ##  ##      #   ##    #    ##  ##   " //3
+	"  ##  ####  # ### ##  #####  ####  #1  " //2
+	" ##                    ##           1# " //1
+	"########33#############################" //0
+	};
+	mazes[2].SetMaze(39, 20, map2);
+	mazes[2].SetParentHT(&P2);
+	mazes[2].UpdateGlobalP();
+	char map3[] =
+	{
+	//                   012345678901234567890123456789012345678
+	"                   #                   " //9
+	"                  ###                  " //8
+	"                 ## ##                 " //7
+	"                ##   ##                " //6
+	"               0#  #  #2               " //5
+	"              #   ##   2#              " //4
+	"             ##  ##  #####             " //3
+	"            ##  ##   #   ##            " //2
+	"           ##  ##  #   #  ##           " //1
+	"          ##  ##  ### ###  ##          " //0
+	"         ##  ##     ###     ##         " //9
+	"        ##  ##  ###G   ####  ##        " //8
+	"       ##  ##      ###        ##       " //7
+	"      ##      ##  #  ##  ####  ##      " //6
+	"     ##  ##  ##  ##   ##  #     ##     " //5
+	"    ######  ##  ##  #  ##  ####  ##    " //4
+	"   ##  ##      ##  ###            ##   " //3
+	"  ##  ##########  #####  ########  ##  " //2
+	" ##                               #### " //1
+	"#########11############################" //0
+	};
+	mazes[3].SetMaze(39, 20, map3);
+	mazes[3].SetParentHT(&P3);
+	mazes[3].UpdateGlobalP();
 
     int terminate=0;
     // TransformMatrix PC;
@@ -394,7 +373,6 @@ int main(void)
     dat.playerPtr = &player;  
     dat.scubesPtr = scubes; 
     dat.cameraPtr = &camera; 
-    dat.wallPtr   = walls; 
     dat.mazePtr   = mazes; 
     FsRegisterOnPaintCallBack(Render,&dat);
     
@@ -407,6 +385,12 @@ int main(void)
 
     double vx = 0., vy = 0., vz = 0.;
     double movespeed = 4.; // increase movement speed
+
+    int nextplane = plane; 
+    int prevplane = plane; 
+    double hx = 0.;
+    double hz = 0.; 
+
     while(0==terminate)
     {
         FsPollDevice();
@@ -442,10 +426,10 @@ int main(void)
 //        printf("%lf, %lf, %lf  ->  %lf, %lf, %lf\n", px, py, pz, hx, hy, hz);
 //        printf("%c\n", mazes[0].GetWallType(map0, px, py, pz, hgx, hgy, hgz));
         
-        mazes[0].Local2Grid(px, py, pz, hgx, hgy, hgz); //set coord on grid
+        // mazes[0].Local2Grid(px, py, pz, hgx, hgy, hgz); //set coord on grid
         
-        char CurrentWallType = mazes[0].GetWallType(map0, hgx, hgy, hgz);
-        printf("%lf, %lf, %lf  ->  %d, %d, %d, walltype: %c\n", px, py, pz, (int)hgx, (int)hgy, (int)hgz, CurrentWallType);
+        // char CurrentWallType = mazes[0].GetWallType(map0, hgx, hgy, hgz);
+        // printf("%lf, %lf, %lf  ->  %d, %d, %d, walltype: %c\n", px, py, pz, (int)hgx, (int)hgy, (int)hgz, CurrentWallType);
 
         
         // overview.HT.Print(); // debugging
@@ -454,70 +438,58 @@ int main(void)
             terminate = 1; 
             break; 
         }
-        if(key == FSKEY_1)
+
+        if (nextplane != prevplane)
         {
-            // red
-//            px = player.HT.GetX();
-//            py = player.HT.GetY();
-//            pz = player.HT.GetZ();
-//            yaw = player.HT.GetYaw();
+	        if(nextplane == 0)
+	        {
+	        	prevplane = nextplane; 
+	            // red
+	            player.pHT = &P0;  
+	            camera.ppHT = &P0;
+	            
+	            teleporter.Teleport(plane, 0, px, py, pz, yaw, hx, hz); 
+	            player.HT.SetPos(px, py, pz);  
+	            player.HT.SetOri(0., 0.,yaw); 
+	            plane = 0; 
+	        }
+	        if(nextplane == 1)
+	        {
+	        	prevplane = nextplane; 
+	            // white
+	            player.pHT = &P1;  
+	            camera.ppHT = &P1; 
 
-            player.pHT = &P0;  
-            camera.ppHT = &P0;
-            
-            teleporter.Teleport(plane, 0, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz);  
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 0; 
-        }
-        if(key == FSKEY_2)
-        {
-            // white
-//            px = player.HT.GetX();
-//            py = player.HT.GetY();
-//            pz = player.HT.GetZ();
-//            yaw = player.HT.GetYaw();
+	            teleporter.Teleport(plane, 1, px, py, pz, yaw, hx, hz); 
+	            player.HT.SetPos(px, py, pz); 
+	            player.HT.SetOri(0., 0.,yaw); 
+	            plane = 1; 
+	        }
+	        if(nextplane == 2)
+	        {
+	        	prevplane = nextplane; 
+	            // purple 
+	            player.pHT = &P2;  
+	            camera.ppHT = &P2;
 
-            player.pHT = &P1;  
-            camera.ppHT = &P1; 
-            // WILL USE TELEPORTER 
-            teleporter.Teleport(plane, 1, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 1; 
-        }
-        if(key == FSKEY_3)
-        {
-            // purple 
-//            px = player.HT.GetX();
-//            py = player.HT.GetY();
-//            pz = player.HT.GetZ();
-//            yaw = player.HT.GetYaw();
-
-            player.pHT = &P2;  
-            camera.ppHT = &P2;
-
-            teleporter.Teleport(plane, 2, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw); 
-            plane = 2; 
-        }
-        if(key == FSKEY_4)
-        {
-            // green
-//            px = player.HT.GetX();
-//            py = player.HT.GetY();
-//            pz = player.HT.GetZ();
-//            yaw = player.HT.GetYaw();
-
-            player.pHT = &P3;  
-            camera.ppHT = &P3;
-            
-            teleporter.Teleport(plane, 3, px, py, pz, yaw); 
-            player.HT.SetPos(px, py, pz); 
-            player.HT.SetOri(0., 0.,yaw);  
-            plane = 3; 
-        }
+	            teleporter.Teleport(plane, 2, px, py, pz, yaw, hx, hz); 
+	            player.HT.SetPos(px, py, pz); 
+	            player.HT.SetOri(0., 0.,yaw); 
+	            plane = 2; 
+	        }
+	        if(nextplane == 3)
+	        {
+	        	prevplane = nextplane; 
+	            // green
+	            player.pHT = &P3;  
+	            camera.ppHT = &P3;
+	            
+	            teleporter.Teleport(plane, 3, px, py, pz, yaw, hx, hz); 
+	            player.HT.SetPos(px, py, pz); 
+	            player.HT.SetOri(0., 0.,yaw);  
+	            plane = 3; 
+	        }
+	    }
 
         if(0!=FsGetKeyState(FSKEY_LEFT))
         {
@@ -537,70 +509,80 @@ int main(void)
         }
         if(0!=FsGetKeyState(FSKEY_SPACE))
         {
-//            double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*0., movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_C))
         {
-//            double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
         }
         if(0!=FsGetKeyState(FSKEY_W))
         {
-//            double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px - 2.*movespeed*vx;
-            fy = py + 2.*movespeed*vy;
-            fz = pz - 2.*movespeed*vz;
+            fx = px - 1.*movespeed*vx;
+            fy = py + 1.*movespeed*vy;
+            fz = pz - 1.*movespeed*vz;
             
-            mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
-            mazes[0].CollisionCheck(FutureWallType, vx, vy, vz);
+            mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+
+            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            printf("%d  ",FutureWallType); 
+            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+            printf("%lf, %lf, %lf \n", vx, vy, vz); 
             player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+
         }
         if(0!=FsGetKeyState(FSKEY_S))
         {
-//            double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+<<<<<<< HEAD
             fx = px + 4.*movespeed*vx;
             fy = py + 4.*movespeed*vy;
             fz = pz + 4.*movespeed*vz;
+=======
+            fx = px + 1.*movespeed*vx;
+            fy = py + 1.*movespeed*vy;
+            fz = pz + 1.*movespeed*vz;
+>>>>>>> e5671399ad0d221c186021009e0b4dc185871061
             
-            mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
-            mazes[0].CollisionCheck(FutureWallType, vx, vy, vz);
+            mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_A))
         {
-//            double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
+<<<<<<< HEAD
             fx = px - 4.*movespeed*vx;
             fy = py + 4.*movespeed*vy;
             fz = pz - 4.*movespeed*vz;
+=======
+            fx = px - 1.*movespeed*vx;
+            fy = py + 1.*movespeed*vy;
+            fz = pz - 1.*movespeed*vz;
+>>>>>>> e5671399ad0d221c186021009e0b4dc185871061
             
-            mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
-            mazes[0].CollisionCheck(FutureWallType, vx, vy, vz);
+            mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
             player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
         {
-//            double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
             fx = px + 1.*movespeed*vx;
             fy = py + 1.*movespeed*vy;
             fz = pz + 1.*movespeed*vz;
             
-            mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
-            mazes[0].CollisionCheck(FutureWallType, vx, vy, vz);
+            mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
+            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
 
