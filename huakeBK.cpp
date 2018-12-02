@@ -441,54 +441,70 @@ int main(void)
 
         if (nextplane != prevplane)
         {
-	        if(nextplane == 0)
-	        {
-	        	prevplane = nextplane; 
-	            // red
-	            player.pHT = &P0;  
-	            camera.ppHT = &P0;
-	            
-	            teleporter.Teleport(plane, 0, px, py, pz, yaw, hx, hz); 
-	            player.HT.SetPos(px, py, pz);  
-	            player.HT.SetOri(0., 0.,yaw); 
-	            plane = 0; 
-	        }
-	        if(nextplane == 1)
-	        {
-	        	prevplane = nextplane; 
-	            // white
-	            player.pHT = &P1;  
-	            camera.ppHT = &P1; 
-
-	            teleporter.Teleport(plane, 1, px, py, pz, yaw, hx, hz); 
-	            player.HT.SetPos(px, py, pz); 
-	            player.HT.SetOri(0., 0.,yaw); 
-	            plane = 1; 
-	        }
-	        if(nextplane == 2)
-	        {
-	        	prevplane = nextplane; 
-	            // purple 
-	            player.pHT = &P2;  
-	            camera.ppHT = &P2;
-
-	            teleporter.Teleport(plane, 2, px, py, pz, yaw, hx, hz); 
-	            player.HT.SetPos(px, py, pz); 
-	            player.HT.SetOri(0., 0.,yaw); 
-	            plane = 2; 
-	        }
-	        if(nextplane == 3)
-	        {
-	        	prevplane = nextplane; 
-	            // green
-	            player.pHT = &P3;  
-	            camera.ppHT = &P3;
-	            
-	            teleporter.Teleport(plane, 3, px, py, pz, yaw, hx, hz); 
-	            player.HT.SetPos(px, py, pz); 
-	            player.HT.SetOri(0., 0.,yaw);  
-	            plane = 3; 
-	        }
+            if(nextplane == 0)
+            {
+                prevplane = nextplane;
+                // red
+                player.pHT = &P0;
+                camera.ppHT = &P0;
+                
+                teleporter.Teleport(plane, 0, hgx, hgy, hgz, yaw);
+                mazes[0].Grid2Local(px, py, pz, hgx, hgy, hgz);
+                
+                player.HT.SetPos(px, py, pz);
+                player.HT.SetOri(0., 0.,yaw);
+                plane = 0;
+//                png.state = 0;
+//                firstPlayingPass = true;
+            }
+            if(nextplane == 1)
+            {
+                prevplane = nextplane;
+                // white
+                player.pHT = &P1;
+                camera.ppHT = &P1;
+                
+                teleporter.Teleport(plane, 1, hgx, hgy, hgz, yaw);
+                mazes[1].Grid2Local(px, py, pz, hgx, hgy, hgz);
+                
+                player.HT.SetPos(px, py, pz);
+                player.HT.SetOri(0., 0.,yaw);
+                plane = 1;
+//                png.state = 1;
+//                firstPlayingPass = true;
+            }
+            if(nextplane == 2)
+            {
+                prevplane = nextplane;
+                // purple
+                player.pHT = &P2;
+                camera.ppHT = &P2;
+                
+                teleporter.Teleport(plane, 2, hgx, hgy, hgz, yaw);
+                mazes[2].Grid2Local(px, py, pz, hgx, hgy, hgz);
+                
+                player.HT.SetPos(px, py, pz);
+                player.HT.SetOri(0., 0.,yaw);
+                plane = 2;
+//                png.state = 2;
+//                firstPlayingPass = true;
+            }
+            if(nextplane == 3)
+            {
+                prevplane = nextplane;
+                // green
+                player.pHT = &P3;
+                camera.ppHT = &P3;
+                
+                teleporter.Teleport(plane, 3, hgx, hgy, hgz, yaw);
+                mazes[3].Grid2Local(px, py, pz, hgx, hgy, hgz);
+                
+                player.HT.SetPos(px, py, pz);
+                player.HT.SetOri(0., 0.,yaw);
+                plane = 3;
+//                png.state = 3;
+//                firstPlayingPass = true;
+            }
 	    }
 
         if(0!=FsGetKeyState(FSKEY_LEFT))
@@ -533,11 +549,8 @@ int main(void)
             fz = pz - movespeed*vz;
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-
-            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-            // printf("type: %d plane: %d ",FutureWallType, plane); 
-            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
-            // printf("%lf, %lf, %lf \n", vx, vy, vz); 
+            //                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
             player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
 
         }
@@ -552,8 +565,8 @@ int main(void)
 
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+            //                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_A))
@@ -566,8 +579,8 @@ int main(void)
             fz = pz - movespeed*vz;
          
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+            //                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
             player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
@@ -579,8 +592,8 @@ int main(void)
             fz = pz + movespeed*vz;
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-            int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-            nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
+            //                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+            nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
             player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
         }
 

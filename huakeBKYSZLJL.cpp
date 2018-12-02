@@ -769,8 +769,8 @@ int main(void)
                 fz = pz - movespeed*vz;
                 
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+//                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
 
                 player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
@@ -784,8 +784,8 @@ int main(void)
                 fz = pz + movespeed*vz;
 
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+//                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
 
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
@@ -799,8 +799,8 @@ int main(void)
                 fz = pz - movespeed*vz;
              
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+//                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
                 player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
             }
             if(0!=FsGetKeyState(FSKEY_D))
@@ -812,8 +812,8 @@ int main(void)
                 fz = pz + movespeed*vz;
                 
                 mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
-                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-                nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane);
+//                FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+                nextplane = mazes[plane].CollisionCheck(fhgx, fhgy, fhgz, vx, vy, vz, plane);
                 player.HT.MovePos( movespeed*vx, movespeed*0., movespeed*vz);
             }
             // REACHED GOAL!

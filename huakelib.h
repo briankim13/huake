@@ -173,7 +173,7 @@ public:
     void Draw(void) const; 
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
     int GetWallType(double hgx, double hgy, double hgz) const;
-    int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane);
+    int CollisionCheck(double fhgx, double fhgy, double fhgz, double &vx, double &vy, double &vz, const int currplane);
     void Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz);
 };
 
