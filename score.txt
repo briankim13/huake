@@ -16,3 +16,5 @@ goal	74.80
 two	3.48
 working?	3.04
 working!	9.23
+allsgood	73.04
+tyo	1.83
