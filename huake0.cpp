@@ -717,8 +717,8 @@ int main(void)
     
     int gamestate = 0; // main game, high score typing 
     dat.statePtr = &gamestate; 
-    bool justChanged = true;
-    bool willChange = false; 
+    bool justChangedState = true;
+    bool willChangeState = false; 
 
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
@@ -842,8 +842,8 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3; 
+                justChangedState = true; 
             }
-
             if(key == FSKEY_ESC)
             {
                 gameOn = false; 
@@ -1008,6 +1008,7 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3;
+                justChangedState = true; 
             }
 
             // minimap moving 
@@ -1081,9 +1082,9 @@ int main(void)
         
         else if (gamestate == 2)
         {
-            if (justChanged)
+            if (justChangedState)
             {
-                justChanged = false;
+                justChangedState = false;
                 CP.SetOri(0.,30.*PI/180.,0.);
                 char timeChar[7];
                 double m = 0.01; 
@@ -1105,6 +1106,7 @@ int main(void)
                     m *= 10.;  
                 }   
                 hello = txt.Run1(timeChar); 
+                printf("txt Set\n"); 
                 continue; 
             }
 
@@ -1128,7 +1130,8 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3;
-                willChange = true; 
+                willChangeState = true; 
+                justChangedState = true; 
             }
             if (key == FSKEY_ESC)
             {
@@ -1151,14 +1154,16 @@ int main(void)
             FsPushOnPaintEvent();
             FsSleep(10);   
 
-            if (willChange)
+            if (willChangeState)
             {
-                willChange = false; 
+                willChangeState = false; 
                 usingBuffer = true; 
+
+                // WRITE FILES SAVE SCORES 
                 FILE *fp1 = fopen("score.txt", "a+");
-                fprintf(fp1, txt.GetString().GetPointer());
+                fprintf(fp1, txt.GetString().GetPointer()); //write name
                 fprintf(fp1, "\t");
-                fprintf(fp1, "%.2lf\n",time);
+                fprintf(fp1, "%.2lf\n",time); //write time 
                 fclose(fp1);
                 txt.str.CleanUp(); 
 
@@ -1173,8 +1178,6 @@ int main(void)
                 dat.wNum = 1; 
                 // Read text file
                 dat.fp3 = fopen(dat.fName, "r");
-                // glColor3f(1.0f, 1.0f, 1.0f);
-                
                 char strLine[256];
                 while(nullptr != MyFgets(strLine, 255, dat.fp3))
                 {

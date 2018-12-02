@@ -11,3 +11,8 @@ hehehe	5.87
 solvedbro	4.96
 nospacebar	2.71
 good	2.38
+ok	60.08
+goal	74.80
+two	3.48
+working?	3.04
+working!	9.23
