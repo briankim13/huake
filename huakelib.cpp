@@ -1965,15 +1965,15 @@ void DrawIntro(void)
 	glRasterPos2d(300, 100);
 	YsGlDrawFontBitmap32x48("Huake!");
 	glColor3f(0, 1.0f, 0);
-	glRasterPos2d(550, 350);
+	glRasterPos2d(500, 350);
 	YsGlDrawFontBitmap20x28("Designed By:");
-	glRasterPos2d(550, 400);
+	glRasterPos2d(500, 400);
 	YsGlDrawFontBitmap20x28("Wooshik Kim");
-	glRasterPos2d(550, 450);
+	glRasterPos2d(500, 450);
 	YsGlDrawFontBitmap20x28("Yunsik Ohm");
-	glRasterPos2d(550, 500);
+	glRasterPos2d(500, 500);
 	YsGlDrawFontBitmap20x28("Jaejun Lee");
-	glRasterPos2d(550, 550);
+	glRasterPos2d(500, 550);
 	YsGlDrawFontBitmap20x28("Zhao Lu");
 
 	glColor3f(1.0f, 1.0f, 0);
