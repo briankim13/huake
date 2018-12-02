@@ -56,10 +56,10 @@ void Render(void *incoming)
         }
         datPtr->playerPtr->Draw(); 
         datPtr->wallPtr->Draw();
-        // for (int i = 0; i < 4; ++i)
-        // {
-        //     datPtr->mazePtr[i].Draw(); 
-        // }
+         for (int i = 0; i < 4; ++i)
+         {
+             datPtr->mazePtr[i].Draw(); 
+         }
         FsSwapBuffers();
     }
 
