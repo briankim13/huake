@@ -931,6 +931,10 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 			{
 				buf += 1; 
 			}
+			else if (b == 'G')
+			{
+				buf += 1; 
+			}
 		}
 	}
 	n = buf; // number of walls 
@@ -976,6 +980,45 @@ void TriMaze::SetMaze(int w, int h, char incoming[])
 						walls[idx].HT.SetOri(0.,0.,0.);
 					}
 				}
+				idx += 1; 
+				if (idx > n)
+				{
+					printf("Out of bound in TriWall!\n"); 
+				}
+			}
+			else if (b == 'G')
+			{
+				px =-dx*x + 1000.*sqrt(6.)/3. -2./3.*dx; 
+				pz = dz*z - L/2. + dz;
+				py = 0.; 
+				walls[idx].HT.SetPos(px,py,pz);  
+				if (x%2==1) // odd row
+				{
+					if (z%2==0) // even col
+					{
+						walls[idx].HT.SetOri(0.,0.,0.);
+					}
+					else        // odd col
+					{
+						walls[idx].HT.MovePos(dx/3.,0.,0.); 
+						walls[idx].HT.SetOri(0.,0.,PI);
+					}
+				} 
+				else  // even row
+				{
+					if (z%2==0) // even col
+					{
+						walls[idx].HT.MovePos(dx/3.,0.,0.); 
+						walls[idx].HT.SetOri(0.,0.,PI);
+					}
+					else        // odd col
+					{
+						walls[idx].HT.SetOri(0.,0.,0.);
+					}
+				}
+				walls[idx].c[0] = 1.f; 
+				walls[idx].c[1] = 1.f;
+				walls[idx].c[2] = 0.f;
 				idx += 1; 
 				if (idx > n)
 				{
