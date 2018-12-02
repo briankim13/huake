@@ -8,6 +8,8 @@
 #include <chrono>
 #include <stdio.h> 
 #include <stdlib.h>
+#include <iostream>
+#include <string.h>
 
 class Pngdata
 {
@@ -432,33 +434,82 @@ int main(void)
 
     // Make mazes
     TriMaze mazes[4]; 
+    // char map0[] =
+    // {
+    // //   012345678901234567890123456789012345678
+    //     "                   #                   " //0
+    //     "                  ###                  " //1
+    //     "                 ## ##                 " //2
+    //     "                ##   ##                " //3
+    //     "               ##  #  #3               " //4
+    //     "              ## ##     #              " //5
+    //     "             ##  #   #  ##             " //6
+    //     "            ##   ##   #  ##            " //7
+    //     "           ##   #  #  #   ##           " //8
+    //     "          ##  #   #   # #  ##          " //9
+    //     "         2#  #       ##   ####         " //0
+    //     "        #   #   ##       ##  ##        " //1
+    //     "       ##  #    ### # # ## ## ##       " //2
+    //     "      ##  #         #  #       ##      " //3
+    //     "     ##       ####  #    #  ##  ##     " //4
+    //     "    ##  ##   ####  #  ## ##      ##    " //5
+    //     "   ##  #   #   #   #        # #   ##   " //6
+    //     "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
+    //     " ##      ##                         ## " //8
+    //     "############### 1######################" //9
+    // };
     char map0[] =
     {
-    //   012345678901234567890123456789012345678
-        "                   #                   " //0
-        "                  ###                  " //1
-        "                 ## ##                 " //2
-        "                ##   ##                " //3
-        "               ##  #  #3               " //4
-        "              ## ##     #              " //5
-        "             ##  #   #  ##             " //6
-        "            ##   ##   #  ##            " //7
-        "           ##   #  #  #   ##           " //8
-        "          ##  #   #   # #  ##          " //9
-        "         2#  #       ##   ####         " //0
-        "        #   #   ##       ##  ##        " //1
-        "       ##  #    ### # # ## ## ##       " //2
-        "      ##  #         #  #       ##      " //3
-        "     ##       ####  #    #  ##  ##     " //4
-        "    ##  ##   ####  #  ## ##      ##    " //5
-        "   ##  #   #   #   #        # #   ##   " //6
-        "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
-        " ##      ##                         ## " //8
-        "############### 1######################" //9
+            //   012345678901234567890123456789012345678
+    "                   #                   " //0
+    "                  ###                  " //1
+    "                 ## ##                 " //2
+    "                ##   ##                " //3
+    "               ##  #  #3               " //4
+    "              ## ##     #              " //5
+    "             ##  #   #  ##             " //6
+    "            ##   ##   #  ##            " //7
+    "           ##   #  #  #   ##           " //8
+    "          ##  #   #   # #  ##          " //9
+    "         2#  #       ##   ####         " //0
+    "        #   #   ##       ##  ##        " //1
+    "       ##  #    ### # # ## ## ##       " //2
+    "      ##  #         #  #       ##      " //3
+    "     ##       ####  #    #  ##  ##     " //4
+    "    ##  ##   ####  #  ## ##      ##    " //5
+    "   ##  #   #   #   #        # #   ##   " //6
+    "  ##  #  ### ##   ## ##  # ##  ##  ##  " //7
+    " ##      ##           ##            ## " //8
+    "############### 1######################" //9
     };
+
     mazes[0].SetMaze(39,20,map0);
     mazes[0].SetParentHT(&P0); 
     mazes[0].UpdateGlobalP(); 
+    // char map1[] =
+    // {
+    // //                   012345678901234567890123456789012345678
+    // "                   #                   " //9
+    // "                  ###                  " //8
+    // "                 ## ##                 " //7
+    // "                ##   ##                " //6
+    // "               ##  #  ##               " //5
+    // "              ##  ###   3              " //4
+    // "             ##  ## ##  ##             " //3
+    // "            ##  ##  ###  ##            " //2
+    // "           ##  ##  ## ##  ##           " //1
+    // "          ##  ##  ##   ##  ##          " //0
+    // "         ##  ##  ##  #  ##  ##         " //9
+    // "        0#  ##  ##   ##  ##  ##        " //8
+    // "       #   ##  ##  #  ##      ##       " //7
+    // "      ##  ##  ##   G#  ##  ##  ##      " //6
+    // "     ##  ##  ##         ##  ##  ##     " //5
+    // "    ##  ##  ###################  ##    " //4
+    // "   ##  ##                     ##  ##   " //3
+    // "  ##  ##########  ###############  ##  " //2
+    // " ##                                 ## " //1
+    // "##################################2 ###" //0
+    // };
     char map1[] =
     {
     //                   012345678901234567890123456789012345678
@@ -486,6 +537,30 @@ int main(void)
     mazes[1].SetMaze(39,20,map1); 
     mazes[1].SetParentHT(&P1); 
     mazes[1].UpdateGlobalP(); 
+    // char map2[] =
+    // {
+    // //                   012345678901234567890123456789012345678
+    // "                   #                   " //9
+    // "                  ###                  " //8
+    // "                 ## ##                 " //7
+    // "                ##   ##                " //6
+    // "               ##  #  ##               " //5
+    // "              ##   ## ###              " //4
+    // "             ##  #  ### ##             " //3
+    // "            ##  ##   ##  ##            " //2
+    // "           ##  ##  ## ##  ##           " //1
+    // "          0   ##      #    ##          " //0
+    // "         ##  ###  ##### ##  ##         " //9
+    // "        ### ####  ##     ##  ##        " //8
+    // "       ## ###  #  #  ###  ##  ##       " //7
+    // "      ##   #   ##           #  ##      " //6
+    // "     ##  #   #  ###    ##  #    ##     " //5
+    // "    ##  ## # ##  #   #  #  # ##  ##    " //4
+    // "   ##  ##      #   ##    #    ##  ##   " //3
+    // "  ##  ####  # ### ##  #####  ####  #1  " //2
+    // " ##                    ##            # " //1
+    // "########3 #############################" //0
+    // };
     char map2[] =
     {
     //                   012345678901234567890123456789012345678
@@ -513,30 +588,55 @@ int main(void)
     mazes[2].SetMaze(39,20,map2); 
     mazes[2].SetParentHT(&P2); 
     mazes[2].UpdateGlobalP(); 
+    // char map3[] =
+    // {
+    // //                   012345678901234567890123456789012345678
+    // "                   #                   " //9
+    // "                  ###                  " //8
+    // "                 ## ##                 " //7
+    // "                ##  ###                " //6
+    // "               0#  ## #2               " //5
+    // "              #   ##    #              " //4
+    // "             ##  ##  #####             " //3
+    // "            ##  ##   #   ##            " //2
+    // "           ##  ##  #   #  ##           " //1
+    // "          ##  ##  ### ###  ##          " //0
+    // "         ##  ##     ###     ##         " //9
+    // "        ##  ##  ###    ####  ##        " //8
+    // "       ##  ##      ###        ##       " //7
+    // "      ##      ##  #  ##  ####  ##      " //6
+    // "     ##  ##  ##  ##   ##  #     ##     " //5
+    // "    ######  ##  ##  #  ##  ####  ##    " //4
+    // "   ##  ##      ##  ###            ##   " //3
+    // "  ##  ##########  #####  ########  ##  " //2
+    // " ##                               #### " //1
+    // "######### 1############################" //0
+    // };
     char map3[] =
     {
-    //                   012345678901234567890123456789012345678
-    "                   #                   " //9
-    "                  ###                  " //8
-    "                 ## ##                 " //7
-    "                ##  ###                " //6
-    "               0#  ## #2               " //5
-    "              #   ##    #              " //4
-    "             ##  ##  #####             " //3
-    "            ##  ##   #   ##            " //2
-    "           ##  ##  #   #  ##           " //1
-    "          ##  ##  ### ###  ##          " //0
-    "         ##  ##     ###     ##         " //9
-    "        ##  ##  ###    ####  ##        " //8
-    "       ##  ##      ###        ##       " //7
-    "      ##      ##  #  ##  ####  ##      " //6
-    "     ##  ##  ##  ##   ##  #     ##     " //5
-    "    ######  ##  ##  #  ##  ####  ##    " //4
-    "   ##  ##      ##  ###            ##   " //3
-    "  ##  ##########  #####  ########  ##  " //2
-    " ##                               #### " //1
-    "######### 1############################" //0
+            //   012345678901234567890123456789012345678
+    "                   #                   " //0
+    "                  ###                  " //1
+    "                 ## ##                 " //2
+    "                ##  ###                " //3
+    "               0#  ## #2               " //4
+    "              #   ##    #              " //5
+    "             ##  ##  #####             " //6
+    "            ##  ##   #   ##            " //7
+    "           ##  ##  #   #  ##           " //8
+    "          ##  ##  ### ###  ##          " //9
+    "         ##  ##     ###     ##         " //0
+    "        ##  ##  ###    ####  ##        " //1
+    "       ##  ##      ###        ##       " //2
+    "      ##      ##  #  ##  ####  ##      " //3
+    "     ##  ##  ##  ##   ##  #     ##     " //4
+    "    ######  ##  ##  #  ##  ####  ##    " //5
+    "   ##  ##      ##  ###            ##   " //6
+    "  ##  ##########  #####  ########  ##  " //7
+    " ##                               #### " //8
+    "######### 1############################" //9
     };
+
     mazes[3].SetMaze(39,20,map3); 
     mazes[3].SetParentHT(&P3); 
     mazes[3].UpdateGlobalP();  
@@ -617,8 +717,8 @@ int main(void)
     
     int gamestate = 0; // main game, high score typing 
     dat.statePtr = &gamestate; 
-    bool justChanged = true;
-    bool willChange = false; 
+    bool justChangedState = true;
+    bool willChangeState = false; 
 
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
@@ -644,12 +744,14 @@ int main(void)
     TextInput txt;
     bool hello = txt.Run1(fName); 
     dat.txtPtr = &txt; 
+    bool usingBuffer = true; 
 
     FsRegisterOnPaintCallBack(Render,&dat);
 
     while(gameOn)
     {
 // player.Print(); 
+// printf("%s\n",txt.GetString().GetPointer());
         // Title screen
         if (gamestate == 0) 
         {
@@ -687,6 +789,18 @@ int main(void)
             CP.RotateRoll(0.3*PI / 180.);
             CP.RotateYaw(1.*PI / 180.);
             CP.RotatePitch1(0.3*PI / 180.);
+
+            if (firstPlayingPass == true)
+            {
+                firstPlayingPass = false;
+                char fName[256] = "music/hell_1.wav";
+                if (YSOK != wav.LoadWav(fName))
+                {
+                    printf("Failed to read %s.\n", fName);
+
+                    return 1;
+                }
+            }
 
             wavDat.PlayBackground(wav);
             wavDat.KeepPlaying();
@@ -728,8 +842,8 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3; 
+                justChangedState = true; 
             }
-
             if(key == FSKEY_ESC)
             {
                 gameOn = false; 
@@ -894,6 +1008,7 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3;
+                justChangedState = true; 
             }
 
             // minimap moving 
@@ -967,12 +1082,13 @@ int main(void)
         
         else if (gamestate == 2)
         {
-            if (justChanged)
+            if (justChangedState)
             {
-                justChanged = false;
+                justChangedState = false;
                 CP.SetOri(0.,30.*PI/180.,0.);
                 char timeChar[7];
                 double m = 0.01; 
+                txt.str.CleanUp(); 
 
                 for (int i = 0; i < 6; ++i)
                 {
@@ -990,6 +1106,20 @@ int main(void)
                     m *= 10.;  
                 }   
                 hello = txt.Run1(timeChar); 
+                printf("txt Set\n"); 
+                continue; 
+            }
+
+            auto c=FsInkeyChar();
+            // use up the FsInkeyChar buffer.....
+            if (usingBuffer)
+            {
+                if (c == 0)
+                {
+                    usingBuffer = false; 
+                }
+                // if there is still buffer skip the loop for now 
+                continue; 
             }
             FsPollDevice();
             wavDat.PlayBackground(wav);
@@ -1000,7 +1130,8 @@ int main(void)
             {
                 gamestate += 1; 
                 gamestate = gamestate % 3;
-                willChange = true; 
+                willChangeState = true; 
+                justChangedState = true; 
             }
             if (key == FSKEY_ESC)
             {
@@ -1011,8 +1142,7 @@ int main(void)
             {
                 txt.str.BackSpace();
             }
-            auto c=FsInkeyChar();
-            if(' '<=c && c<128)
+            if(' '< c && c<128) // no space bar!
             {
                 txt.str.Add(c);
             }
@@ -1024,13 +1154,16 @@ int main(void)
             FsPushOnPaintEvent();
             FsSleep(10);   
 
-            if (willChange)
+            if (willChangeState)
             {
-                willChange = false; 
+                willChangeState = false; 
+                usingBuffer = true; 
+
+                // WRITE FILES SAVE SCORES 
                 FILE *fp1 = fopen("score.txt", "a+");
-                fprintf(fp1, txt.GetString().GetPointer());
+                fprintf(fp1, txt.GetString().GetPointer()); //write name
                 fprintf(fp1, "\t");
-                fprintf(fp1, "%.2lf\n",time);
+                fprintf(fp1, "%.2lf\n",time); //write time 
                 fclose(fp1);
                 txt.str.CleanUp(); 
 
@@ -1045,8 +1178,6 @@ int main(void)
                 dat.wNum = 1; 
                 // Read text file
                 dat.fp3 = fopen(dat.fName, "r");
-                // glColor3f(1.0f, 1.0f, 1.0f);
-                
                 char strLine[256];
                 while(nullptr != MyFgets(strLine, 255, dat.fp3))
                 {
