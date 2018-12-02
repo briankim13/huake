@@ -174,8 +174,6 @@ public:
     int GetWallType(double hgx, double hgy, double hgz) const;
     int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz);
     void Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz);
-    char GetWallType(const char map[], double hgx, double hgy, double hgz) const;
-    void CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz);
 };
 
 void DrawGround(void);
@@ -186,14 +184,6 @@ void DrawFloor(double x1, double y1, double z1,
                double x3, double y3, double z3);
 
 void DrawScore(double time); 
-
-char *MyFgets(char str[],int maxn,FILE *fp);
-int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
-
-void DrawScore(double time); 
-// char *MyFgets(char str[],int maxn,FILE *fp);
-int ParseString(int wordTop[],int wordLen[],int maxlen,char input[]);
-
 
 class Teleporter
 {

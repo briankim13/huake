@@ -1024,8 +1024,6 @@ void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,
     hgz = hz / l;
 }
 
-
-int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
 void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy, double hgz)
 {
     double CartCoord[4], buf[4];
@@ -1079,7 +1077,7 @@ void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy
     hgz = hz / l;
 }
 
-char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
+int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
 {
     int hgx1 = (int) hgx;
     int hgz1 = (int) hgz;
@@ -1119,7 +1117,7 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
     else
     {
         printf("ERROR in COORDINATE on HEX GRID");
-        return 0;
+        return -1;
     }
 }
 
@@ -1941,71 +1939,71 @@ void DynamicsContext::SimStep(void)
 	w  += dw*dT;  
 }
 
-char *MyFgets(char str[],int maxn,FILE *fp)
-{
-    auto r=fgets(str,maxn,fp);
-    if(nullptr!=r)
-    {
-        for(int i=strlen(str)-1; 0<=i; --i)
-        {
-            if(str[i]<' ')
-            {
-                str[i]=0;
-            }
-            else
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        str[0]=0;
-    }
-    return r;
-}
 
-int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
-{
-    if(0==maxlen)
-    {
-        return 0;
-    }
+// char *MyFgets(char str[],int maxn,FILE *fp)
+// {
+//     auto r=fgets(str,maxn,fp);
+//     if(nullptr!=r)
+//     {
+//         for(int i=strlen(str)-1; 0<=i; --i)
+//         {
+//             if(str[i]<' ')
+//             {
+//                 str[i]=0;
+//             }
+//             else
+//             {
+//                 break;
+//             }
+//         }
+//     }
+//     else
+//     {
+//         str[0]=0;
+//     }
+//     return r;
+// }
 
-    int state=0;
-    int wordCount=0;
-    for(int i=0; 0!=input[i]; ++i)
-    {
-        if(0==state)
-        {
-            if(' '<input[i])
-            {
-                wordTop[wordCount]=i;
-                wordLen[wordCount]=1;
-                state=1;
-                ++wordCount;
-            }
-        }
-        else if(1==state)
-        {
-            if(input[i]<=' ')
-            {
-                state=0;
-                if(maxlen<=wordCount)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                ++wordLen[wordCount-1];
-            }
-        }
-    }
+// int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
+// {
+//     if(0==maxlen)
+//     {
+//         return 0;
+//     }
 
-    return wordCount;
-}
+//     int state=0;
+//     int wordCount=0;
+//     for(int i=0; 0!=input[i]; ++i)
+//     {
+//         if(0==state)
+//         {
+//             if(' '<input[i])
+//             {
+//                 wordTop[wordCount]=i;
+//                 wordLen[wordCount]=1;
+//                 state=1;
+//                 ++wordCount;
+//             }
+//         }
+//         else if(1==state)
+//         {
+//             if(input[i]<=' ')
+//             {
+//                 state=0;
+//                 if(maxlen<=wordCount)
+//                 {
+//                     break;
+//                 }
+//             }
+//             else
+//             {
+//                 ++wordLen[wordCount-1];
+//             }
+//         }
+//     }
 
+//     return wordCount;
+// }
 
 // class Parser
 // {
@@ -2108,130 +2106,6 @@ int ParseString(int wordTop[],int wordLen[],int maxlen,char input[])
 // 		if(nullptr!=fgets(str,255,fp))
 // 		{
 // 			int nScore = atoi(str);
-// 			printf("%d scores will be shown.\n", nScore);
-
-// 			int n=0;
-// 			vtx=new Vec [nVtx];
-// 			for(int i=0; i<nVtx; ++i)
-// 			{
-// 				if(nullptr!=fgets(str,255,fp))
-// 				{
-// 					int nw,wTop[2],wLen[2];
-// 					if(2<=ParseString(wTop,wLen,2,str))
-// 					{
-// 						vtx[n].x=atoi(str+wTop[0]);
-// 						vtx[n].y=atoi(str+wTop[1]);
-// 						++n;
-// 					}
-// 				}
-// 			}
-// 			printf("%d vertices read.\n",n);
-
-// 			fclose(fp);
-// 		}
-// 	}
-// }
-// class Parser
-// {
-// protected:
-// 	int nw;
-// 	int *wTop,*wLen;
-// 	char *str;
-
-// public:
-// 	Parser();
-// 	~Parser();
-// 	void CleanUp(void);
-
-// 	int Parse(char str[]);
-// 	void GetWord(char wd[],int maxlen,int idx);
-// };
-
-// Parser::Parser()
-// {
-// 	nw=0;
-// 	str=nullptr;
-// 	wTop=nullptr;
-// 	wLen=nullptr;
-// }
-// Parser::~Parser()
-// {
-// 	CleanUp();
-// }
-// void Parser::CleanUp(void)
-// {
-// 	nw=0;
-// 	if(nullptr!=str)
-// 	{
-// 		delete [] str;
-// 		str=nullptr;
-// 	}
-// 	if(nullptr!=wTop)
-// 	{
-// 		delete [] wTop;
-// 		wTop=nullptr;
-// 	}
-// 	if(nullptr!=wLen)
-// 	{
-// 		delete [] wLen;
-// 		wLen=nullptr;
-// 	}
-// }
-// int Parser::Parse(char incoming[])
-// {
-// 	int maxlen=(strlen(str)+1)/2;
-// 	CleanUp();
-
-// 	str=new char [strlen(incoming)+1];
-// 	strcpy(str,incoming);
-// 	wTop=new int [maxlen];
-// 	wLen=new int [maxlen];
-// 	return ParseString(wTop,wLen,maxlen,str);
-// }
-
-// class Score
-// {
-// protected:
-// 	int nScore;
-// 	char *vtx;
-// public:
-// 	Score();
-// 	~Score();
-// 	void CleanUp(void);
-
-// 	void ReadFile(char fName[]);
-// 	void Draw(void);
-// };
-
-// Score::Score()
-// {
-// 	nVtx=0;
-// 	vtx=nullptr;
-// }
-// Score::~Score()
-// {
-// 	CleanUp();
-// }
-// void Score::CleanUp(void)
-// {
-// 	nVtx=0;
-// 	if(nullptr!=vtx)
-// 	{
-// 		delete [] vtx;
-// 		vtx=nullptr;
-// 	}
-// }
-
-// void Score::ReadFile(char fName[])
-// {
-// 	FILE *fp=fopen(fName,"r");
-// 	if(nullptr!=fp)
-// 	{
-// 		CleanUp();
-// 		char str[256];
-// 		if(nullptr!=fgets(str,255,fp))
-// 		{
-// 			nScore = atoi(str);
 // 			printf("%d scores will be shown.\n", nScore);
 
 // 			int n=0;
