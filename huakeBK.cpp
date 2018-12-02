@@ -566,9 +566,9 @@ int main(void)
 //            double vx,vy,vz;
             player.GetForwardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px + 2.*movespeed*vx;
-            fy = py + 2.*movespeed*vy;
-            fz = pz + 2.*movespeed*vz;
+            fx = px + 4.*movespeed*vx;
+            fy = py + 4.*movespeed*vy;
+            fz = pz + 4.*movespeed*vz;
             
             mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
             char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
@@ -580,9 +580,9 @@ int main(void)
 //            double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px - 2.*movespeed*vx;
-            fy = py + 2.*movespeed*vy;
-            fz = pz - 2.*movespeed*vz;
+            fx = px - 4.*movespeed*vx;
+            fy = py + 4.*movespeed*vy;
+            fz = pz - 4.*movespeed*vz;
             
             mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
             char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
@@ -594,9 +594,9 @@ int main(void)
 //            double vx,vy,vz;
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px + 2.*movespeed*vx;
-            fy = py + 2.*movespeed*vy;
-            fz = pz -+ 2.*movespeed*vz;
+            fx = px + 1.*movespeed*vx;
+            fy = py + 1.*movespeed*vy;
+            fz = pz + 1.*movespeed*vz;
             
             mazes[0].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
             char FutureWallType = mazes[0].GetWallType(map0, fhgx, fhgy, fhgz);
