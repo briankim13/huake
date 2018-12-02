@@ -1222,28 +1222,31 @@ int TriMaze::CollisionCheck(double fhgx, double fhgy, double fhgz, double &vx, d
     int FutureWallType = GetWallType(fhgx, fhgy, fhgz);
     if(FutureWallType == 8) // will collide in future
     {
-        if(GetWallType(fhgx, fhgy, fhgz-vhgz) != 8)
-        {
-            vhgz += -vhgz; // vhgz = 0
-            Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
-        }
-        else if(GetWallType(fhgx-vhgx, fhgy, fhgz) != 8)
-        {
-            vhgx += -vhgx; // vhgx = 0
-            Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
-        }
-        else if(GetWallType(fhgx-(vhgx+vhgz)/sqrt(2.), fhgy, fhgz-(vhgx+vhgz)/sqrt(2.)) != 8)
-        {
-            vhgx += -(vhgx+vhgz)/sqrt(2.);
-            vhgz += -(vhgx+vhgz)/sqrt(2.);
-            Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
-        }
-        else
-        {
-            vx = 0.;
-            vy = 0.;
-            vz = 0.;
-        }
+        // if(GetWallType(fhgx, fhgy, fhgz-vhgz) != 8)
+        // {
+        //     vhgz += -vhgz; // vhgz = 0
+        //     Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
+        // }
+        // else if(GetWallType(fhgx-vhgx, fhgy, fhgz) != 8)
+        // {
+        //     vhgx += -vhgx; // vhgx = 0
+        //     Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
+        // }
+        // else if(GetWallType(fhgx-(vhgx+vhgz)/sqrt(2.), fhgy, fhgz-(vhgx+vhgz)/sqrt(2.)) != 8)
+        // {
+        //     vhgx += -(vhgx+vhgz)/sqrt(2.);
+        //     vhgz += -(vhgx+vhgz)/sqrt(2.);
+        //     Grid2Local(vx, vy, vx, vhgx, vhgy, vhgz);
+        // }
+        // else
+        // {
+        //     vx = 0.;
+        //     vy = 0.;
+        //     vz = 0.;
+        // }
+        vx = 0.;
+        vy = 0.;
+        vz = 0.; 
         return currplane;
     }
     else if(FutureWallType == 9) // collision-free
