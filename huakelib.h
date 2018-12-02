@@ -40,7 +40,8 @@ public:
     void MovePos(double dx, double dy, double dz); 
     void RotateRoll(double dr);
     void RotatePitch(double dp);
-    void RotateYaw(double dy); 
+    void RotateYaw(double dy);
+	void RotatePitch1(double dp);
 
     void Print(void) const; 
     void DoPostMult(const TransformMatrix R);
@@ -179,6 +180,7 @@ void DrawBackground(void);
 void DrawFloor(double x1, double y1, double z1,
                double x2, double y2, double z2,
                double x3, double y3, double z3);
+void DrawIntro(void);
 
 class Teleporter
 {
