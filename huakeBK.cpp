@@ -384,7 +384,7 @@ int main(void)
     Teleporter teleporter; 
 
     double vx = 0., vy = 0., vz = 0.;
-    double movespeed = 4.; // increase movement speed
+    double movespeed = 1.; // increase movement speed
 
     int nextplane = plane; 
     int prevplane = plane; 
@@ -517,21 +517,28 @@ int main(void)
             player.GetForwardVector(vx,vy,vz);
             player.HT.MovePos(-movespeed*0.,-movespeed*1.,-movespeed*0.);
         }
+
+        // double fhgx, fhgy, fhgz;
+       	// mazes[plane].Local2Grid(px, py, pz, fhgx, fhgy, fhgz);
+        // int WallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
+        // // printf("type: %d plane: %d | %lf, %lf, %lf\n",WallType, plane, fhgx, fhgy, fhgz); 
+        // printf("local: %lf, %lf, %lf |skey: %lf, %lf, %lf\n",px, py, pz, fhgx, fhgy, fhgz);
+
         if(0!=FsGetKeyState(FSKEY_W))
         {
             player.GetForwardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px - 1.*movespeed*vx;
-            fy = py + 1.*movespeed*vy;
-            fz = pz - 1.*movespeed*vz;
+            fx = px - movespeed*vx;
+            fy = py;
+            fz = pz - movespeed*vz;
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
 
             int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
-            printf("%d  ",FutureWallType); 
+            // printf("type: %d plane: %d ",FutureWallType, plane); 
             nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
-            printf("%lf, %lf, %lf \n", vx, vy, vz); 
-            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+            // printf("%lf, %lf, %lf \n", vx, vy, vz); 
+            player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
 
         }
         if(0!=FsGetKeyState(FSKEY_S))
@@ -539,9 +546,9 @@ int main(void)
             player.GetForwardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
 
-            fx = px + 1.*movespeed*vx;
-            fy = py + 1.*movespeed*vy;
-            fz = pz + 1.*movespeed*vz;
+            fx = px + movespeed*vx;
+            fy = py;
+            fz = pz + movespeed*vz;
 
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
@@ -554,22 +561,22 @@ int main(void)
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
 
-            fx = px - 1.*movespeed*vx;
-            fy = py + 1.*movespeed*vy;
-            fz = pz - 1.*movespeed*vz;
+            fx = px - movespeed*vx;
+            fy = py;
+            fz = pz - movespeed*vz;
          
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
             int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);
             nextplane = mazes[plane].CollisionCheck(FutureWallType, vx, vy, vz, plane, hx, hz);
-            player.HT.MovePos(-movespeed*vx, movespeed*0.,-movespeed*vz);
+            player.HT.MovePos(-movespeed*vx, -movespeed*0.,-movespeed*vz);
         }
         if(0!=FsGetKeyState(FSKEY_D))
         {
             player.GetSidewardVector(vx,vy,vz);
             double fx, fy, fz, fhgx, fhgy, fhgz; // future coord
-            fx = px + 1.*movespeed*vx;
-            fy = py + 1.*movespeed*vy;
-            fz = pz + 1.*movespeed*vz;
+            fx = px + movespeed*vx;
+            fy = py;
+            fz = pz + movespeed*vz;
             
             mazes[plane].Local2Grid(fx, fy, fz, fhgx, fhgy, fhgz);
             int FutureWallType = mazes[plane].GetWallType(fhgx, fhgy, fhgz);

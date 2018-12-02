@@ -1020,7 +1020,7 @@ void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,
 			buf[j] += mat[j][i]*CartCoord[i];
 		}
 	}
-	hx = buf[0];
+	hx = buf[0] * 2./sqrt(3.);
 	hy = buf[1];
 	hz = buf[2];
     
@@ -1071,7 +1071,7 @@ void TriMaze::Grid2Local(double &x, double &y, double &z, double hgx, double hgy
         }
     }
     
-    CartCoord[0] = x; CartCoord[1] = y; CartCoord[2] = z; CartCoord[3] = 1.;
+    x =CartCoord[0]; y = CartCoord[1]; z = CartCoord[2]; CartCoord[3] = 1.;
 
     
     // hgx1 = (int) hgx;
