@@ -1,4 +1,7 @@
-Yun 1
-Brian 2
-Jaejun 3
-Zhao 4
+Yun 	10
+Brian 	84
+Jaejun 	32
+Zhao 	11
+score	31
+hello	30
+hellu	30
