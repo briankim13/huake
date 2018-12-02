@@ -171,7 +171,8 @@ public:
     void UpdateGlobalP(void); 
     void Draw(void) const;
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
-    char GetWallType(const char map[], double hgx, double hgy, double hgz) const; 
+    char GetWallType(const char map[], double hgx, double hgy, double hgz) const;
+    void CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz);
 };
 
 void DrawGround(void);
@@ -224,7 +225,8 @@ public:
     void SetZeroVel(void); 
     void SetPos(double x, double y, double z); 
     void SetPos(double x, double y, double z, double r, double p, double w); 
-    void SimStep(void); 
+    void SimStep(void);
+    void MovePos(TriMaze *map, double dx, double dy, double dz);
     // simulate step (dT) from input, 
     // how should we get input? as a separate class?
 };
