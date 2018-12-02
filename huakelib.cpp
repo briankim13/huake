@@ -916,7 +916,7 @@ void TriMaze::CleanUp()
 }
 void TriMaze::SetMaze(int w, int h, char incoming[])
 {
-	map = incoming;
+	map = incoming; // this is the map
 	int buf = 0;  
 	for (int x=0; x<w; ++x)
 	{
@@ -1024,7 +1024,7 @@ void TriMaze::Local2Grid(double x, double y, double z, double &hgx, double &hgy,
     hgz = hz / l;
 }
 
-char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) const // players local position
+int TriMaze::GetWallType(double hgx, double hgy, double hgz) const // players local position
 {
     int hgx1 = (int) hgx;
     int hgz1 = (int) hgz;
@@ -1033,11 +1033,33 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
 
     if(1. >= hgx2 + hgz2)
     {
-        return map[39*(19-hgx1)+(hgx1+2*hgz1)];
+        if (map[39*(19-hgx1)+(hgx1+2*hgz1)] == '#') // if wall 
+        {
+        	return 8;
+        }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1)] == ' ') // if nothing
+        {
+        	return 9; 
+        }
+        else
+        {
+        	return map[39*(19-hgx1)+(hgx1+2*hgz1)]-48; 
+        }
     }
     else if(1. < hgx2 + hgz2)
     {
-        return map[39*(19-hgx1)+(hgx1+2*hgz1+1)];
+    	if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == '#') // if wall
+        {
+        	return 8;
+        }
+        else if (map[39*(19-hgx1)+(hgx1+2*hgz1+1)] == ' ') // if nothing
+        {
+        	return 9; 
+        }
+        else // if transition 
+        {
+        	return map[39*(19-hgx1)+(hgx1+2*hgz1+1)]-48; 
+        }
     }
     else
     {
@@ -1046,21 +1068,91 @@ char TriMaze::GetWallType(const char map[], double hgx, double hgy, double hgz) 
     }
 }
 
-void TriMaze::CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz)
+int TriMaze::CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz)
 {
-    if(FutureWallType == '#') // will collide in future
+    if(FutureWallType == 8) // will collide in future
     {
         vx = 0.;
-//        vy = 0.;
+        vy = 0.;
         vz = 0.;
+        return currplane; 
     }
-    else if(FutureWallType == ' ') // collision-free
+    else if(FutureWallType == 9) // collision-free
     {
-//        vx = 0.;
-//        vy = 0.;
-//        vz = 0.;
+    	return currplane; 
     }
-    else{}
+
+    else if(FutureWallType == 0)
+    {
+    	if (currplane == 1) // from 1 to 0
+    	{
+    		// ix = 
+    		// iy = 
+    	}
+    	else if (currplane == 2) // from 2 to 0
+    	{
+
+    	}
+    	else if (currplane == 3) // from 3 to 0
+    	{
+
+    	}
+    	return 0; // this is the next plane
+    }
+    else if(FutureWallType == 1)
+    {
+    	if (currplane == 0) // from 0 to 1
+    	{
+    		hx = 7.7;
+    		hz = 0.7;
+    	}
+    	else if (currplane == 2) // from 2 to 1
+    	{
+
+    	}
+    	else if (currplane == 3) // from 3 to 1
+    	{
+
+    	}
+    	return 1; 
+    }
+    else if(FutureWallType == 2)
+    {
+    	if (currplane == 0) 
+    	{
+
+    	}
+    	else if (currplane == 1) 
+    	{
+    		
+    	}
+    	else if (currplane == 3) 
+    	{
+
+    	}
+    	return 2; 
+    }
+    else if(FutureWallType == 3)
+    {
+    	if (currplane == 0) 
+    	{
+    		
+    	}
+    	else if (currplane == 1) 
+    	{
+    		
+    	}
+    	else if (currplane == 2) 
+    	{
+
+    	}
+    	return 3; 
+    }
+
+    else
+    {
+    	return currplane; 
+    }
 }
 
 
@@ -1244,7 +1336,7 @@ Teleporter::Teleporter()
 {
 	a = 1000.; 
 }
-void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w) 
+void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w, double hx, double hz) 
 {
 	int mode; // there will be 12 
 	double px, py, pz, t;
@@ -1291,98 +1383,101 @@ void Teleporter::Teleport(int pplane, int cplane, double &x, double &y, double &
 
 	if (mode == 0) // P0 to P1
 	{
-        t = (2./sqrt(2.)/a*pz-1)/(-2.);
-        x = (2.-3.*t)*sqrt(6.)*a/6.;
-        y = py;
-        z = -t*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1)/(-2.);
+        // x = (2.-3.*t)*sqrt(6.)*a/6.;
+        // y = py;
+        // z = -t*sqrt(2.)/2.*a;
+        x = 0.;
+        y = 20.; 
+        z = 0.; 
         w += 60.*PI/180.; 
 	}
 	else if (mode == 1) // P0 to P2
 	{
-        t = -2./sqrt(2.)/a*pz;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (-1.+t)*sqrt(2.)/2.*a;
+        // t = -2./sqrt(2.)/a*pz;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (-1.+t)*sqrt(2.)/2.*a;
         w +=180.*PI/180.; 
 	}
 	else if (mode == 2) // P0 to P3
 	{
-        t = -2./sqrt(2.)/a*pz+1;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (-1.+t)*sqrt(2.)/2*a;
+        // t = -2./sqrt(2.)/a*pz+1;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (-1.+t)*sqrt(2.)/2*a;
         w +=-60.*PI/180.; 
 	}
 	else if (mode == 3) // P1 to P0
 	{
-        t = -2./sqrt(2.)/a*pz;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 4) // P1 to P2
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 5) // P1 to P3
 	{
-        t = -2./sqrt(2.)/a*pz+1;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 6) // P2 to P0
 	{
-        t = 2.*pz/sqrt(2.)/a+1;
-        x = (2.-3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = -t*sqrt(2.)/2.*a;
+        // t = 2.*pz/sqrt(2.)/a+1;
+        // x = (2.-3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = -t*sqrt(2.)/2.*a;
         w += 180.*PI/180.; 
 	}
 	else if (mode == 7) // P2 to P1
 	{
-        t = -2./sqrt(2.)/a*pz+1.;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1.;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 8) // P2 to P3
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w +=-60.*PI/180.; 
 	}
 	else if (mode == 9) // P3 to P0
 	{
-        t = 2./sqrt(2.)/a*pz+1.;
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = 2./sqrt(2.)/a*pz+1.;
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 60.*PI/180.; 
 	}
 	else if (mode == 10) // P3 to P1
 	{
-        t = (2./sqrt(2.)/a*pz-1.)/(-2.);
-        x = (-1.+3.*t)*sqrt(6.)/6.*a;
-        y = py;
-        z = (1.-t)*sqrt(2.)/2.*a;
+        // t = (2./sqrt(2.)/a*pz-1.)/(-2.);
+        // x = (-1.+3.*t)*sqrt(6.)/6.*a;
+        // y = py;
+        // z = (1.-t)*sqrt(2.)/2.*a;
         w += 300.*PI/180.; 
 	}
 	else if (mode == 11) // P3 to P2
 	{
-        t = -2./sqrt(2.)/a*pz+1.;
-        x = -sqrt(6.)*a/6.;
-        y = py;
-        z = (1.-2.*t)*sqrt(2.)*a/2.;
+        // t = -2./sqrt(2.)/a*pz+1.;
+        // x = -sqrt(6.)*a/6.;
+        // y = py;
+        // z = (1.-2.*t)*sqrt(2.)*a/2.;
         w += 60.*PI/180.; 
 	}
 	else if (mode == -1)

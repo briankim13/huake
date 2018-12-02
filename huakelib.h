@@ -171,8 +171,8 @@ public:
     void UpdateGlobalP(void); 
     void Draw(void) const;
     void Local2Grid(double x, double y, double z, double &hgx, double &hgy,double &hgz);
-    char GetWallType(const char map[], double hgx, double hgy, double hgz) const;
-    void CollisionCheck(const char FutureWallType, double &vx, double &vy, double &vz);
+    int GetWallType(double hgx, double hgy, double hgz) const;
+    int CollisionCheck(const int FutureWallType, double &vx, double &vy, double &vz, const int currplane, double &hx, double &hz);
 };
 
 void DrawGround(void);
@@ -190,7 +190,7 @@ class Teleporter
 public:
     double a; 
     Teleporter(); 
-    void Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w); 
+    void Teleport(int pplane, int cplane, double &x, double &y, double &z, double &w, double hx, double hz); 
 };
 
 class DynamicsContext
