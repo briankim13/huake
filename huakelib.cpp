@@ -2485,7 +2485,9 @@ void TextInput::Draw(void) const
 	glColor3ub(255,255,255);
 
 	glRasterPos2d(32,32);
-	YsGlDrawFontBitmap12x16(title.GetPointer());
+	YsGlDrawFontBitmap16x20("Your record");
+	glRasterPos2d(32,52);
+	YsGlDrawFontBitmap16x20(title.GetPointer());
 
 	auto cpy=str;
 	switch(time(nullptr)%2)
@@ -2498,6 +2500,8 @@ void TextInput::Draw(void) const
 		break;
 	}
 
-	glRasterPos2d(32,48);
-	YsGlDrawFontBitmap12x16(cpy.GetPointer());
+	glRasterPos2d(32,72);
+	YsGlDrawFontBitmap16x20("Your name");
+	glRasterPos2d(32,92);
+	YsGlDrawFontBitmap16x20(cpy.GetPointer());
 }

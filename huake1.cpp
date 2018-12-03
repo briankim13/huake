@@ -305,11 +305,11 @@ void Render(void *incoming)
         // draw from score.txt 
         for(int i = 0; i < ((datPtr->wNum-1) / 2); ++i)
         {
-            glRasterPos2d(128, 32 + 16 * i);
-            YsGlDrawFontBitmap12x16(datPtr->strName[i]);
+            glRasterPos2d(400, 32 + 20 * i);
+            YsGlDrawFontBitmap16x20(datPtr->strName[i]);
 
-            glRasterPos2d(128 + 160, 32 + 16 * i);
-            YsGlDrawFontBitmap12x16(datPtr->strScore[i]);
+            glRasterPos2d(400 + 250, 32 + 20 * i);
+            YsGlDrawFontBitmap16x20(datPtr->strScore[i]);
         }
         fclose(datPtr->fp3);
 

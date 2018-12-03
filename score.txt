@@ -18,3 +18,8 @@ working?	3.04
 working!	9.23
 allsgood	73.04
 tyo	1.83
+mergesuccess	50.37
+sexy	43.79
+BRIANKIM	3.29
+perfect	11.61
+WOO	39.50
