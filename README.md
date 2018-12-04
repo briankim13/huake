@@ -17,5 +17,5 @@ This is the result of group effort of Huake team. We made a 3D maze for Engineer
 ## Transition
 ![](transition.gif)
 
-## Collision
+## Minimap
 ![](minimap.gif)
