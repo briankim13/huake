@@ -25,3 +25,4 @@ TrytoBeat90	48.15
 Beat90GetPrize	27.98
 HUAKE	111.90
 onemore	390.19
+changingcolor	120.38

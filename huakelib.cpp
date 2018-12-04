@@ -855,12 +855,14 @@ void TriWall::Draw(void) const
 		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
 		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
 		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
-                                              
+                                    
+    	glColor3f(1.f,1.f,1.f);          
 		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 		glVertex3d(gp[4].x, gp[4].y, gp[4].z);
 		glVertex3d(gp[3].x, gp[3].y, gp[3].z);
-                                                                                              
+                               
+        glColor3f(.5f,.5f,.5f);                                                                
 		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
 		glVertex3d(gp[5].x, gp[5].y, gp[5].z);
@@ -868,6 +870,7 @@ void TriWall::Draw(void) const
 	glEnd();
 
 	glBegin(GL_TRIANGLES);
+		glColor3f(c[0],c[1],c[2]); 
 		glVertex3d(gp[0].x, gp[0].y, gp[0].z);
 		glVertex3d(gp[1].x, gp[1].y, gp[1].z);
 		glVertex3d(gp[2].x, gp[2].y, gp[2].z);
